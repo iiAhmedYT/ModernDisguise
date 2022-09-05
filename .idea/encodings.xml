@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/DisguiseAPI/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/DisguiseAPI/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/DisguiseCore/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/DisguiseCore/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/DisguiseVSupport/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/DisguiseVSupport/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ModernDisguise-Core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ModernDisguise-Core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ModernVersionSupport/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ModernVersionSupport/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-1_7/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-1_7/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-1_8/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-1_8/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

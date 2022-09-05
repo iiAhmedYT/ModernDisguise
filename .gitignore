@@ -1,0 +1,4 @@
+# Project exclude paths
+/DisguiseAPI/target/
+/DisguiseCore/target/
+/VersionSupport-1_8/target/
