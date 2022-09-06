@@ -2,20 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ModernDisguise</artifactId>
+        <groupId>dev.iiahmed</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.iiahmed</groupId>
-    <artifactId>ModernDisguise</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-
-    <modules>
-        <module>DisguiseCore</module>
-        <module>DisguiseAPI</module>
-
-        <module>VersionSupport-1_8_R3</module>
-        <module>VersionSupport-ProtocolLib</module>
-    </modules>
+    <artifactId>VersionSupport-ProtocolLib</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -25,9 +19,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <groupId>dev.iiahmed</groupId>
+            <artifactId>DisguiseAPI</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

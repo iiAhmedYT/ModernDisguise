@@ -7,6 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class PlayerInfo {
 
-    private final String name, textures, signature;
+    private final String name, nickname, textures, signature;
 
 }

@@ -6,9 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="VersionSupport-1_8_R3" />
+        <module name="VersionSupport-ProtocolLib" />
         <module name="DisguiseAPI" />
         <module name="DisguiseCore" />
-        <module name="VersionSupport-1_8" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

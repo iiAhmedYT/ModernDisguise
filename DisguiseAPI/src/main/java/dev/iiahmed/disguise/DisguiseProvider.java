@@ -32,7 +32,7 @@ public abstract class DisguiseProvider {
      * @param player is the player you're grabbing info about
      * @return null if not disguised
      */
-    abstract public @Nullable PlayerInfo getRealInfo(@NotNull Player player);
+    abstract public @Nullable PlayerInfo getInfo(@NotNull Player player);
 
     /**
      * This sends packets to players to show changes like name & skin

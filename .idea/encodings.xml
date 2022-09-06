@@ -13,8 +13,10 @@
     <file url="file://$PROJECT_DIR$/ModernVersionSupport/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/VersionSupport-1_7/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/VersionSupport-1_7/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/VersionSupport-1_8/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/VersionSupport-1_8/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-1_8_R3/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-1_8_R3/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-ProtocolLib/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VersionSupport-ProtocolLib/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

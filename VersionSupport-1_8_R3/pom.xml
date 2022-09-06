@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>VersionSupport-1_8</artifactId>
+    <artifactId>VersionSupport-1_8_R3</artifactId>
     <version>${project.parent.version}</version>
 
 
@@ -21,14 +21,12 @@
 
 
     <dependencies>
-
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
 
         <dependency>
             <groupId>dev.iiahmed</groupId>

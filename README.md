@@ -9,7 +9,12 @@ This project is deployed on a self-hosted repository currently
 
 here's the repo
 ```xml
-
+<repositories>
+    <repository>
+        <id>iiahmed-dev</id>
+        <url>https://repo.iiahmed.dev/repositories/public/</url>
+    </repository>
+</repositories>
 ```
 and here's the dependancy
 ```xml

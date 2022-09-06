@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MVS1_8 extends DisguiseProvider {
+public class MVS1_8_R3 extends DisguiseProvider {
 
     private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
 
@@ -73,7 +73,7 @@ public class MVS1_8 extends DisguiseProvider {
             profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
         }
 
-        playerInfo.put(player.getUniqueId(), new PlayerInfo(realname, oldTextures, oldSignature));
+        playerInfo.put(player.getUniqueId(), new PlayerInfo(realname, disguise.hasName()? disguise.getName() : realname, oldTextures, oldSignature));
 
         return DisguiseResponse.SUCCESS;
     }
@@ -111,7 +111,7 @@ public class MVS1_8 extends DisguiseProvider {
     }
 
     @Override
-    public @Nullable PlayerInfo getRealInfo(@NotNull Player player) {
+    public @Nullable PlayerInfo getInfo(@NotNull Player player) {
         return playerInfo.get(player.getUniqueId());
     }
 
