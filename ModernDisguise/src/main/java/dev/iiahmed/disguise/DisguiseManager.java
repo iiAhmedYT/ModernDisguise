@@ -34,6 +34,9 @@ public class DisguiseManager {
         }
     }
 
+    /**
+     * @return the available DisguiseProvider for current version
+     */
     @Nullable
     public static DisguiseProvider getProvider() {
         return PROVIDER;
