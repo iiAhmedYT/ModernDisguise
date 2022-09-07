@@ -6,10 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="ModernDisguise" />
         <module name="VersionSupport-1_8_R3" />
         <module name="VersionSupport-ProtocolLib" />
         <module name="DisguiseAPI" />
-        <module name="DisguiseCore" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
