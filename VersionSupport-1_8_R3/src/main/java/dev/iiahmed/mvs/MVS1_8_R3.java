@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import dev.iiahmed.disguise.*;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.PacketPlayOutRespawn;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,6 +33,10 @@ public class MVS1_8_R3 extends DisguiseProvider {
 
         if(isDisguised(player)) {
             return DisguiseResponse.FAIL_ALREADY_DISGUISED;
+        }
+
+        if(disguise.isEmpty()) {
+            return DisguiseResponse.FAIL_EMPTY_DISGUISE;
         }
 
         final String realname = player.getName();
@@ -74,6 +79,7 @@ public class MVS1_8_R3 extends DisguiseProvider {
         }
 
         playerInfo.put(player.getUniqueId(), new PlayerInfo(realname, disguise.hasName()? disguise.getName() : realname, oldTextures, oldSignature));
+        refreshPlayer(player);
 
         return DisguiseResponse.SUCCESS;
     }
@@ -121,17 +127,22 @@ public class MVS1_8_R3 extends DisguiseProvider {
         location.setYaw(player.getLocation().getYaw());
         location.setPitch(player.getLocation().getPitch());
         EntityPlayer ep = ((CraftPlayer)player).getHandle();
+        // synchorizing this process, other tasks can be async just fine
         Bukkit.getScheduler().runTask(plugin, () -> {
+            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
+                    ep));
             ep.playerConnection.sendPacket(new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(),
                     ep.getWorld().getWorldData().getType(), ep.playerInteractManager.getGameMode()));
             player.teleport(location);
+            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
+                    ep));
+
         });
         for(Player serverPlayer : Bukkit.getOnlinePlayers()) {
             if(serverPlayer == player) continue;
             serverPlayer.hidePlayer(player);
-        }
-        for(Player serverPlayer : Bukkit.getOnlinePlayers()) {
-            if(serverPlayer == player) continue;
             serverPlayer.showPlayer(player);
         }
     }

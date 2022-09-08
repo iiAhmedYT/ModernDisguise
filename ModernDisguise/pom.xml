@@ -82,19 +82,22 @@
         <dependency>
             <groupId>dev.iiahmed</groupId>
             <artifactId>DisguiseAPI</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>dev.iiahmed</groupId>
             <artifactId>VersionSupport-1_8_R3</artifactId>
             <version>${project.parent.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>dev.iiahmed</groupId>
             <artifactId>VersionSupport-ProtocolLib</artifactId>
             <version>${project.parent.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

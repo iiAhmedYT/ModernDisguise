@@ -35,7 +35,7 @@ public abstract class DisguiseProvider {
     abstract public @Nullable PlayerInfo getInfo(@NotNull Player player);
 
     /**
-     * This sends packets to players to show changes like name & skin
+     * This sends packets to players to show changes like name and skin
      * @param player is the refreshed player
      */
     abstract public void refreshPlayer(Player player);

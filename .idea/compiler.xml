@@ -13,10 +13,15 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="DisguiseAPI" target="1.8" />
       <module name="DisguiseVSupport" target="1.8" />
+      <module name="ModernDisguise" target="1.8" />
       <module name="ModernDisguise-Core" target="1.8" />
+      <module name="ModernDisguise-parent" target="1.8" />
       <module name="ModernVersionSupport" target="1.8" />
       <module name="VersionSupport-1_7" target="1.8" />
+      <module name="VersionSupport-1_8_R3" target="1.8" />
+      <module name="VersionSupport-ProtocolLib" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

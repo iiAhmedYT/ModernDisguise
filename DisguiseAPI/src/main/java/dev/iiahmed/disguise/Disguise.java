@@ -26,6 +26,10 @@ public class Disguise {
         this.fakename = fakename;
     }
 
+    public boolean isEmpty() {
+        return !hasName() && !hasSkin();
+    }
+
     public boolean hasName() {
         return name != null && !fakename;
     }

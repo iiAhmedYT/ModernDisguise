@@ -45,7 +45,8 @@ public class ExampleClass implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Disguise disguise = Disguise.builder()
-                .setName("BillBobbyBob")
+                // the boolean is whether this is a fkae nickname or not
+                .setName("BillBobbyBob", false)
                 // you could as well use DisguiseBuilder#setSkin(textures, signature)
                 .setSkin(SkinAPI.MINETOOLS_UUID, "example-uuid")
                 .build();
