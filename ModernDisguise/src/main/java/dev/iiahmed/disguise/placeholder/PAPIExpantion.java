@@ -30,8 +30,8 @@ public class PAPIExpantion extends PlaceholderExpansion {
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
 
-        if(provider == null) {
-            return player.getName();
+        if(player == null) {
+            return "";
         }
 
         String request = params.toLowerCase();
@@ -46,9 +46,8 @@ public class PAPIExpantion extends PlaceholderExpansion {
             case "realname":
                 if(provider.isDisguised(player) && info != null) {
                     return info.getName();
-                } else {
-                    return player.getName();
                 }
+                return player.getName();
         }
 
         return null;

@@ -14,7 +14,7 @@
         <module>DisguiseAPI</module>
 
         <module>VersionSupport-1_8_R3</module>
-        <module>VersionSupport-ProtocolLib</module>
+        <module>VersionSupport-Fallback</module>
     </modules>
 
     <distributionManagement>

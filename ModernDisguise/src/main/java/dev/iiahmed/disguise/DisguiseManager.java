@@ -3,7 +3,8 @@ package dev.iiahmed.disguise;
 import dev.iiahmed.disguise.placeholder.PAPIExpantion;
 import dev.iiahmed.mvs.MVS1_8_R3;
 import dev.iiahmed.mvs.MVS_ProtocolLib;
-import org.jetbrains.annotations.Nullable;
+import dev.iiahmed.mvs.MVS_Unavailable;
+import org.jetbrains.annotations.NotNull;
 
 public class DisguiseManager {
 
@@ -17,7 +18,7 @@ public class DisguiseManager {
         && classExists("dev.iiahmed.mvs.MVS_ProtocolLib")) {
             PROVIDER = new MVS_ProtocolLib();
         } else {
-            PROVIDER = null;
+            PROVIDER = new MVS_Unavailable();
         }
     }
 
@@ -37,7 +38,7 @@ public class DisguiseManager {
     /**
      * @return the available DisguiseProvider for current version
      */
-    @Nullable
+    @NotNull
     public static DisguiseProvider getProvider() {
         return PROVIDER;
     }
