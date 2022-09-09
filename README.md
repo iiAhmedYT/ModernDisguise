@@ -48,6 +48,7 @@ public class ExampleClass implements Listener {
                 // the boolean is whether this is a fkae nickname or not
                 .setName("BillBobbyBob", false)
                 // you could as well use DisguiseBuilder#setSkin(textures, signature)
+                // which is more recommended
                 .setSkin(SkinAPI.MINETOOLS_UUID, "example-uuid")
                 .build();
         provider.disguise(player, disguise);
