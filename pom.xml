@@ -15,6 +15,7 @@
 
         <module>VersionSupport-1_8_R3</module>
         <module>VersionSupport-Fallback</module>
+        <module>VersionSupport-1_9_R2</module>
     </modules>
 
     <distributionManagement>

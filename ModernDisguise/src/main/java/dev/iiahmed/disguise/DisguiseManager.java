@@ -2,6 +2,7 @@ package dev.iiahmed.disguise;
 
 import dev.iiahmed.disguise.placeholder.PAPIExpantion;
 import dev.iiahmed.mvs.MVS1_8_R3;
+import dev.iiahmed.mvs.MVS1_9_R2;
 import dev.iiahmed.mvs.MVS_ProtocolLib;
 import dev.iiahmed.mvs.MVS_Unavailable;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,8 @@ public class DisguiseManager {
     static {
         if(versionExists("v1_8_R3")) {
             PROVIDER = new MVS1_8_R3();
+        } else if (versionExists("v1_9_R2")) {
+            PROVIDER = new MVS1_9_R2();
         } else if(classExists("com.pheonix.protocol.ProtocolLib")
         && classExists("dev.iiahmed.mvs.MVS_ProtocolLib")) {
             PROVIDER = new MVS_ProtocolLib();
