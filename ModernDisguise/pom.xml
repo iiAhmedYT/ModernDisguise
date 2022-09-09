@@ -95,7 +95,7 @@
 
         <dependency>
             <groupId>dev.iiahmed</groupId>
-            <artifactId>VersionSupport-ProtocolLib</artifactId>
+            <artifactId>VersionSupport-Fallback</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>

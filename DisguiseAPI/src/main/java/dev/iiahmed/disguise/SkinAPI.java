@@ -2,8 +2,8 @@ package dev.iiahmed.disguise;
 
 public enum SkinAPI {
 
+    MOJANG_UUID("https://sessionserver.mojang.com/session/minecraft/profile/%uuid%?unsigned=false"),
     MINETOOLS_UUID("https://api.minetools.eu/profile/%uuid%"),
-
     MINESKIN_UUID("https://api.mineskin.org/get/uuid/%uuid%"),
 
     ;

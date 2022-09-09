@@ -107,17 +107,33 @@ public class Disguise {
             String texture = null, signature = null;
 
             switch (skinAPI) {
-                case MINETOOLS_UUID:
-                    JSONArray array = (JSONArray) object.get("raw.properties");
-                    for(int i = 0; i < array.size(); i++) {
-                        JSONObject jsonObject = (JSONObject) array.get(0);
-                        if(jsonObject == null) continue;
+                case MOJANG_UUID:
+                    JSONArray mojangArray = (JSONArray) object.get("properties");
+                    for (Object o : mojangArray) {
+                        JSONObject jsonObject = (JSONObject) o;
+                        if (jsonObject == null) continue;
 
-                        if(jsonObject.get("value") != null) {
+                        if (jsonObject.get("value") != null) {
                             texture = (String) jsonObject.get("value");
                         }
 
-                        if(jsonObject.get("signature") != null) {
+                        if (jsonObject.get("signature") != null) {
+                            signature = (String) jsonObject.get("signature");
+                        }
+                    }
+                    break;
+                case MINETOOLS_UUID:
+                    JSONObject raw = (JSONObject) object.get("raw");
+                    JSONArray array = (JSONArray) raw.get("properties");
+                    for (Object o : array) {
+                        JSONObject jsonObject = (JSONObject) o;
+                        if (jsonObject == null) continue;
+
+                        if (jsonObject.get("value") != null) {
+                            texture = (String) jsonObject.get("value");
+                        }
+
+                        if (jsonObject.get("signature") != null) {
                             signature = (String) jsonObject.get("signature");
                         }
                     }
