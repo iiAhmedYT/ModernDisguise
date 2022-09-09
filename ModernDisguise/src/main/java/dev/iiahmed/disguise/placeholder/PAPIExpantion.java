@@ -48,6 +48,10 @@ public class PAPIExpantion extends PlaceholderExpansion {
                     return info.getName();
                 }
                 return player.getName();
+            case "is_nicked":
+            case "is_disguised":
+                return String.valueOf(provider.isDisguised(player));
+
         }
 
         return null;
