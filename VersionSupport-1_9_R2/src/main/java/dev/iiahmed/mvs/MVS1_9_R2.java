@@ -138,7 +138,6 @@ public class MVS1_9_R2 extends DisguiseProvider {
             ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                     PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
                     ep));
-
         });
         for(Player serverPlayer : Bukkit.getOnlinePlayers()) {
             if(serverPlayer == player) continue;
