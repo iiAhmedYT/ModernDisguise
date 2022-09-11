@@ -53,8 +53,9 @@ public class ExampleClass implements Listener {
         Disguise disguise = Disguise.builder()
                 // the boolean is whether this is a fkae nickname or not
                 .setName("BillBobbyBob", false)
-                // you could as well use DisguiseBuilder#setSkin(textures, signature)
+                // you could as well use Disguise.Builder#setSkin(textures, signature)
                 // which is more recommended
+                // it's recommended to run this async since #setSkin from API could block the mainthread
                 .setSkin(SkinAPI.MINETOOLS_UUID, "example-uuid")
                 .build();
         provider.disguise(player, disguise);
