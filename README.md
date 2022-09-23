@@ -14,6 +14,8 @@ here's a list of supported versions so far
 This project is deployed on a self-hosted repository currently
 
 here's the repo
+
+**TEMPORARILY OFFLINE**
 ```xml
 <repositories>
     <repository>
