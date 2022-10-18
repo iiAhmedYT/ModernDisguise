@@ -5,7 +5,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MVS_Unavailable  extends DisguiseProvider {
+/**
+ * This will always return a FAIL_VERSION_NOT_SUPPORTED in every response
+ */
+public class MVS_Unavailable extends DisguiseProvider {
 
     @Override
     public @NotNull DisguiseResponse disguise(@NotNull Player player, @NotNull Disguise disguise) {

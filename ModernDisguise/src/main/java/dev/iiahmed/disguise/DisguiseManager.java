@@ -1,10 +1,7 @@
 package dev.iiahmed.disguise;
 
 import dev.iiahmed.disguise.placeholder.PAPIExpantion;
-import dev.iiahmed.mvs.MVS1_8_R3;
-import dev.iiahmed.mvs.MVS1_9_R2;
-import dev.iiahmed.mvs.MVS_ProtocolLib;
-import dev.iiahmed.mvs.MVS_Unavailable;
+import dev.iiahmed.mvs.*;
 import org.jetbrains.annotations.NotNull;
 
 public class DisguiseManager {
@@ -17,8 +14,9 @@ public class DisguiseManager {
             PROVIDER = new MVS1_8_R3();
         } else if (versionExists("v1_9_R2")) {
             PROVIDER = new MVS1_9_R2();
-        } else if(classExists("com.pheonix.protocol.ProtocolLib")
-        && classExists("dev.iiahmed.mvs.MVS_ProtocolLib")) {
+        } else if (versionExists("v1_10_R1")) {
+            PROVIDER = new MVS1_10_R1();
+        } else if(classExists("com.pheonix.protocol.ProtocolLib")) {
             PROVIDER = new MVS_ProtocolLib();
         } else {
             PROVIDER = new MVS_Unavailable();
