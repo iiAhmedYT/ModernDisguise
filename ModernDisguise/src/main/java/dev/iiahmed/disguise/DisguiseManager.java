@@ -10,15 +10,15 @@ public class DisguiseManager {
     private static boolean expantionRegistered = false;
 
     static {
-        if(versionExists("v1_8_R3")) {
+        if(isVersion("1_8_R3")) {
             PROVIDER = new MVS1_8_R3();
-        } else if (versionExists("v1_9_R2")) {
+        } else if (isVersion("1_9_R2")) {
             PROVIDER = new MVS1_9_R2();
-        } else if (versionExists("v1_10_R1")) {
+        } else if (isVersion("1_10_R1")) {
             PROVIDER = new MVS1_10_R1();
-        } else if (versionExists("v1_11_R1")) {
+        } else if (isVersion("1_11_R1")) {
             PROVIDER = new MVS1_11_R1();
-        } else if (versionExists("v1_12_R1")) {
+        } else if (isVersion("1_12_R1")) {
             PROVIDER = new MVS1_12_R1();
         } else if(classExists("com.pheonix.protocol.ProtocolLib")) {
             PROVIDER = new MVS_ProtocolLib();
@@ -27,8 +27,8 @@ public class DisguiseManager {
         }
     }
 
-    private static boolean versionExists(final String version) {
-        return classExists("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
+    private static boolean isVersion(final String version) {
+        return classExists("org.bukkit.craftbukkit.v" + version + ".entity.CraftPlayer");
     }
 
     private static boolean classExists(final String path) {
