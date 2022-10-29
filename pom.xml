@@ -13,10 +13,11 @@
         <module>ModernDisguise</module>
         <module>DisguiseAPI</module>
 
-        <module>VersionSupport-1_8_R3</module>
         <module>VersionSupport-Fallback</module>
+        <module>VersionSupport-1_8_R3</module>
         <module>VersionSupport-1_9_R2</module>
         <module>VersionSupport-1_10_R1</module>
+        <module>VersionSupport-1_11_R1</module>
     </modules>
 
     <distributionManagement>

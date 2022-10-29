@@ -8,7 +8,8 @@ here's a list of supported versions so far
 
 - v1_8_R3 (1.8.8)
 - v1_9_R2 (1.9.4)
-- v1_10_R1 (1.10.2)
+- v1_10_R1 (1.10.x)
+- v1_11_R1 (1.11.x)
 
 ## Maven
 

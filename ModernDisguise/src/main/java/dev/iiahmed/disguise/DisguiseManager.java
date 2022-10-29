@@ -16,6 +16,8 @@ public class DisguiseManager {
             PROVIDER = new MVS1_9_R2();
         } else if (versionExists("v1_10_R1")) {
             PROVIDER = new MVS1_10_R1();
+        } else if (versionExists("v1_11_R1")) {
+            PROVIDER = new MVS1_11_R1();
         } else if(classExists("com.pheonix.protocol.ProtocolLib")) {
             PROVIDER = new MVS_ProtocolLib();
         } else {
