@@ -19,6 +19,7 @@
         <module>VersionSupport-1_10_R1</module>
         <module>VersionSupport-1_11_R1</module>
         <module>VersionSupport-1_12_R1</module>
+        <module>VersionSupport-1_13_R2</module>
     </modules>
 
     <distributionManagement>

@@ -123,6 +123,13 @@
 
         <dependency>
             <groupId>dev.iiahmed</groupId>
+            <artifactId>VersionSupport-1_13_R2</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.iiahmed</groupId>
             <artifactId>VersionSupport-Fallback</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
