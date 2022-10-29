@@ -10,6 +10,7 @@ here's a list of supported versions so far
 - v1_9_R2 (1.9.4)
 - v1_10_R1 (1.10.x)
 - v1_11_R1 (1.11.x)
+- v1_12_R1 (1.12.x)
 
 ## Maven
 
