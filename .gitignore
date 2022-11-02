@@ -6,7 +6,6 @@
 
 # IntelliJ
 out/
-*.iml
 # Compiled class file
 *.class
 
