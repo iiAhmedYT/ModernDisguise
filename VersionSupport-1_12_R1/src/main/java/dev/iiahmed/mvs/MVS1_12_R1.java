@@ -141,8 +141,8 @@ public class MVS1_12_R1 extends DisguiseProvider {
         });
         for(Player serverPlayer : Bukkit.getOnlinePlayers()) {
             if(serverPlayer == player) continue;
-            serverPlayer.hidePlayer(player);
-            serverPlayer.showPlayer(player);
+            serverPlayer.hidePlayer(plugin, player);
+            serverPlayer.showPlayer(plugin, player);
         }
     }
 
