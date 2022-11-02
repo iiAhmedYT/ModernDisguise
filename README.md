@@ -40,7 +40,7 @@ and here's the dependancy
 
 ## Usage
 
-Here's an example usage of the API (easiest)
+Here's an example usage of the API (easiest):
 
 ```java
 import dev.iiahmed.disguise.*;
@@ -65,6 +65,47 @@ public class ExampleClass implements Listener {
                 .setSkin(SkinAPI.MINETOOLS_UUID, "example-uuid")
                 .build();
         provider.disguise(player, disguise);
+    }
+    
+}
+```
+
+Here's an advanced wah of using it:
+
+```java
+import dev.iiahmed.disguise.*;
+
+public class ExampleClass implements Listener {
+    
+    private final DisguiseProvider provider = DisguiseManager.getProvider();
+    
+    public ExampleClass() {
+        provider.setPlugin(ExamplePlugin.getInstance());
+    }
+    
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        Disguise disguise = Disguise.builder()
+                // the boolean is whether this is a fkae nickname or not
+                .setName("BillBobbyBob", false)
+                // you could as well use Disguise.Builder#setSkin(textures, signature)
+                // which is more recommended
+                // it's recommended to run this async since #setSkin from API could block the mainthread
+                .setSkin(SkinAPI.MINETOOLS_UUID, "example-uuid")
+                .build();
+        DisguiseResponse response = provider.disguise(player, disguise);
+        switch (response) {
+            case SUCCESS:
+                player.sendMessage("Disguise is successful.");
+                break;
+            case FAIL_NAME_ALREADY_ONLINE:
+                player.sendMessage("There's already an online player with that nickname.");
+                break;
+            default:
+                player.sendMessage("Disguise is unsuccessful with the reason " + response.toString());
+                break;
+        }
     }
     
 }
