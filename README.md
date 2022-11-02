@@ -70,7 +70,7 @@ public class ExampleClass implements Listener {
 }
 ```
 
-Here's an advanced wah of using it:
+Here's an advanced way of using it:
 
 ```java
 import dev.iiahmed.disguise.*;
