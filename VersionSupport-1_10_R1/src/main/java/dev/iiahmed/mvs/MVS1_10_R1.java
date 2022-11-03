@@ -26,8 +26,7 @@ public class MVS1_10_R1 extends DisguiseProvider {
     @Override
     public @NotNull DisguiseResponse disguise(@NotNull Player player, @NotNull Disguise disguise) {
 
-        if(plugin == null
-        || !plugin.isEnabled()) {
+        if(plugin == null || !plugin.isEnabled()) {
             return DisguiseResponse.FAIL_PLUGIN_NOT_INITIALIZED;
         }
 

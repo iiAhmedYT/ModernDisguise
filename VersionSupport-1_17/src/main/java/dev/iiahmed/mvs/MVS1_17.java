@@ -3,12 +3,12 @@ package dev.iiahmed.mvs;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import dev.iiahmed.disguise.*;
-import net.minecraft.server.v1_12_R1.EntityPlayer;
-import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_12_R1.PacketPlayOutRespawn;
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
+import net.minecraft.network.protocol.game.PacketPlayOutRespawn;
+import net.minecraft.server.level.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MVS1_12_R1 extends DisguiseProvider {
+public class MVS1_17 extends DisguiseProvider {
 
     private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
 
@@ -125,17 +125,20 @@ public class MVS1_12_R1 extends DisguiseProvider {
         Location location = player.getLocation();
         location.setYaw(player.getLocation().getYaw());
         location.setPitch(player.getLocation().getPitch());
+        final long seed = player.getWorld().getSeed();
         EntityPlayer ep = ((CraftPlayer)player).getHandle();
         // synchorizing this process, other tasks can be async just fine
         Bukkit.getScheduler().runTask(plugin, () -> {
-            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
-                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
+            ep.b.sendPacket(new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e,
                     ep));
-            ep.playerConnection.sendPacket(new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(),
-                    ep.getWorld().getWorldData().getType(), ep.playerInteractManager.getGameMode()));
+            ep.b.sendPacket(new PacketPlayOutRespawn(ep.getWorld().getDimensionManager(),
+                    ep.getWorld().getDimensionKey(),
+                    seed, ep.d.getGameMode(),
+                    ep.d.getGameMode(), false, false, true));
             player.teleport(location);
-            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
-                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
+            ep.b.sendPacket(new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a,
                     ep));
         });
         for(Player serverPlayer : Bukkit.getOnlinePlayers()) {

@@ -1,20 +1,21 @@
-# ModernDisguise
-### NOTE: KEEP IN MIND THIS PROJECT IS PRETTY NEW AND STILL UNDER ACTIVE DEVELOPMENT
+![](assets/ModernDisguise.png)
+
 ## Description
 ModernDisguise is a free open-source high quality library to help you add a disguise/nick system in your minecraft plugin
 
 ## Supported versions
 here's a list of supported versions so far:
 
-- 1_8_R3 (1.8.8)
-- 1_9_R2 (1.9.4)
-- 1_10_R1 (1.10.x)
-- 1_11_R1 (1.11.x)
-- 1_12_R1 (1.12.x)
-- 1_13_R2 (1.13.2)
-- 1_14_R1 (1.14.x)
-- 1_15_R1 (1.15.x)
-- 1_16_R3 (1.16.5)
+- 1.8.8 (1_8_R3)
+- 1.9.4 (1_9_R2)
+- 1.10.x (1_10_R1)
+- 1.11.x (1_11_R1)
+- 1.12.x (1_12_R1)
+- 1.13.2 (1_13_R2)
+- 1.14.x (1_14_R1)
+- 1.15.x (1_15_R1)
+- 1.16.5 (1_16_R3)
+- 1.17.x (<== NO MORE NMS)
 
 ## Maven
 

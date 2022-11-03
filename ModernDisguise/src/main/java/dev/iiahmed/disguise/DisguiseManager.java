@@ -68,6 +68,10 @@ public class DisguiseManager {
                 case "1.16.5":
                     PROVIDER = new MVS1_16_R3();
                     break;
+                case "1.17":
+                case "1.17.1":
+                    PROVIDER = new MVS1_17();
+                    break;
                 default:
                     if(classExists("com.pheonix.protocol.ProtocolLib")) {
                         PROVIDER = new MVS_ProtocolLib();
