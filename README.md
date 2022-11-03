@@ -14,6 +14,7 @@ here's a list of supported versions so far:
 - 1_13_R2 (1.13.2)
 - 1_14_R1 (1.14.x)
 - 1_15_R1 (1.15.x)
+- 1_16_R3 (1.16.5)
 
 ## Maven
 
