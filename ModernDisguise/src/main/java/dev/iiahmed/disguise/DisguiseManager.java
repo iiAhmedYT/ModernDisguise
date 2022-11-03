@@ -19,10 +19,7 @@ public class DisguiseManager {
 
         String version = null;
         while (matcher.find()) {
-            String found = Bukkit.getBukkitVersion().substring(matcher.start(), matcher.end());
-            if(version == null) {
-                version = found;
-            }
+            version = Bukkit.getBukkitVersion().substring(matcher.start(), matcher.end());
         }
 
         if(version == null) {
@@ -102,7 +99,7 @@ public class DisguiseManager {
 
     @SuppressWarnings("unused")
     public static void registerExpantion() {
-        if(!classExists("me.clip.papi.PlaceholderAPI")) {
+        if(!classExists("me.clip.placeholderapi.expansion.PlaceholderExpansion")) {
             return;
         }
 
