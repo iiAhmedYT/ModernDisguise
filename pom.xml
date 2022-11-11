@@ -28,13 +28,6 @@
         <module>VersionSupport-1_19_R1</module>
     </modules>
 
-    <distributionManagement>
-        <repository>
-            <id>iiahmed-dev</id>
-            <url>http://localhost:8080/releases</url>
-        </repository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
@@ -50,12 +43,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0</version>
             </plugin>
         </plugins>
     </build>
