@@ -17,7 +17,7 @@ here's a list of supported versions so far:
 - 1.16.5 (1_16_R3)
 - 1.17.x (1_17_R1)
 - 1.18.2 (1_18_R2)
-- 1.19.* (1_19_R1)
+- 1.19.x (1_19_R1)
 
 ## Maven
 
