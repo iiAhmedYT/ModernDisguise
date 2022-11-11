@@ -2,14 +2,6 @@ jdk:
   - openjdk17
 before_install:
   - wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-  - java -jar BuildTools.jar --rev 1.8.8
-  - java -jar BuildTools.jar --rev 1.9.4
-  - java -jar BuildTools.jar --rev 1.10.2
-  - java -jar BuildTools.jar --rev 1.12.2
-  - java -jar BuildTools.jar --rev 1.13.2
-  - java -jar BuildTools.jar --rev 1.14.4
-  - java -jar BuildTools.jar --rev 1.15.2
-  - java -jar BuildTools.jar --rev 1.16.5
   - java -jar BuildTools.jar --rev 1.17.1 --remapped
   - java -jar BuildTools.jar --rev 1.18.2 --remapped
   - java -jar BuildTools.jar --rev 1.19.2 --remapped
