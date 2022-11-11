@@ -14,7 +14,7 @@ public class DisguiseManager {
 
     static {
 
-        final String version = Bukkit.getServer().getVersion().getClass().getPackage().getName().substring(24);
+        final String version = Bukkit.getServer().getClass().getPackage().getName().substring(24);
 
         switch (version) {
             case "1_8_R3":
