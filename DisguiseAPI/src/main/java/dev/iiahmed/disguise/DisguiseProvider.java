@@ -42,9 +42,19 @@ public abstract class DisguiseProvider {
 
     /**
      * @param plugin the neeeded plugin to register listeners / hide players
+     * @deprecated see DisguiseManager#setPlugin
      */
+    @SuppressWarnings("all")
+    @Deprecated
     public void setPlugin(@NotNull Plugin plugin) {
         this.plugin = plugin;
+    }
+
+    /**
+     * returns the plugin
+     */
+    public Plugin getPlugin() {
+        return plugin;
     }
 
 }

@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MVS1_17 extends DisguiseProvider {
+public class MVS1_17_R1 extends DisguiseProvider {
 
     private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
 
@@ -88,6 +88,11 @@ public class MVS1_17 extends DisguiseProvider {
 
         if(!isDisguised(player)) {
             return UndisguiseResponse.FAIL_ALREADY_UNDISGUISED;
+        }
+
+        if(!player.isOnline()) {
+            playerInfo.remove(player.getUniqueId());
+            return UndisguiseResponse.SUCCESS;
         }
 
         PlayerInfo info = playerInfo.get(player.getUniqueId());

@@ -15,7 +15,8 @@ here's a list of supported versions so far:
 - 1.14.x (1_14_R1)
 - 1.15.x (1_15_R1)
 - 1.16.5 (1_16_R3)
-- 1.17.x (<== NO MORE NMS)
+- 1.17.x (1_17_R1)
+- 1.18.2 (1_18_R2)
 
 ## Maven
 
@@ -54,7 +55,7 @@ public class ExampleClass implements Listener {
     private final DisguiseProvider provider = DisguiseManager.getProvider();
     
     public ExampleClass() {
-        provider.setPlugin(ExamplePlugin.getInstance());
+        DisguiseManager.setPlugin(ExamplePlugin.getInstance());
     }
     
     @EventHandler
@@ -84,7 +85,7 @@ public class ExampleClass implements Listener {
     private final DisguiseProvider provider = DisguiseManager.getProvider();
     
     public ExampleClass() {
-        provider.setPlugin(ExamplePlugin.getInstance());
+        DisguiseManager.setPlugin(ExamplePlugin.getInstance());
     }
     
     @EventHandler
@@ -100,15 +101,12 @@ public class ExampleClass implements Listener {
                 .build();
         DisguiseResponse response = provider.disguise(player, disguise);
         switch (response) {
-            case SUCCESS:
-                player.sendMessage("Disguise is successful.");
-                break;
-            case FAIL_NAME_ALREADY_ONLINE:
-                player.sendMessage("There's already an online player with that nickname.");
-                break;
-            default:
-                player.sendMessage("Disguise is unsuccessful with the reason " + response.toString());
-                break;
+            case SUCCESS ->
+                    player.sendMessage("Disguise is successful.");
+            case FAIL_NAME_ALREADY_ONLINE ->
+                    player.sendMessage("There's already an online player with that nickname.");
+            default ->
+                    player.sendMessage("Disguise is unsuccessful with the reason " + response.toString());
         }
     }
     

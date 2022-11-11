@@ -23,7 +23,8 @@
         <module>VersionSupport-1_14_R1</module>
         <module>VersionSupport-1_15_R1</module>
         <module>VersionSupport-1_16_R3</module>
-        <module>VersionSupport-1_17</module>
+        <module>VersionSupport-1_17_R1</module>
+        <module>VersionSupport-1_18_R2</module>
     </modules>
 
     <distributionManagement>
@@ -35,13 +36,19 @@
 
     <build>
         <plugins>
-
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.0</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>aggregate</id>
+                        <goals>
+                            <goal>aggregate-jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>

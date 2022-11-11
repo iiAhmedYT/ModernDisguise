@@ -90,6 +90,11 @@ public class MVS1_11_R1 extends DisguiseProvider {
             return UndisguiseResponse.FAIL_ALREADY_UNDISGUISED;
         }
 
+        if(!player.isOnline()) {
+            playerInfo.remove(player.getUniqueId());
+            return UndisguiseResponse.SUCCESS;
+        }
+
         PlayerInfo info = playerInfo.get(player.getUniqueId());
 
         CraftPlayer craftPlayer = (CraftPlayer) player;

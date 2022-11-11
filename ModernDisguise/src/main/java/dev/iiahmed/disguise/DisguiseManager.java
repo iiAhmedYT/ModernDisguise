@@ -1,8 +1,10 @@
 package dev.iiahmed.disguise;
 
+import dev.iiahmed.disguise.listener.PlayerListener;
 import dev.iiahmed.disguise.placeholder.PAPIExpantion;
 import dev.iiahmed.mvs.*;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -67,7 +69,10 @@ public class DisguiseManager {
                     break;
                 case "1.17":
                 case "1.17.1":
-                    PROVIDER = new MVS1_17();
+                    PROVIDER = new MVS1_17_R1();
+                    break;
+                case "1.18.2":
+                    PROVIDER = new MVS1_18_R2();
                     break;
                 default:
                     if(classExists("com.pheonix.protocol.ProtocolLib")) {
@@ -86,6 +91,16 @@ public class DisguiseManager {
             return true;
         } catch (ClassNotFoundException ignored) {
             return false;
+        }
+    }
+
+    /**
+     * sets the plugin for the provider and registers the litsners
+     */
+    public static void setPlugin(Plugin plugin) {
+        if(PROVIDER.getPlugin() == null) {
+            PROVIDER.setPlugin(plugin);
+            plugin.getServer().getPluginManager().registerEvents(new PlayerListener(), plugin);
         }
     }
 
