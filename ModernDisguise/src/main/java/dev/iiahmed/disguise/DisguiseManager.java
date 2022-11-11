@@ -74,6 +74,11 @@ public class DisguiseManager {
                 case "1.18.2":
                     PROVIDER = new MVS1_18_R2();
                     break;
+                case "1.19":
+                case "1.19.1":
+                case "1.19.2":
+                    PROVIDER = new MVS1_19_R1();
+                    break;
                 default:
                     if(classExists("com.pheonix.protocol.ProtocolLib")) {
                         PROVIDER = new MVS_ProtocolLib();
@@ -97,6 +102,7 @@ public class DisguiseManager {
     /**
      * sets the plugin for the provider and registers the litsners
      */
+    @SuppressWarnings("all")
     public static void setPlugin(Plugin plugin) {
         if(PROVIDER.getPlugin() == null) {
             PROVIDER.setPlugin(plugin);
