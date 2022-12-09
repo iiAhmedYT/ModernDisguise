@@ -26,6 +26,7 @@
         <module>VersionSupport-1_17_R1</module>
         <module>VersionSupport-1_18_R2</module>
         <module>VersionSupport-1_19_R1</module>
+        <module>VersionSupport-1_19_R2</module>
     </modules>
 
     <build>
@@ -48,8 +49,8 @@
     </build>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

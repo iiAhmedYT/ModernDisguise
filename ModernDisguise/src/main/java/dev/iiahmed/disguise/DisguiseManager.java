@@ -53,6 +53,9 @@ public class DisguiseManager {
             case "1_19_R1":
                 PROVIDER = new MVS1_19_R1();
                 break;
+            case "1_19_R2":
+                PROVIDER = new MVS1_19_R2();
+                break;
             default:
                 if(classExists("com.pheonix.protocol.ProtocolLib")) {
                     PROVIDER = new MVS_ProtocolLib();
