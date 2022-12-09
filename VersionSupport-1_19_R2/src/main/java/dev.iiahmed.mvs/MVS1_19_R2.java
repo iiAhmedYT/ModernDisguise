@@ -136,7 +136,7 @@ public class MVS1_19_R2 extends DisguiseProvider {
             ep.connection.send(new ClientboundRespawnPacket(ep.getLevel().dimensionTypeId(),
                     ep.getLevel().dimension(),
                     seed, ep.gameMode.getGameModeForPlayer(),
-                    ep.gameMode.getGameModeForPlayer(), false, false, (byte) 0,
+                    ep.gameMode.getGameModeForPlayer(), false, false, ClientboundRespawnPacket.KEEP_ATTRIBUTES,
                     ep.getLastDeathLocation()));
             player.teleport(location);
             ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
