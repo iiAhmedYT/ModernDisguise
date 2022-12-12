@@ -23,14 +23,13 @@ here's a list of supported versions so far:
 
 This project is deployed on a self-hosted repository currently
 
-here's the repo
+here's the repo:
 
-**TEMPORARILY OFFLINE**
 ```xml
 <repositories>
     <repository>
-        <id>iiahmed-dev</id>
-        <url>https://repo.iiahmed.dev/repositories/public/</url>
+        <id>gravemc-repo</id>
+        <url>https://repo.gravemc.net/releases/</url>
     </repository>
 </repositories>
 ```
