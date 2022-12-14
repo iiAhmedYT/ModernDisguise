@@ -51,10 +51,12 @@ public class Disguise {
         boolean fakename = false;
 
         /* we don't allow constructors from outside */
-        private Builder() {}
+        private Builder() {
+        }
 
         /**
          * This method sets the new name of the nicked player
+         *
          * @param name the replacement of the actual player name
          * @param fake whether should the plugin replace the name or only replace it with a specific placeholder
          * @return the disguise builder
@@ -66,8 +68,7 @@ public class Disguise {
         }
 
         /**
-         *
-         * @param skinAPI decides the SkinAPI type
+         * @param skinAPI     decides the SkinAPI type
          * @param replacement this is either the UUID or the Name of the needed player
          * @return the disguise builder
          */
@@ -79,11 +80,11 @@ public class Disguise {
 
             try {
                 URL url = new URL(urlString);
-                HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
                 connection.setRequestProperty("User-Agent", "ModernDisguiseAPI/v1.0");
                 connection.setRequestMethod("GET");
                 connection.connect();
-                if(connection.getResponseCode() != 200) {
+                if (connection.getResponseCode() != 200) {
                     throw new RuntimeException("The used URL doesn't seem to be working (the api is down?) " + urlString);
                 }
 
@@ -100,7 +101,7 @@ public class Disguise {
                 throw new RuntimeException(e);
             }
 
-            if(object == null || object.isEmpty()){
+            if (object == null || object.isEmpty()) {
                 return this;
             }
 

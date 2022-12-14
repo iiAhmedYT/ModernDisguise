@@ -11,30 +11,23 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 public class MVS1_10_R1 extends DisguiseProvider {
 
-    private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
-
     @Override
     public @NotNull DisguiseResponse disguise(@NotNull Player player, @NotNull Disguise disguise) {
-
-        if(plugin == null || !plugin.isEnabled()) {
+        if (plugin == null || !plugin.isEnabled()) {
             return DisguiseResponse.FAIL_PLUGIN_NOT_INITIALIZED;
         }
 
-        if(isDisguised(player)) {
+        if (isDisguised(player)) {
             return DisguiseResponse.FAIL_ALREADY_DISGUISED;
         }
 
-        if(disguise.isEmpty()) {
+        if (disguise.isEmpty()) {
             return DisguiseResponse.FAIL_EMPTY_DISGUISE;
         }
 
@@ -43,32 +36,30 @@ public class MVS1_10_R1 extends DisguiseProvider {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         GameProfile profile = craftPlayer.getProfile();
 
-        if(Bukkit.getPlayer(disguise.getName()) != null) {
+        if (Bukkit.getPlayer(disguise.getName()) != null) {
             return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
         }
 
-        if(disguise.hasName() && !Objects.equals(disguise.getName(), player.getName())) {
+        if (disguise.hasName() && !Objects.equals(disguise.getName(), player.getName())) {
             String name = disguise.getName();
 
-            if(name.length() > 16) {
+            if (name.length() > 16) {
                 name = name.substring(0, 16);
             }
 
             try {
-                Field field = profile.getClass().getDeclaredField("name");
-                field.setAccessible(true);
-                field.set(profile, name);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+                nameField.set(profile, name);
+            } catch (IllegalAccessException e) {
                 return DisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
             }
         }
 
         String oldTextures = null, oldSignature = null;
 
-        if(disguise.hasSkin()) {
+        if (disguise.hasSkin()) {
             Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
 
-            if(optional.isPresent()) {
+            if (optional.isPresent()) {
                 oldTextures = optional.get().getValue();
                 oldSignature = optional.get().getSignature();
                 profile.getProperties().removeAll("textures");
@@ -77,7 +68,7 @@ public class MVS1_10_R1 extends DisguiseProvider {
             profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
         }
 
-        playerInfo.put(player.getUniqueId(), new PlayerInfo(realname, disguise.hasName()? disguise.getName() : realname, oldTextures, oldSignature));
+        playerInfo.put(player.getUniqueId(), new PlayerInfo(realname, disguise.hasName() ? disguise.getName() : realname, oldTextures, oldSignature));
         refreshPlayer(player);
 
         return DisguiseResponse.SUCCESS;
@@ -85,12 +76,11 @@ public class MVS1_10_R1 extends DisguiseProvider {
 
     @Override
     public @NotNull UndisguiseResponse unDisguise(@NotNull Player player) {
-
-        if(!isDisguised(player)) {
+        if (!isDisguised(player)) {
             return UndisguiseResponse.FAIL_ALREADY_UNDISGUISED;
         }
 
-        if(!player.isOnline()) {
+        if (!player.isOnline()) {
             playerInfo.remove(player.getUniqueId());
             return UndisguiseResponse.SUCCESS;
         }
@@ -100,13 +90,11 @@ public class MVS1_10_R1 extends DisguiseProvider {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         GameProfile profile = craftPlayer.getProfile();
 
-        if(!Objects.equals(info.getName(), player.getName())) {
+        if (!Objects.equals(info.getName(), player.getName())) {
             String name = info.getName();
             try {
-                Field field = profile.getClass().getDeclaredField("name");
-                field.setAccessible(true);
-                field.set(profile, name);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+                nameField.set(profile, name);
+            } catch (IllegalAccessException e) {
                 return UndisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
             }
         }
@@ -121,16 +109,14 @@ public class MVS1_10_R1 extends DisguiseProvider {
     }
 
     @Override
-    public @Nullable PlayerInfo getInfo(@NotNull Player player) {
-        return playerInfo.get(player.getUniqueId());
-    }
-
-    @Override
     public void refreshPlayer(Player player) {
+        if (!player.isOnline()) {
+            return;
+        }
         Location location = player.getLocation();
         location.setYaw(player.getLocation().getYaw());
         location.setPitch(player.getLocation().getPitch());
-        EntityPlayer ep = ((CraftPlayer)player).getHandle();
+        EntityPlayer ep = ((CraftPlayer) player).getHandle();
         // synchorizing this process, other tasks can be async just fine
         Bukkit.getScheduler().runTask(plugin, () -> {
             ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
@@ -143,16 +129,11 @@ public class MVS1_10_R1 extends DisguiseProvider {
                     PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
                     ep));
         });
-        for(Player serverPlayer : Bukkit.getOnlinePlayers()) {
-            if(serverPlayer == player) continue;
+        for (Player serverPlayer : Bukkit.getOnlinePlayers()) {
+            if (serverPlayer == player) continue;
             serverPlayer.hidePlayer(player);
             serverPlayer.showPlayer(player);
         }
-    }
-
-    @Override
-    public boolean isDisguised(@NotNull Player player) {
-        return playerInfo.containsKey(player.getUniqueId());
     }
 
 }

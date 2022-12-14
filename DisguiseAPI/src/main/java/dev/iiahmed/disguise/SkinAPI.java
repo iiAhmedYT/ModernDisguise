@@ -15,13 +15,13 @@ public enum SkinAPI {
     }
 
     public String format(String replacement) {
-        if(url.contains("%uuid%")) {
+        if (url.contains("%uuid%")) {
             return url.replace("%uuid%", replacement.replaceAll("-", ""));
         }
-        if(url.contains("%name%")) {
+        if (url.contains("%name%")) {
             return url.replace("%name%", replacement);
         }
-        if(url.contains("%id%")) {
+        if (url.contains("%id%")) {
             return url.replace("%id%", replacement);
         }
         return url + replacement.replaceAll("-", "");

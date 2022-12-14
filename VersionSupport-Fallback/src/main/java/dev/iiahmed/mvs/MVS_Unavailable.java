@@ -3,7 +3,6 @@ package dev.iiahmed.mvs;
 import dev.iiahmed.disguise.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * This will always return a FAIL_VERSION_NOT_SUPPORTED in every response
@@ -18,16 +17,6 @@ public class MVS_Unavailable extends DisguiseProvider {
     @Override
     public @NotNull UndisguiseResponse unDisguise(@NotNull Player player) {
         return UndisguiseResponse.FAIL_VERSION_NOT_SUPPORTED;
-    }
-
-    @Override
-    public boolean isDisguised(@NotNull Player player) {
-        return false;
-    }
-
-    @Override
-    public @Nullable PlayerInfo getInfo(@NotNull Player player) {
-        return null;
     }
 
     @Override

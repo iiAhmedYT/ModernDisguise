@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class DisguiseManager {
 
+
+    public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(24);
+
     private static final DisguiseProvider PROVIDER;
     private static boolean expantionRegistered = false;
 
     static {
-
-        final String version = Bukkit.getServer().getClass().getPackage().getName().substring(24);
-
-        switch (version) {
+        switch (VERSION) {
             case "1_8_R3":
                 PROVIDER = new MVS1_8_R3();
                 break;
@@ -57,7 +57,7 @@ public class DisguiseManager {
                 PROVIDER = new MVS1_19_R2();
                 break;
             default:
-                if(classExists("com.pheonix.protocol.ProtocolLib")) {
+                if (classExists("com.pheonix.protocol.ProtocolLib")) {
                     PROVIDER = new MVS_ProtocolLib();
                 } else {
                     PROVIDER = new MVS_Unavailable();
@@ -80,7 +80,7 @@ public class DisguiseManager {
      */
     @SuppressWarnings("all")
     public static void setPlugin(Plugin plugin) {
-        if(PROVIDER.getPlugin() == null) {
+        if (PROVIDER.getPlugin() == null) {
             PROVIDER.setPlugin(plugin);
             plugin.getServer().getPluginManager().registerEvents(new PlayerListener(), plugin);
         }
@@ -96,11 +96,11 @@ public class DisguiseManager {
 
     @SuppressWarnings("unused")
     public static void registerExpantion() {
-        if(!classExists("me.clip.placeholderapi.expansion.PlaceholderExpansion")) {
+        if (!classExists("me.clip.placeholderapi.expansion.PlaceholderExpansion")) {
             return;
         }
 
-        if(!expantionRegistered) {
+        if (!expantionRegistered) {
             new PAPIExpantion().register();
             expantionRegistered = true;
         }

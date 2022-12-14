@@ -1,9 +1,12 @@
 ![](assets/ModernDisguise.png)
 
 ## Description
-ModernDisguise is a free open-source high quality library to help you add a disguise/nick system in your minecraft plugin
+
+ModernDisguise is a free open-source high quality library to help you add a disguise/nick system in your minecraft
+plugin
 
 ## Supported versions
+
 here's a list of supported versions so far:
 
 - 1.8.8 (1_8_R3)
@@ -19,21 +22,26 @@ here's a list of supported versions so far:
 - 1.18.2 (1_18_R2)
 - 1.19.x (1_19_R1, 1_19_R2)
 
+## WARNING
+
+On versions that support Mojang Chat-Reports this plugin will add a ChatColor#RESET to the end of every message
+to disable Mojang's Chat-Report feature.
+
 ## Maven
 
 This project is deployed on a self-hosted repository currently
 
-here's the repo:
+Add this repo to your repositories:
 
 ```xml
-<repositories>
-    <repository>
-        <id>gravemc-repo</id>
-        <url>https://repo.gravemc.net/releases/</url>
-    </repository>
-</repositories>
+<repository>
+    <id>gravemc-repo</id>
+    <url>https://repo.gravemc.net/releases/</url>
+</repository>
 ```
-and here's the dependancy
+
+and then add this dependancy:
+
 ```xml
 <dependency>
     <groupId>dev.iiahmed</groupId>

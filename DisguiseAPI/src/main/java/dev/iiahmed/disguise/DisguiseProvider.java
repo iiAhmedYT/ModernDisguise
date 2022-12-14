@@ -1,16 +1,35 @@
 package dev.iiahmed.disguise;
 
+import com.mojang.authlib.GameProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.UUID;
+
 public abstract class DisguiseProvider {
 
+    protected final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
     protected Plugin plugin;
 
+    protected final Field nameField;
+
+    {
+        Field field;
+        try {
+            field = GameProfile.class.getDeclaredField("name");
+            field.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            field = null;
+        }
+        nameField = field;
+    }
+
     /**
-     * @param player is the disguising player
+     * @param player   is the disguising player
      * @param disguise the disguise that the player should use
      * @return the response of the disguise action (like reasons of failure or so)
      */
@@ -26,16 +45,21 @@ public abstract class DisguiseProvider {
      * @param player is the player being checked
      * @return true if the player is disguised, false if the player is not.
      */
-    abstract public boolean isDisguised(@NotNull Player player);
+    public boolean isDisguised(@NotNull Player player) {
+        return playerInfo.containsKey(player.getUniqueId());
+    }
 
     /**
      * @param player is the player you're grabbing info about
      * @return null if not disguised
      */
-    abstract public @Nullable PlayerInfo getInfo(@NotNull Player player);
+    public @Nullable PlayerInfo getInfo(@NotNull Player player) {
+        return playerInfo.get(player.getUniqueId());
+    }
 
     /**
      * This sends packets to players to show changes like name and skin
+     *
      * @param player is the refreshed player
      */
     abstract public void refreshPlayer(Player player);
