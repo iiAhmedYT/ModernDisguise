@@ -47,6 +47,9 @@ public class DisguiseManager {
             case "1_17_R1":
                 PROVIDER = new MVS1_17_R1();
                 break;
+            case "1_18_R1":
+                PROVIDER = new MVS1_18_R1();
+                break;
             case "1_18_R2":
                 PROVIDER = new MVS1_18_R2();
                 break;

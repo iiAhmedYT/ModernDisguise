@@ -34,6 +34,7 @@
         <module>VersionSupport-1_18_R2</module>
         <module>VersionSupport-1_19_R1</module>
         <module>VersionSupport-1_19_R2</module>
+        <module>VersionSupport-1_18_R1</module>
     </modules>
 
     <build>
