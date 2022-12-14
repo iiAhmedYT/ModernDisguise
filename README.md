@@ -2,7 +2,7 @@
 
 ## Description
 
-ModernDisguise is a free open-source high quality library to help you add a disguise/nick system in your minecraft
+ModernDisguise is a free lightweight open-source high quality library to help you add a disguise/nick system in your minecraft
 plugin
 
 ## Supported versions
