@@ -46,7 +46,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <scope>compile</scope>
 </dependency>
 ```
