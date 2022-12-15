@@ -51,6 +51,24 @@ and then add this dependancy:
 </dependency>
 ```
 
+## Gradle
+
+Add this repo to your repositories block
+```groovy
+repositories {
+    maven {
+        name = "gravemc-repo"
+        url = "https://repo.gravemc.net/releases/"
+    }
+}
+```
+
+and now add dependency 
+```groovy
+dependencies {
+    implementation 'dev.iiahmed:ModernDisguise:1.0'
+}
+```
 ## Usage
 
 Here's an example usage of the API (easiest):
@@ -70,7 +88,7 @@ public class ExampleClass implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Disguise disguise = Disguise.builder()
-                // the boolean is whether this is a fkae nickname or not
+                // the boolean is whether this is a fake nickname or not
                 .setName("BillBobbyBob", false)
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
                 // which is more recommended
@@ -100,7 +118,7 @@ public class ExampleClass implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Disguise disguise = Disguise.builder()
-                // the boolean is whether this is a fkae nickname or not
+                // the boolean is whether this is a fake nickname or not
                 .setName("BillBobbyBob", false)
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
                 // which is more recommended
