@@ -118,7 +118,7 @@ public class MVS1_18_R2 extends DisguiseProvider {
         location.setPitch(player.getLocation().getPitch());
         final long seed = player.getWorld().getSeed();
         ServerPlayer ep = ((CraftPlayer) player).getHandle();
-        // synchorizing this process, other tasks can be async just fine
+        // synchronizing this process, other tasks can be async just fine
         Bukkit.getScheduler().runTask(plugin, () -> {
             ep.connection.send(new ClientboundPlayerInfoPacket(
                     ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,

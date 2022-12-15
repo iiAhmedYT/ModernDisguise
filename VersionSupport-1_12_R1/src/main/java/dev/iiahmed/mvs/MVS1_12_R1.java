@@ -117,7 +117,7 @@ public class MVS1_12_R1 extends DisguiseProvider {
         location.setYaw(player.getLocation().getYaw());
         location.setPitch(player.getLocation().getPitch());
         EntityPlayer ep = ((CraftPlayer) player).getHandle();
-        // synchorizing this process, other tasks can be async just fine
+        // synchronizing this process, other tasks can be async just fine
         Bukkit.getScheduler().runTask(plugin, () -> {
             ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                     PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
