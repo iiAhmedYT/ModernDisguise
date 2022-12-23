@@ -1,112 +1,23 @@
 package dev.iiahmed.mvs;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import dev.iiahmed.disguise.*;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
-import java.util.Optional;
 
 public class MVS1_18_R1 extends DisguiseProvider {
-
-    @Override
-    public @NotNull DisguiseResponse disguise(@NotNull Player player, @NotNull Disguise disguise) {
-        if (plugin == null || !plugin.isEnabled()) {
-            return DisguiseResponse.FAIL_PLUGIN_NOT_INITIALIZED;
-        }
-
-        if (isDisguised(player)) {
-            return DisguiseResponse.FAIL_ALREADY_DISGUISED;
-        }
-
-        if (disguise.isEmpty()) {
-            return DisguiseResponse.FAIL_EMPTY_DISGUISE;
-        }
-
-        final String realname = player.getName();
-
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        GameProfile profile = craftPlayer.getProfile();
-
-        if (Bukkit.getPlayer(disguise.getName()) != null) {
-            return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
-        }
-
-        if (disguise.hasName() && !Objects.equals(disguise.getName(), player.getName())) {
-            String name = disguise.getName();
-
-            if (name.length() > 16) {
-                name = name.substring(0, 16);
-            }
-
-            try {
-                nameField.set(profile, name);
-            } catch (IllegalAccessException e) {
-                return DisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
-            }
-        }
-
-        String oldTextures = null, oldSignature = null;
-
-        if (disguise.hasSkin()) {
-            Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
-
-            if (optional.isPresent()) {
-                oldTextures = optional.get().getValue();
-                oldSignature = optional.get().getSignature();
-                profile.getProperties().removeAll("textures");
-            }
-
-            profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
-        }
-
-        playerInfo.put(player.getUniqueId(), new PlayerInfo(realname, disguise.hasName() ? disguise.getName() : realname, oldTextures, oldSignature));
-        refreshPlayer(player);
-
-        return DisguiseResponse.SUCCESS;
-    }
-
-    @Override
-    public @NotNull UndisguiseResponse unDisguise(@NotNull Player player) {
-        if (!isDisguised(player)) {
-            return UndisguiseResponse.FAIL_ALREADY_UNDISGUISED;
-        }
-
-        if (!player.isOnline()) {
-            playerInfo.remove(player.getUniqueId());
-            return UndisguiseResponse.SUCCESS;
-        }
-
-        PlayerInfo info = playerInfo.get(player.getUniqueId());
-
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        GameProfile profile = craftPlayer.getProfile();
-
-        if (!Objects.equals(info.getName(), player.getName())) {
-            String name = info.getName();
-            try {
-                nameField.set(profile, name);
-            } catch (IllegalAccessException e) {
-                return UndisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
-            }
-        }
-
-        profile.getProperties().removeAll("textures");
-        profile.getProperties().put("textures", new Property("textures", info.getTextures(), info.getSignature()));
-
-        playerInfo.remove(player.getUniqueId());
-
-        refreshPlayer(player);
-        return UndisguiseResponse.SUCCESS;
-    }
 
     @Override
     public void refreshPlayer(Player player) {
@@ -137,6 +48,29 @@ public class MVS1_18_R1 extends DisguiseProvider {
             serverPlayer.hidePlayer(plugin, player);
             serverPlayer.showPlayer(plugin, player);
         }
+    }
+
+    @Override
+    public void refreshEntity(Player refreshed, Player target) {
+        if (!isDisguised(refreshed)) {
+            return;
+        }
+        ServerPlayer ep = ((CraftPlayer) target).getHandle();
+        ServerPlayer rfep = ((CraftPlayer) refreshed).getHandle();
+        EntityType type = Objects.requireNonNull(getInfo(refreshed)).getEntityType();
+        ClientboundAddEntityPacket spawn;
+        try {
+            Entity entity = (Entity) DisguiseUtil.getEntity(type).getDeclaredConstructor(Level.class).newInstance(rfep.getLevel());
+            spawn = new ClientboundAddEntityPacket(entity);
+            Field id = ClientboundAddEntityPacket.class.getDeclaredField("a");
+            id.setAccessible(true);
+            id.set(spawn, refreshed.getEntityId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        ClientboundRemoveEntitiesPacket destroy = new ClientboundRemoveEntitiesPacket(refreshed.getEntityId());
+        ep.connection.send(destroy);
+        ep.connection.send(spawn);
     }
 
 }

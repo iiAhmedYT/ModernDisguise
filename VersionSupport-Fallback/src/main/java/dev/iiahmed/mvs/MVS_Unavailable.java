@@ -24,4 +24,6 @@ public class MVS_Unavailable extends DisguiseProvider {
         // do nothing
     }
 
+    @Override
+    public void refreshEntity(Player refreshed, Player target) {}
 }

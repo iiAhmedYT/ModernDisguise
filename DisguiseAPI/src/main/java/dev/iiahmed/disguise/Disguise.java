@@ -1,7 +1,7 @@
 package dev.iiahmed.disguise;
 
 import lombok.Getter;
-import org.jetbrains.annotations.ApiStatus;
+import org.bukkit.entity.EntityType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,21 +13,28 @@ import java.net.URL;
 import java.util.Scanner;
 
 @Getter
+@SuppressWarnings("unused")
 public class Disguise {
 
     private final String name, textures, signature;
     private final long time = System.currentTimeMillis();
     private final boolean fakename;
+    private final EntityType entityType;
 
-    private Disguise(String name, String textures, String signature, boolean fakename) {
+    private Disguise(String name, String textures, String signature, boolean fakename, EntityType entityType) {
         this.name = name;
         this.textures = textures;
         this.signature = signature;
         this.fakename = fakename;
+        this.entityType = entityType;
     }
 
     public boolean isEmpty() {
-        return !hasName() && !hasSkin();
+        return !hasName() && !hasSkin() && !hasEntity();
+    }
+
+    public boolean hasEntity() {
+        return entityType != null && entityType != EntityType.PLAYER;
     }
 
     public boolean hasName() {
@@ -35,7 +42,11 @@ public class Disguise {
     }
 
     public boolean hasSkin() {
-        return textures != null && signature != null;
+        return textures != null && !textures.isEmpty() && signature != null && !signature.isEmpty();
+    }
+
+    public EntityType getEntityType() {
+        return entityType == null? EntityType.PLAYER : entityType;
     }
 
     public static Builder builder() {
@@ -49,10 +60,10 @@ public class Disguise {
 
         String name, texture, signature;
         boolean fakename = false;
+        private EntityType entityType;
 
         /* we don't allow constructors from outside */
-        private Builder() {
-        }
+        private Builder() {}
 
         /**
          * This method sets the new name of the nicked player
@@ -72,9 +83,7 @@ public class Disguise {
          * @param replacement this is either the UUID or the Name of the needed player
          * @return the disguise builder
          */
-        @ApiStatus.Experimental
         public Builder setSkin(SkinAPI skinAPI, String replacement) {
-
             final String urlString = skinAPI.format(replacement);
             JSONObject object;
 
@@ -106,7 +115,6 @@ public class Disguise {
             }
 
             String texture = null, signature = null;
-
             switch (skinAPI) {
                 case MOJANG_UUID:
                     JSONArray mojangArray = (JSONArray) object.get("properties");
@@ -149,14 +157,26 @@ public class Disguise {
             return setSkin(texture, signature);
         }
 
+        /**
+         * @return the disguise builder
+         */
         public Builder setSkin(String texture, String signature) {
             this.texture = texture;
             this.signature = signature;
             return this;
         }
 
+        /**
+         * @param entityType the entity type the player should look like
+         * @return the disguise builder
+         */
+        public Builder setEntityType(EntityType entityType) {
+            this.entityType = entityType;
+            return this;
+        }
+
         public Disguise build() {
-            return new Disguise(name, texture, signature, fakename);
+            return new Disguise(name, texture, signature, fakename, entityType);
         }
 
     }
