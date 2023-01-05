@@ -44,7 +44,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -62,7 +62,7 @@ repositories {
 and now add dependency 
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:1.1'
+    implementation 'dev.iiahmed:ModernDisguise:1.2'
 }
 ```
 ## Usage
