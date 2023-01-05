@@ -1,6 +1,5 @@
 package dev.iiahmed.disguise;
 
-import lombok.Getter;
 import org.bukkit.entity.EntityType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,12 +11,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Scanner;
 
-@Getter
 @SuppressWarnings("unused")
-public class Disguise {
+public final class Disguise {
 
     private final String name, textures, signature;
-    private final long time = System.currentTimeMillis();
     private final boolean fakename;
     private final EntityType entityType;
 
@@ -45,10 +42,29 @@ public class Disguise {
         return textures != null && !textures.isEmpty() && signature != null && !signature.isEmpty();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getTextures() {
+        return textures;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public boolean isFakename() {
+        return fakename;
+    }
+
     public EntityType getEntityType() {
         return entityType == null? EntityType.PLAYER : entityType;
     }
 
+    /**
+     * Returns a new instance of the Disguise.Builder class
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -79,14 +95,13 @@ public class Disguise {
         }
 
         /**
-         * @param skinAPI     decides the SkinAPI type
-         * @param replacement this is either the UUID or the Name of the needed player
+         * @param skinAPI     determines the SkinAPI type
+         * @param replacement this is either the UUID or the Name of the needed player's skin
          * @return the disguise builder
          */
         public Builder setSkin(SkinAPI skinAPI, String replacement) {
             final String urlString = skinAPI.format(replacement);
             JSONObject object;
-
             try {
                 URL url = new URL(urlString);
                 HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -158,6 +173,7 @@ public class Disguise {
         }
 
         /**
+         * Sets the skin based on a texture and a signature
          * @return the disguise builder
          */
         public Builder setSkin(String texture, String signature) {

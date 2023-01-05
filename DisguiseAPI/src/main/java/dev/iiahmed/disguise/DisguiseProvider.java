@@ -37,7 +37,7 @@ public abstract class DisguiseProvider {
         }
 
         if (disguise.hasEntity() && DisguiseUtil.getEntity(disguise.getEntityType()) == null) {
-            return DisguiseResponse.FAIL_ENTITY_UNSUPPORTED;
+            return DisguiseResponse.FAIL_ENTITY_NOT_SUPPORTED;
         }
 
         final String realname = player.getName();
@@ -81,11 +81,11 @@ public abstract class DisguiseProvider {
                 disguise.hasName()? disguise.getName():realname,
                 oldTextures, oldSignature, disguise.getEntityType()));
         if(disguise.hasName() || disguise.hasSkin()) {
-            refreshPlayer(player);
+            refreshAsPlayer(player);
         }
         if(disguise.hasEntity()) {
             for (Player p : Bukkit.getOnlinePlayers()) {
-                refreshEntity(player, p);
+                refreshAsEntity(player, p);
             }
         }
         return DisguiseResponse.SUCCESS;
@@ -120,12 +120,13 @@ public abstract class DisguiseProvider {
             }
         }
 
-        profile.getProperties().removeAll("textures");
-        profile.getProperties().put("textures", new Property("textures", info.getTextures(), info.getSignature()));
+        if (info.hasSkin()) {
+            profile.getProperties().removeAll("textures");
+            profile.getProperties().put("textures", new Property("textures", info.getTextures(), info.getSignature()));
+        }
 
         playerInfo.remove(player.getUniqueId());
-
-        refreshPlayer(player);
+        refreshAsPlayer(player);
 
         return UndisguiseResponse.SUCCESS;
     }
@@ -151,7 +152,13 @@ public abstract class DisguiseProvider {
      *
      * @param player is the refreshed player
      */
-    abstract public void refreshPlayer(Player player);
+    abstract public void refreshAsPlayer(Player player);
+
+    /**
+     * @param refreshed the needed player to be refreshed
+     * @param target the needed player to receive packets
+     */
+    abstract public void refreshAsEntity(Player refreshed, Player target);
 
     /**
      * @param plugin the neeeded plugin to register listeners / hide players
@@ -169,11 +176,5 @@ public abstract class DisguiseProvider {
     public Plugin getPlugin() {
         return plugin;
     }
-
-    /**
-     * @param refreshed the needed player to be refreshed
-     * @param target the needed player to receive packets
-     */
-    abstract public void refreshEntity(Player refreshed, Player target);
 
 }

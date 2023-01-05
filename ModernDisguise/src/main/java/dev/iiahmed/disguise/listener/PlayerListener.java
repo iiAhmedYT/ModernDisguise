@@ -26,7 +26,7 @@ public class PlayerListener implements Listener {
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.equals(player)) continue;
             if (provider.isDisguised(p) && Objects.requireNonNull(provider.getInfo(p)).getEntityType() != EntityType.PLAYER) {
-                // refresh if Entity for p
+                provider.refreshAsEntity(player, p);
             }
         }
     }
@@ -36,7 +36,9 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         if (provider.isDisguised(player)) {
             UndisguiseResponse response = provider.unDisguise(player);
-
+            if(response.name().startsWith("FAIL")) {
+                provider.getPlugin().getLogger().info("Undisguise somehow failed on leave");
+            }
         }
     }
 
@@ -44,7 +46,7 @@ public class PlayerListener implements Listener {
     public void onSwitch(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         if (provider.isDisguised(player)) {
-            provider.refreshPlayer(player);
+            provider.refreshAsPlayer(player);
         }
     }
 
@@ -52,7 +54,7 @@ public class PlayerListener implements Listener {
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         if (provider.isDisguised(player)) {
-            provider.refreshPlayer(player);
+            provider.refreshAsPlayer(player);
         }
     }
 

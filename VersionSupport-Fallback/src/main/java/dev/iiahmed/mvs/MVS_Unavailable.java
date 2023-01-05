@@ -20,10 +20,10 @@ public class MVS_Unavailable extends DisguiseProvider {
     }
 
     @Override
-    public void refreshPlayer(Player player) {
+    public void refreshAsPlayer(Player player) {
         // do nothing
     }
 
     @Override
-    public void refreshEntity(Player refreshed, Player target) {}
+    public void refreshAsEntity(Player refreshed, Player target) {}
 }

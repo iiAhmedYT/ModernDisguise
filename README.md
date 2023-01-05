@@ -132,6 +132,7 @@ public class ExampleClass implements Listener {
                 .setEntityType(EntityType.ZOMBIE)
                 .build();
         DisguiseResponse response = provider.disguise(player, disguise);
+        // there are 8 responses other than DisguiseResponse#SUCCESS
         switch (response) {
             case SUCCESS ->
                     player.sendMessage("Disguise is successful.");
@@ -144,3 +145,6 @@ public class ExampleClass implements Listener {
     
 }
 ```
+
+There's way more to it but I'd rather you figure it out on your own by checking the DisguiseProvider class :)
+

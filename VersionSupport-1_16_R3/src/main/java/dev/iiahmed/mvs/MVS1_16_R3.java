@@ -14,7 +14,7 @@ import java.util.Objects;
 public class MVS1_16_R3 extends DisguiseProvider {
 
     @Override
-    public void refreshPlayer(Player player) {
+    public void refreshAsPlayer(Player player) {
         if (!player.isOnline()) {
             return;
         }
@@ -45,7 +45,7 @@ public class MVS1_16_R3 extends DisguiseProvider {
     }
 
     @Override
-    public void refreshEntity(Player refreshed, Player target) {
+    public void refreshAsEntity(Player refreshed, Player target) {
         if (!isDisguised(refreshed)) {
             return;
         }

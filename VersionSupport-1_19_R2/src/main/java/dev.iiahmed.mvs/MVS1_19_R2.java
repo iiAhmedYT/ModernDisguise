@@ -4,11 +4,11 @@ import dev.iiahmed.disguise.*;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -18,7 +18,7 @@ import java.util.Objects;
 public class MVS1_19_R2 extends DisguiseProvider {
 
     @Override
-    public void refreshPlayer(Player player) {
+    public void refreshAsPlayer(Player player) {
         if (!player.isOnline()) {
             return;
         }
@@ -51,18 +51,26 @@ public class MVS1_19_R2 extends DisguiseProvider {
     }
 
     @Override
-    public void refreshEntity(Player refreshed, Player target) {
+    @SuppressWarnings("all")
+    public void refreshAsEntity(Player refreshed, Player target) {
         if (!isDisguised(refreshed)) {
             return;
         }
         ServerPlayer ep = ((CraftPlayer) target).getHandle();
         ServerPlayer rfep = ((CraftPlayer) refreshed).getHandle();
-        EntityType type = Objects.requireNonNull(getInfo(refreshed)).getEntityType();
+        org.bukkit.entity.EntityType type = Objects.requireNonNull(getInfo(refreshed)).getEntityType();
         ClientboundAddEntityPacket spawn;
         try {
-            Entity entity = (Entity) DisguiseUtil.getEntity(type).getDeclaredConstructor(Level.class).newInstance(rfep.getLevel());
+            Class<?> clazz = DisguiseUtil.getEntity(type);
+            Entity entity;
+            if (DisguiseUtil.hasConstructor(clazz, Level.class)) {
+                entity = (Entity) clazz.getDeclaredConstructor(Level.class).newInstance(rfep.getLevel());
+            } else {
+                EntityType t = (EntityType) EntityType.class.getField(type.name()).get(null);
+                entity = (Entity) clazz.getDeclaredConstructor(EntityType.class, Level.class).newInstance(t, rfep.getLevel());
+            }
             spawn = new ClientboundAddEntityPacket(entity);
-            Field id = ClientboundAddEntityPacket.class.getDeclaredField("a");
+            Field id = ClientboundAddEntityPacket.class.getDeclaredField("c");
             id.setAccessible(true);
             id.set(spawn, refreshed.getEntityId());
         } catch (Exception e) {
