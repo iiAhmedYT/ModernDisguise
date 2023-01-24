@@ -27,10 +27,6 @@ public enum DisguiseResponse {
      */
     FAIL_NAME_ALREADY_ONLINE,
     /**
-     * Returns when disguising an already disguied player
-     */
-    FAIL_ALREADY_DISGUISED,
-    /**
      * Returns when reflections fail to get the player's GameProfile
      */
     FAIL_PROFILE_NOT_FOUND,
@@ -40,7 +36,7 @@ public enum DisguiseResponse {
      */
     FAIL_NAME_CHANGE_EXCEPTION,
     /**
-     * Returns when the disguise request succedes
+     * Returns when the disguise request succeeds
      */
     SUCCESS
 

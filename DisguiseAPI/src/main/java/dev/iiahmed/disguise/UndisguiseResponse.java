@@ -25,7 +25,7 @@ public enum UndisguiseResponse {
      */
     FAIL_NAME_CHANGE_EXCEPTION,
     /**
-     * Returns when the undisguise request succedes
+     * Returns when the undisguise request succeeds
      */
     SUCCESS
 

@@ -3,13 +3,6 @@ package dev.iiahmed.disguise;
 import org.bukkit.entity.EntityType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Scanner;
 
 @SuppressWarnings("unused")
 public final class Disguise {
@@ -18,7 +11,7 @@ public final class Disguise {
     private final boolean fakename;
     private final EntityType entityType;
 
-    private Disguise(String name, String textures, String signature, boolean fakename, EntityType entityType) {
+    private Disguise(final String name, final String textures, final String signature, final boolean fakename, final EntityType entityType) {
         this.name = name;
         this.textures = textures;
         this.signature = signature;
@@ -26,47 +19,74 @@ public final class Disguise {
         this.entityType = entityType;
     }
 
-    public boolean isEmpty() {
-        return !hasName() && !hasSkin() && !hasEntity();
-    }
-
-    public boolean hasEntity() {
-        return entityType != null && entityType != EntityType.PLAYER;
-    }
-
-    public boolean hasName() {
-        return name != null && !fakename;
-    }
-
-    public boolean hasSkin() {
-        return textures != null && !textures.isEmpty() && signature != null && !signature.isEmpty();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getTextures() {
-        return textures;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public boolean isFakename() {
-        return fakename;
-    }
-
-    public EntityType getEntityType() {
-        return entityType == null? EntityType.PLAYER : entityType;
-    }
-
     /**
      * Returns a new instance of the Disguise.Builder class
      */
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * @return a {@link Boolean} that indicates whether the disguise is empty or not
+     */
+    public boolean isEmpty() {
+        return !hasName() && !hasSkin() && !hasEntity();
+    }
+
+    /**
+     * @return a {@link Boolean} that indicates whether the disguise will change the player's entity
+     */
+    public boolean hasEntity() {
+        return entityType != null && entityType != EntityType.PLAYER;
+    }
+
+    /**
+     * @return a {@link Boolean} that indicates whether the disguise will change the player's name
+     */
+    public boolean hasName() {
+        return name != null && !fakename;
+    }
+
+    /**
+     * @return a {@link Boolean} that indicates whether the disguise will change the player's skin
+     */
+    public boolean hasSkin() {
+        return textures != null && !textures.isEmpty() && signature != null && !signature.isEmpty();
+    }
+
+    /**
+     * @return the name that the disguised player's name going to be changed for
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return a {@link Boolean} that indicates whether the nickname is fake or not
+     */
+    public boolean isFakename() {
+        return fakename;
+    }
+
+    /**
+     * @return the textures that the disguised player's skin going to be changed for
+     */
+    public String getTextures() {
+        return textures;
+    }
+
+    /**
+     * @return the signature that the disguised player's skin going to be changed for
+     */
+    public String getSignature() {
+        return signature;
+    }
+
+    /**
+     * @return the entitytype that the disguised player's entity going to be changed for
+     */
+    public EntityType getEntityType() {
+        return entityType == null ? EntityType.PLAYER : entityType;
     }
 
     /**
@@ -79,7 +99,8 @@ public final class Disguise {
         private EntityType entityType;
 
         /* we don't allow constructors from outside */
-        private Builder() {}
+        private Builder() {
+        }
 
         /**
          * This method sets the new name of the nicked player
@@ -88,7 +109,7 @@ public final class Disguise {
          * @param fake whether should the plugin replace the name or only replace it with a specific placeholder
          * @return the disguise builder
          */
-        public Builder setName(String name, boolean fake) {
+        public Builder setName(final String name, final boolean fake) {
             this.name = name;
             this.fakename = fake;
             return this;
@@ -99,31 +120,9 @@ public final class Disguise {
          * @param replacement this is either the UUID or the Name of the needed player's skin
          * @return the disguise builder
          */
-        public Builder setSkin(SkinAPI skinAPI, String replacement) {
+        public Builder setSkin(final SkinAPI skinAPI, final String replacement) {
             final String urlString = skinAPI.format(replacement);
-            JSONObject object;
-            try {
-                URL url = new URL(urlString);
-                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-                connection.setRequestProperty("User-Agent", "ModernDisguiseAPI/v1.0");
-                connection.setRequestMethod("GET");
-                connection.connect();
-                if (connection.getResponseCode() != 200) {
-                    throw new RuntimeException("The used URL doesn't seem to be working (the api is down?) " + urlString);
-                }
-
-                Scanner scanner = new Scanner(url.openStream());
-                StringBuilder builder = new StringBuilder();
-
-                while (scanner.hasNext()) {
-                    builder.append(scanner.next());
-                }
-
-                JSONParser parser = new JSONParser();
-                object = (JSONObject) parser.parse(builder.toString());
-            } catch (IOException | ParseException e) {
-                throw new RuntimeException(e);
-            }
+            final JSONObject object = DisguiseUtil.getJSONObject(urlString);
 
             if (object == null || object.isEmpty()) {
                 return this;
@@ -132,9 +131,9 @@ public final class Disguise {
             String texture = null, signature = null;
             switch (skinAPI) {
                 case MOJANG_UUID:
-                    JSONArray mojangArray = (JSONArray) object.get("properties");
+                    final JSONArray mojangArray = (JSONArray) object.get("properties");
                     for (Object o : mojangArray) {
-                        JSONObject jsonObject = (JSONObject) o;
+                        final JSONObject jsonObject = (JSONObject) o;
                         if (jsonObject == null) continue;
 
                         if (jsonObject.get("value") != null) {
@@ -147,10 +146,10 @@ public final class Disguise {
                     }
                     break;
                 case MINETOOLS_UUID:
-                    JSONObject raw = (JSONObject) object.get("raw");
-                    JSONArray array = (JSONArray) raw.get("properties");
+                    final JSONObject raw = (JSONObject) object.get("raw");
+                    final JSONArray array = (JSONArray) raw.get("properties");
                     for (Object o : array) {
-                        JSONObject jsonObject = (JSONObject) o;
+                        final JSONObject jsonObject = (JSONObject) o;
                         if (jsonObject == null) continue;
 
                         if (jsonObject.get("value") != null) {
@@ -163,8 +162,8 @@ public final class Disguise {
                     }
                     break;
                 case MINESKIN_UUID:
-                    JSONObject dataObject = (JSONObject) object.get("data");
-                    JSONObject texturesObject = (JSONObject) dataObject.get("texture");
+                    final JSONObject dataObject = (JSONObject) object.get("data");
+                    final JSONObject texturesObject = (JSONObject) dataObject.get("texture");
                     texture = (String) texturesObject.get("value");
                     signature = (String) texturesObject.get("signature");
                     break;
@@ -174,9 +173,10 @@ public final class Disguise {
 
         /**
          * Sets the skin based on a texture and a signature
+         *
          * @return the disguise builder
          */
-        public Builder setSkin(String texture, String signature) {
+        public Builder setSkin(final String texture, final String signature) {
             this.texture = texture;
             this.signature = signature;
             return this;
@@ -186,11 +186,14 @@ public final class Disguise {
          * @param entityType the entity type the player should look like
          * @return the disguise builder
          */
-        public Builder setEntityType(EntityType entityType) {
+        public Builder setEntityType(final EntityType entityType) {
             this.entityType = entityType;
             return this;
         }
 
+        /**
+         * @return a new instance of {@link Disguise} with the collected info
+         */
         public Disguise build() {
             return new Disguise(name, texture, signature, fakename, entityType);
         }

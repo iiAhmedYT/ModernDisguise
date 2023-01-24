@@ -1,10 +1,8 @@
 package dev.iiahmed.mvs;
 
-import dev.iiahmed.disguise.*;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
+import dev.iiahmed.disguise.DisguiseProvider;
+import dev.iiahmed.disguise.DisguiseUtil;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -13,37 +11,33 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.Objects;
 
-public class MVS1_18_R2 extends DisguiseProvider {
+public final class MVS1_18_R2 extends DisguiseProvider {
 
     @Override
-    public void refreshAsPlayer(Player player) {
+    public void refreshAsPlayer(@NotNull final Player player) {
         if (!player.isOnline()) {
             return;
         }
-        Location location = player.getLocation();
-        location.setYaw(player.getLocation().getYaw());
-        location.setPitch(player.getLocation().getPitch());
+        final Location location = player.getLocation();
         final long seed = player.getWorld().getSeed();
-        ServerPlayer ep = ((CraftPlayer) player).getHandle();
-        // synchronizing this process, other tasks can be async just fine
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            ep.connection.send(new ClientboundPlayerInfoPacket(
-                    ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,
-                    ep));
-            ep.connection.send(new ClientboundRespawnPacket(ep.getLevel().dimensionTypeRegistration(),
-                    ep.getLevel().dimension(),
-                    seed, ep.gameMode.getGameModeForPlayer(),
-                    ep.gameMode.getGameModeForPlayer(), false, false, true));
-            player.teleport(location);
-            ep.connection.send(new ClientboundPlayerInfoPacket(
-                    ClientboundPlayerInfoPacket.Action.ADD_PLAYER,
-                    ep));
-        });
-        for (Player serverPlayer : Bukkit.getOnlinePlayers()) {
+        final ServerPlayer ep = ((CraftPlayer) player).getHandle();
+        ep.connection.send(new ClientboundPlayerInfoPacket(
+                ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,
+                ep));
+        ep.connection.send(new ClientboundRespawnPacket(ep.getLevel().dimensionTypeRegistration(),
+                ep.getLevel().dimension(),
+                seed, ep.gameMode.getGameModeForPlayer(),
+                ep.gameMode.getGameModeForPlayer(), false, false, true));
+        player.teleport(location);
+        ep.connection.send(new ClientboundPlayerInfoPacket(
+                ClientboundPlayerInfoPacket.Action.ADD_PLAYER,
+                ep));
+        player.updateInventory();
+        for (final Player serverPlayer : Bukkit.getOnlinePlayers()) {
             if (serverPlayer == player) continue;
             serverPlayer.hidePlayer(plugin, player);
             serverPlayer.showPlayer(plugin, player);
@@ -52,17 +46,16 @@ public class MVS1_18_R2 extends DisguiseProvider {
 
     @Override
     @SuppressWarnings("all")
-    public void refreshAsEntity(Player refreshed, Player target) {
-        if (!isDisguised(refreshed)) {
+    public void refreshAsEntity(@NotNull final Player refreshed, final boolean remove, final Player... targets) {
+        if (!isDisguised(refreshed) || targets.length == 0 || !getInfo(refreshed).hasEntity()) {
             return;
         }
-        ServerPlayer ep = ((CraftPlayer) target).getHandle();
-        ServerPlayer rfep = ((CraftPlayer) refreshed).getHandle();
-        org.bukkit.entity.EntityType type = Objects.requireNonNull(getInfo(refreshed)).getEntityType();
-        ClientboundAddEntityPacket spawn;
+        final ServerPlayer rfep = ((CraftPlayer) refreshed).getHandle();
+        final org.bukkit.entity.EntityType type = getInfo(refreshed).getEntityType();
+        final ClientboundAddEntityPacket spawn;
         try {
-            Class<?> clazz = DisguiseUtil.getEntity(type);
-            Entity entity;
+            final Class<?> clazz = DisguiseUtil.getEntity(type);
+            final Entity entity;
             if (DisguiseUtil.hasConstructor(clazz, Level.class)) {
                 entity = (Entity) clazz.getDeclaredConstructor(Level.class).newInstance(rfep.getLevel());
             } else {
@@ -70,15 +63,25 @@ public class MVS1_18_R2 extends DisguiseProvider {
                 entity = (Entity) clazz.getDeclaredConstructor(EntityType.class, Level.class).newInstance(t, rfep.getLevel());
             }
             spawn = new ClientboundAddEntityPacket(entity);
-            Field id = ClientboundAddEntityPacket.class.getDeclaredField("c");
+            final Field id = ClientboundAddEntityPacket.class.getDeclaredField("c");
             id.setAccessible(true);
             id.set(spawn, refreshed.getEntityId());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        ClientboundRemoveEntitiesPacket destroy = new ClientboundRemoveEntitiesPacket(refreshed.getEntityId());
-        ep.connection.send(destroy);
-        ep.connection.send(spawn);
+        final ClientboundRemoveEntitiesPacket destroy = new ClientboundRemoveEntitiesPacket(refreshed.getEntityId());
+        final ClientboundTeleportEntityPacket tp = new ClientboundTeleportEntityPacket(rfep);
+        final ClientboundUpdateAttributesPacket attributes = new ClientboundUpdateAttributesPacket(refreshed.getEntityId(), rfep.getAttributes().getDirtyAttributes());
+        for (final Player player : targets) {
+            if (player == refreshed) continue;
+            final ServerPlayer ep = ((CraftPlayer) player).getHandle();
+            if (remove) {
+                ep.connection.send(destroy);
+            }
+            ep.connection.send(spawn);
+            ep.connection.send(tp);
+            ep.connection.send(attributes);
+        }
     }
 
 }

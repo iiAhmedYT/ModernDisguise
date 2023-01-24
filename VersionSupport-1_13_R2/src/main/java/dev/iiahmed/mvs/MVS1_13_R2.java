@@ -2,17 +2,17 @@ package dev.iiahmed.mvs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
 import dev.iiahmed.disguise.DisguiseUtil;
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 
-public final class MVS1_11_R1 extends DisguiseProvider {
+public final class MVS1_13_R2 extends DisguiseProvider {
 
     @Override
     public void refreshAsPlayer(@NotNull final Player player) {
@@ -33,11 +33,10 @@ public final class MVS1_11_R1 extends DisguiseProvider {
         player.updateInventory();
         for (final Player serverPlayer : Bukkit.getOnlinePlayers()) {
             if (serverPlayer == player) continue;
-            serverPlayer.hidePlayer(player);
-            serverPlayer.showPlayer(player);
+            serverPlayer.hidePlayer(plugin, player);
+            serverPlayer.showPlayer(plugin, player);
         }
     }
-
 
     @Override
     public void refreshAsEntity(@NotNull final Player refreshed, final boolean remove, final Player... targets) {

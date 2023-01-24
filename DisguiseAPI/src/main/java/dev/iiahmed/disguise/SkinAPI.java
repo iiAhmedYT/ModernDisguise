@@ -3,18 +3,19 @@ package dev.iiahmed.disguise;
 public enum SkinAPI {
 
     /**
-     * Official Mojang Skin API
+     * Official Mojang Skin API (RECOMMENDED)
      */
     MOJANG_UUID("https://sessionserver.mojang.com/session/minecraft/profile/%uuid%?unsigned=false"),
-    /**
-     * MineToolseu Skin API
-     */
-    MINETOOLS_UUID("https://api.minetools.eu/profile/%uuid%"),
+
     /**
      * MineSkin Skin API
      */
     MINESKIN_UUID("https://api.mineskin.org/get/uuid/%uuid%"),
 
+    /**
+     * MineTools Skin API
+     */
+    MINETOOLS_UUID("https://api.minetools.eu/profile/%uuid%"),
     ;
 
     private final String url;

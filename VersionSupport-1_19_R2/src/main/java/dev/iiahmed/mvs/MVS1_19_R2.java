@@ -9,13 +9,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
-public final class MVS1_19_R1 extends DisguiseProvider {
+public final class MVS1_19_R2 extends DisguiseProvider {
 
     @Override
     public void refreshAsPlayer(@NotNull final Player player) {
@@ -25,16 +26,18 @@ public final class MVS1_19_R1 extends DisguiseProvider {
         final Location location = player.getLocation();
         final long seed = player.getWorld().getSeed();
         final ServerPlayer ep = ((CraftPlayer) player).getHandle();
-        ep.connection.send(new ClientboundPlayerInfoPacket(
-                ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,
-                ep));
+        ep.connection.send(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(ep.getUUID())));
         ep.connection.send(new ClientboundRespawnPacket(ep.getLevel().dimensionTypeId(),
-                ep.getLevel().dimension(), seed, ep.gameMode.getGameModeForPlayer(),
-                ep.gameMode.getGameModeForPlayer(), false, false, true,
+                ep.getLevel().dimension(),
+                seed, ep.gameMode.getGameModeForPlayer(),
+                ep.gameMode.getGameModeForPlayer(), false, false, ClientboundRespawnPacket.KEEP_ALL_DATA,
                 ep.getLastDeathLocation()));
         player.teleport(location);
-        ep.connection.send(new ClientboundPlayerInfoPacket(
-                ClientboundPlayerInfoPacket.Action.ADD_PLAYER,
+        ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
+                ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
+                ep));
+        ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
+                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
                 ep));
         player.updateInventory();
         for (final Player serverPlayer : Bukkit.getOnlinePlayers()) {
