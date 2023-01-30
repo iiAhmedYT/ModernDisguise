@@ -7,14 +7,14 @@ import org.json.simple.JSONObject;
 @SuppressWarnings("unused")
 public final class Disguise {
 
-    private final String name, textures, signature;
+    private final String name;
+    private final Skin skin;
     private final boolean fakename;
     private final EntityType entityType;
 
-    private Disguise(final String name, final String textures, final String signature, final boolean fakename, final EntityType entityType) {
+    private Disguise(final String name, final Skin skin, final boolean fakename, final EntityType entityType) {
         this.name = name;
-        this.textures = textures;
-        this.signature = signature;
+        this.skin = skin;
         this.fakename = fakename;
         this.entityType = entityType;
     }
@@ -51,7 +51,7 @@ public final class Disguise {
      * @return a {@link Boolean} that indicates whether the disguise will change the player's skin
      */
     public boolean hasSkin() {
-        return textures != null && !textures.isEmpty() && signature != null && !signature.isEmpty();
+        return skin != null && skin.isValid();
     }
 
     /**
@@ -62,24 +62,23 @@ public final class Disguise {
     }
 
     /**
-     * @return a {@link Boolean} that indicates whether the nickname is fake or not
-     */
-    public boolean isFakename() {
-        return fakename;
-    }
-
-    /**
      * @return the textures that the disguised player's skin going to be changed for
      */
     public String getTextures() {
-        return textures;
+        if(skin == null) {
+            return null;
+        }
+        return skin.getTextures();
     }
 
     /**
      * @return the signature that the disguised player's skin going to be changed for
      */
     public String getSignature() {
-        return signature;
+        if(skin == null) {
+            return null;
+        }
+        return skin.getSignature();
     }
 
     /**
@@ -94,8 +93,9 @@ public final class Disguise {
      */
     public static class Builder {
 
-        String name, texture, signature;
-        boolean fakename = false;
+        private String name;
+        private Skin skin;
+        private boolean fakename = false;
         private EntityType entityType;
 
         /* we don't allow constructors from outside */
@@ -176,9 +176,17 @@ public final class Disguise {
          *
          * @return the disguise builder
          */
-        public Builder setSkin(final String texture, final String signature) {
-            this.texture = texture;
-            this.signature = signature;
+        public Builder setSkin(final String textures, final String signature) {
+            return setSkin(new Skin(textures, signature));
+        }
+
+        /**
+         * Sets the skin based on a {@link Skin}
+         *
+         * @return the disguise builder
+         */
+        public Builder setSkin(final Skin skin) {
+            this.skin = skin;
             return this;
         }
 
@@ -195,7 +203,7 @@ public final class Disguise {
          * @return a new instance of {@link Disguise} with the collected info
          */
         public Disguise build() {
-            return new Disguise(name, texture, signature, fakename, entityType);
+            return new Disguise(name, skin, fakename, entityType);
         }
 
     }

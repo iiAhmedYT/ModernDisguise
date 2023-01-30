@@ -1,6 +1,7 @@
 package dev.iiahmed.disguise;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.json.simple.parser.ParseException;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -24,7 +26,7 @@ public final class DisguiseUtil {
     public static final int INT_VER = Integer.parseInt(VERSION.split("_")[1]);
     public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
     private static final HashSet<String> NAMES = new HashSet<>();
-    private static final HashMap<EntityType, Class<?>> ENTITIES = new HashMap<>();
+    private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     public static int found, living, registered;
     public static Field PROFILE_NAME, CONNECTION, NETWORK_MANAGER, CHANNEL;
     private static Class<?> CRAFT_PLAYER, ENTITY_LIVING, ENTITY_TYPES, WORLD;
@@ -62,7 +64,7 @@ public final class DisguiseUtil {
         }
 
         for (final EntityType type : EntityType.values()) {
-            StringBuilder builder = new StringBuilder("Entity");
+            final StringBuilder builder = new StringBuilder("Entity");
             boolean cap = true;
             for (char c : type.name().toCharArray()) {
                 if (c == '_') {
@@ -72,8 +74,7 @@ public final class DisguiseUtil {
                 builder.append(cap ? c : String.valueOf(c).toLowerCase());
                 cap = false;
             }
-            String name = builder.toString();
-            Class<?> clazz = findEntity(name);
+            final Class<?> clazz = findEntity(builder.toString());
             if (clazz == null) {
                 continue;
             }
@@ -82,20 +83,21 @@ public final class DisguiseUtil {
                 continue;
             }
             living++;
-            if (hasConstructor(clazz, WORLD) || hasConstructor(clazz, ENTITY_TYPES, WORLD)) {
+            final Constructor<?> constructor = findConstructor(clazz, type.name());
+            if(constructor != null) {
                 registered++;
-                ENTITIES.put(type, clazz);
+                ENTITIES.put(type, constructor);
             }
         }
     }
 
     /**
-     * finds the {@link Class} of any NMS entity
+     * Finds the {@link Class} of any NMS entity
      *
-     * @param name of the NMS entity
+     * @param name the name of the NMS entity
      * @return null if the NMS entity was NOT found
      */
-    private static Class<?> findEntity(String name) {
+    private static Class<?> findEntity(final String name) {
         if (INT_VER < 17) {
             return getClass(PREFIX + name);
         }
@@ -112,16 +114,17 @@ public final class DisguiseUtil {
     }
 
     /**
-     * @return a {@link Boolean} that determines whether a {@link Class}
-     * has a Constructor with the specified type arguments
+     * Finds the {@link Constructor} of any NMS entity
+     *
+     * @param entityClass the class of the NMS entity
+     * @return null if the NMS entity was NOT found
      */
-    public static boolean hasConstructor(Class<?> clazz, Class<?>... classes) {
-        try {
-            clazz.getDeclaredConstructor(classes);
-            return true;
-        } catch (NoSuchMethodException e) {
-            return false;
+    private static Constructor<?> findConstructor(final Class<?> entityClass, final String name) {
+        Constructor<?> constructor = getConstructor(entityClass, WORLD);
+        if(constructor == null && INT_VER > 12 && hasField(entityClass, name)) {
+            constructor = getConstructor(entityClass, ENTITY_TYPES, WORLD);
         }
+        return constructor;
     }
 
     /**
@@ -129,18 +132,44 @@ public final class DisguiseUtil {
      *
      * @return null if the {@link Class} was NOT found
      */
-    public static Class<?> getClass(String path) {
+    public static Class<?> getClass(final String path) {
         try {
             return Class.forName(path);
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
-     * @return the {@link Class} of a supported NMS entity by it's {@link EntityType}
+     * A nullable {@link Class#getDeclaredConstructor(Class[])} instead of throwing exceptions
+     *
+     * @return null if the {@link Constructor} was NOT found
      */
-    public static Class<?> getEntity(@NotNull final EntityType type) {
+    private static Constructor<?> getConstructor(@NotNull final Class<?> clazz, final Class<?>... classes) {
+        try {
+            return clazz.getDeclaredConstructor(classes);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * @return a {@link Boolean} that determines whether a {@link Class}
+     * has a {@link Field} with the specified type arguments
+     */
+    public static boolean hasField(@NotNull final Class<?> clazz, @NotNull final String field) {
+        try {
+            clazz.getField(field);
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    /**
+     * @return the {@link Constructor} of a supported NMS entity by it's {@link EntityType}
+     */
+    public static Constructor<?> getEntity(@NotNull final EntityType type) {
         return ENTITIES.get(type);
     }
 
@@ -153,6 +182,24 @@ public final class DisguiseUtil {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * @return the {@link Skin} of the given {@link Player}
+     */
+    @SuppressWarnings("unused")
+    public static Skin getSkin(@NotNull final Player player) {
+        GameProfile profile = getProfile(player);
+        if(profile == null) {
+            return new Skin(null, null);
+        }
+        String textures = null, signature = null;
+        final Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
+        if (optional.isPresent()) {
+            textures = optional.get().getValue();
+            signature = optional.get().getSignature();
+        }
+        return new Skin(textures, signature);
     }
 
     /**
@@ -186,7 +233,7 @@ public final class DisguiseUtil {
      *
      * @param name the registered name
      */
-    public static void register(final String name) {
+    public static void register(@NotNull final String name) {
         NAMES.add(name.toLowerCase(Locale.ENGLISH));
     }
 
@@ -195,7 +242,7 @@ public final class DisguiseUtil {
      *
      * @param name the unregistered name
      */
-    public static void unregister(final String name) {
+    public static void unregister(@NotNull final String name) {
         NAMES.remove(name.toLowerCase(Locale.ENGLISH));
     }
 
@@ -205,7 +252,7 @@ public final class DisguiseUtil {
      *
      * @param name the checked name
      */
-    public static boolean isPlayerOnline(final String name) {
+    public static boolean isPlayerOnline(@NotNull final String name) {
         return NAMES.contains(name.toLowerCase(Locale.ENGLISH));
     }
 

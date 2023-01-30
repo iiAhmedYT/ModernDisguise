@@ -32,9 +32,6 @@ On versions that support Mojang Chat-Reports this plugin will add a ChatColor#RE
 to disable Mojang's Chat-Report feature.
 
 ## Maven
-
-This project is deployed on a self-hosted repository currently
-
 Add this repo to your repositories:
 
 ```xml
@@ -56,8 +53,7 @@ and then add this dependancy:
 ```
 
 ## Gradle
-
-Add this repo to your repositories block
+Add this repo to your repositories block:
 
 ```groovy
 repositories {
@@ -68,7 +64,7 @@ repositories {
 }
 ```
 
-and now add dependency
+and now add dependency:
 
 ```groovy
 dependencies {
@@ -156,3 +152,28 @@ public class ExampleClass implements Listener {
 
 There's way more to it but I'd rather you figure it out on your own by checking the DisguiseProvider class :)
 
+## Building
+###### 1- Building Spigot Versions
+All these versions have to be built using Spigot's BuildTools
+
+- 1.8.8
+- 1.9.4
+- 1.10.2
+- 1.11.2
+- 1.12.2
+- 1.13, 1.13.2
+- 1.14.4
+- 1.15.2
+- 1.16.1, 1.16.3, 1.16.5
+
+Versions from now-on should be built with the ```--remapped``` flag
+- 1.17.1
+- 1.18.1, 1.18.2
+- 1.19.2, 1.19.3
+
+###### 2- Cloning
+You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature
+
+Congratulations! Now you can build ModernDisguise with the command ```mvn clean install```
+## License
+This project is licensed under the [GPL-3.0 License](LICENSE.md)

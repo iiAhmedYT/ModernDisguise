@@ -84,7 +84,7 @@ public abstract class DisguiseProvider {
         }
         DisguiseUtil.register(oldName);
         playerInfo.put(player.getUniqueId(), new PlayerInfo(oldName, disguise.getName(),
-                oldTextures, oldSignature, disguise.getEntityType()));
+                new Skin(oldTextures, oldSignature), disguise.getEntityType()));
 
         if (disguise.hasName() || disguise.hasSkin()) {
             final boolean flying = player.isFlying();
@@ -171,7 +171,7 @@ public abstract class DisguiseProvider {
         if (playerInfo.containsKey(player.getUniqueId())) {
             return playerInfo.get(player.getUniqueId());
         }
-        return new PlayerInfo(player.getName(), null, null, null, null);
+        return new PlayerInfo(player.getName(), null, null, null);
     }
 
     /**
@@ -200,7 +200,7 @@ public abstract class DisguiseProvider {
      */
     @SuppressWarnings("all")
     @Deprecated
-    public void setPlugin(@NotNull final Plugin plugin) {
+    protected void setPlugin(@NotNull final Plugin plugin) {
         this.plugin = plugin;
     }
 

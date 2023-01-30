@@ -4,17 +4,17 @@ import org.bukkit.entity.EntityType;
 
 public class PlayerInfo {
 
-    private final String name, nickname, textures, signature;
+    private final String name, nickname;
+    private final Skin skin;
     private final EntityType entityType;
 
-    protected PlayerInfo(final String name, final String nickname, final String textures, final String signature, final EntityType entityType) {
+    protected PlayerInfo(final String name, final String nickname, final Skin skin, final EntityType entityType) {
         if (name == null) {
             throw new IllegalArgumentException("Input real name can't be null.");
         }
         this.name = name;
         this.nickname = nickname;
-        this.textures = textures;
-        this.signature = signature;
+        this.skin = skin;
         this.entityType = entityType;
     }
 
@@ -37,14 +37,20 @@ public class PlayerInfo {
      * @return the original textures of the disguised player's skin
      */
     public String getTextures() {
-        return textures;
+        if(skin == null) {
+            return null;
+        }
+        return skin.getTextures();
     }
 
     /**
      * @return the original signature of the disguised player's skin
      */
     public String getSignature() {
-        return signature;
+        if(skin == null) {
+            return null;
+        }
+        return skin.getSignature();
     }
 
     /**
@@ -65,7 +71,7 @@ public class PlayerInfo {
      * @return a {@link Boolean} that indicates whether the disguise had changed the player's skin
      */
     public boolean hasSkin() {
-        return textures != null && !textures.isEmpty() && signature != null && !signature.isEmpty();
+        return skin != null && skin.isValid();
     }
 
     /**
