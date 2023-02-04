@@ -10,7 +10,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 public final class VS1_14_R1 extends DisguiseProvider {
@@ -56,18 +55,10 @@ public final class VS1_14_R1 extends DisguiseProvider {
             return;
         }
         final EntityPlayer p = ((CraftPlayer) refreshed).getHandle();
-        final World world = p.getWorld();
         final EntityType type = getInfo(refreshed).getEntityType();
         final PacketPlayOutSpawnEntityLiving spawn;
         try {
-            final Constructor<?> constructor = DisguiseUtil.getEntity(type);
-            final EntityLiving entity;
-            if (constructor.getParameterCount() == 1) {
-                entity = (EntityLiving) DisguiseUtil.getEntity(type).newInstance(world);
-            } else {
-                entity = (EntityLiving) DisguiseUtil.getEntity(type)
-                        .newInstance(EntityTypes.class.getDeclaredField(type.name()).get(null), world);
-            }
+            final EntityLiving entity = (EntityLiving) DisguiseUtil.createEntity(type, p.world);
             spawn = new PacketPlayOutSpawnEntityLiving(entity);
             id.set(spawn, refreshed.getEntityId());
         } catch (Exception e) {

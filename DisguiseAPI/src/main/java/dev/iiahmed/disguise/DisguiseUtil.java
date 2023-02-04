@@ -27,6 +27,7 @@ public final class DisguiseUtil {
     public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
     private static final HashSet<String> NAMES = new HashSet<>();
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
+    private static final HashMap<EntityType, Object> ENTITIY_FIELDS = new HashMap<>();
     public static int found, living, registered;
     public static Field PROFILE_NAME, CONNECTION, NETWORK_MANAGER, CHANNEL;
     private static Class<?> CRAFT_PLAYER, ENTITY_LIVING, ENTITY_TYPES, WORLD;
@@ -60,7 +61,8 @@ public final class DisguiseUtil {
                     "net.minecraft.network." : PREFIX)
                     + "NetworkManager");
             CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ? "channel" : (INT_VER > 18 || VERSION.equals("1_18_R2") ? "m" : "k"));
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
 
         for (final EntityType type : EntityType.values()) {
@@ -83,7 +85,7 @@ public final class DisguiseUtil {
                 continue;
             }
             living++;
-            final Constructor<?> constructor = findConstructor(clazz, type.name());
+            final Constructor<?> constructor = findConstructor(clazz, type);
             if(constructor != null) {
                 registered++;
                 ENTITIES.put(type, constructor);
@@ -119,10 +121,24 @@ public final class DisguiseUtil {
      * @param entityClass the class of the NMS entity
      * @return null if the NMS entity was NOT found
      */
-    private static Constructor<?> findConstructor(final Class<?> entityClass, final String name) {
+    private static Constructor<?> findConstructor(final Class<?> entityClass, final EntityType type) {
         Constructor<?> constructor = getConstructor(entityClass, WORLD);
-        if(constructor == null && INT_VER > 12 && hasField(entityClass, name)) {
-            constructor = getConstructor(entityClass, ENTITY_TYPES, WORLD);
+        if (constructor != null) {
+            return constructor;
+        }
+        if (INT_VER < 13) {
+            return null;
+        }
+        final Field field = getField(ENTITY_TYPES, type.name());
+        if (field == null) {
+            return null;
+        }
+        constructor = getConstructor(entityClass, ENTITY_TYPES, WORLD);
+        if (constructor != null) {
+            try {
+                ENTITIY_FIELDS.put(type, field.get(null));
+            } catch (Exception ignored) {
+            }
         }
         return constructor;
     }
@@ -132,10 +148,10 @@ public final class DisguiseUtil {
      *
      * @return null if the {@link Class} was NOT found
      */
-    public static Class<?> getClass(final String path) {
+    public static Class<?> getClass(@NotNull final String path) {
         try {
             return Class.forName(path);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             return null;
         }
     }
@@ -148,29 +164,50 @@ public final class DisguiseUtil {
     private static Constructor<?> getConstructor(@NotNull final Class<?> clazz, final Class<?>... classes) {
         try {
             return clazz.getDeclaredConstructor(classes);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             return null;
         }
     }
 
     /**
-     * @return a {@link Boolean} that determines whether a {@link Class}
-     * has a {@link Field} with the specified type arguments
+     * A nullable {@link Class#getField(String)} (String)} instead of throwing exceptions
+     *
+     * @return null if the {@link Class} was NOT found
      */
-    public static boolean hasField(@NotNull final Class<?> clazz, @NotNull final String field) {
+    public static Field getField(@NotNull final Class<?> clazz, @NotNull final String field) {
         try {
-            clazz.getField(field);
-            return true;
+            return clazz.getDeclaredField(field);
         } catch (Exception ignored) {
-            return false;
+            return null;
         }
     }
 
     /**
-     * @return the {@link Constructor} of a supported NMS entity by it's {@link EntityType}
+     * Creates an NMS entity instance of the provided {@link EntityType}
+     * as long as it's a supported one
+     *
+     * @param type the {@link EntityType}
+     * @param world the NMS world the entity should spawn in
      */
-    public static Constructor<?> getEntity(@NotNull final EntityType type) {
-        return ENTITIES.get(type);
+    public static Object createEntity(@NotNull final EntityType type, @NotNull final Object world) throws Exception {
+        if (!ENTITIES.containsKey(type)) {
+            throw new RuntimeException("Creating a not supported entity.");
+        }
+        final Constructor<?> constructor = ENTITIES.get(type);
+        final Object entity;
+        if (constructor.getParameterCount() == 1) {
+            entity = constructor.newInstance(WORLD.cast(world));
+        } else {
+            entity = constructor.newInstance(ENTITY_TYPES.cast(ENTITIY_FIELDS.get(type)), WORLD.cast(world));
+        }
+        return entity;
+    }
+
+    /**
+     * Checks if the provided {@link EntityType} is supported to be disguised as
+     */
+    public static boolean isEntitySupported(@NotNull final EntityType type) {
+        return ENTITIES.containsKey(type);
     }
 
     /**
@@ -179,7 +216,7 @@ public final class DisguiseUtil {
     public static GameProfile getProfile(@NotNull final Player player) {
         try {
             return (GameProfile) GET_PROFILE.invoke(CRAFT_PLAYER.cast(player));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             return null;
         }
     }
@@ -262,7 +299,7 @@ public final class DisguiseUtil {
      * @param player  the player getting injected into
      * @param handler the {@link ChannelHandler} injected into the channel
      */
-    public static void inject(@NotNull final Player player, final @NotNull ChannelHandler handler) throws Exception {
+    public static void inject(@NotNull final Player player, @NotNull final ChannelHandler handler) throws Exception {
         Object entityPlayer = GET_HANDLE.invoke(CRAFT_PLAYER.cast(player));
         Object connection = CONNECTION.get(entityPlayer);
         Object networkManager = NETWORK_MANAGER.get(connection);

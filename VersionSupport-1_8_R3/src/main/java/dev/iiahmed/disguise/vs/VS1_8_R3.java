@@ -35,7 +35,7 @@ public final class VS1_8_R3 extends DisguiseProvider {
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                 ep));
-        World world = ep.getWorld();
+        final World world = ep.world;
         ep.playerConnection.sendPacket(new PacketPlayOutRespawn(ep.dimension, world.getDifficulty(),
                 world.getWorldData().getType(), ep.playerInteractManager.getGameMode()));
         player.teleport(location);
@@ -56,11 +56,10 @@ public final class VS1_8_R3 extends DisguiseProvider {
             return;
         }
         final EntityPlayer p = ((CraftPlayer) refreshed).getHandle();
-        final World world = p.getWorld();
         final EntityType type = getInfo(refreshed).getEntityType();
         final PacketPlayOutSpawnEntityLiving spawn;
         try {
-            final EntityLiving entity = (EntityLiving) DisguiseUtil.getEntity(type).newInstance(world);
+            final EntityLiving entity = (EntityLiving) DisguiseUtil.createEntity(type, p.world);
             spawn = new PacketPlayOutSpawnEntityLiving(entity);
             id.set(spawn, refreshed.getEntityId());
         } catch (Exception e) {

@@ -5,14 +5,13 @@ import dev.iiahmed.disguise.DisguiseUtil;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Collections;
 
@@ -39,9 +38,9 @@ public final class VS1_19_R2 extends DisguiseProvider {
         final long seed = player.getWorld().getSeed();
         final ServerPlayer ep = ((CraftPlayer) player).getHandle();
         ep.connection.send(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(ep.getUUID())));
-        ep.connection.send(new ClientboundRespawnPacket(ep.getLevel().dimensionTypeId(),
-                ep.getLevel().dimension(),
-                seed, ep.gameMode.getGameModeForPlayer(),
+        final Level level = ep.level;
+        ep.connection.send(new ClientboundRespawnPacket(level.dimensionTypeId(),
+                level.dimension(), seed, ep.gameMode.getGameModeForPlayer(),
                 ep.gameMode.getGameModeForPlayer(), false, false, ClientboundRespawnPacket.KEEP_ALL_DATA,
                 ep.getLastDeathLocation()));
         player.teleport(location);
@@ -68,14 +67,7 @@ public final class VS1_19_R2 extends DisguiseProvider {
         final org.bukkit.entity.EntityType type = getInfo(refreshed).getEntityType();
         final ClientboundAddEntityPacket spawn;
         try {
-            final Constructor<?> constructor = DisguiseUtil.getEntity(type);
-            final Entity entity;
-            if (constructor.getParameterCount() == 1) {
-                entity = (Entity) DisguiseUtil.getEntity(type).newInstance(rfep.getLevel());
-            } else {
-                entity = (Entity) DisguiseUtil.getEntity(type)
-                        .newInstance(EntityType.class.getDeclaredField(type.name()).get(null), rfep.getLevel());
-            }
+            final Entity entity = (Entity) DisguiseUtil.createEntity(type, rfep.getLevel());
             spawn = new ClientboundAddEntityPacket(entity);
             id.set(spawn, refreshed.getEntityId());
         } catch (Exception e) {

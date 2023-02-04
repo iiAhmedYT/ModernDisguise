@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 public class DisguiseManager {
 
     private static final DisguiseProvider PROVIDER;
@@ -74,10 +75,10 @@ public class DisguiseManager {
     /**
      * sets the plugin for the provider and registers the litsners
      */
-    @SuppressWarnings("all")
-    public static void setPlugin(Plugin plugin) {
-        if (PROVIDER.getPlugin() == null) {
-            PROVIDER.setPlugin(plugin);
+    public static void setPlugin(@NotNull final Plugin plugin) {
+        final Plugin old = PROVIDER.getPlugin();
+        if (old == null || !old.isEnabled()) {
+            PROVIDER.plugin = plugin;
             plugin.getServer().getPluginManager().registerEvents(new PlayerListener(), plugin);
         }
     }
@@ -93,7 +94,6 @@ public class DisguiseManager {
     /**
      * Registers a PlaceholderAPI expantion if PAPI exists
      */
-    @SuppressWarnings("unused")
     public static void registerExpantion() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             return;

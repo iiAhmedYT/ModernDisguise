@@ -32,7 +32,7 @@ public abstract class DisguiseProvider {
             return DisguiseResponse.FAIL_EMPTY_DISGUISE;
         }
 
-        if (disguise.hasEntity() && DisguiseUtil.getEntity(disguise.getEntityType()) == null) {
+        if (disguise.hasEntity() && !DisguiseUtil.isEntitySupported(disguise.getEntityType())) {
             return DisguiseResponse.FAIL_ENTITY_NOT_SUPPORTED;
         }
 
@@ -192,16 +192,6 @@ public abstract class DisguiseProvider {
      */
     public Plugin getPlugin() {
         return this.plugin;
-    }
-
-    /**
-     * @param plugin the needed plugin to register listeners & refresh {@link Player}s
-     * @deprecated see {@link DisguiseManager#setPlugin}
-     */
-    @SuppressWarnings("all")
-    @Deprecated
-    protected void setPlugin(@NotNull final Plugin plugin) {
-        this.plugin = plugin;
     }
 
 }
