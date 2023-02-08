@@ -2,13 +2,13 @@ package dev.iiahmed.disguise;
 
 import org.bukkit.entity.EntityType;
 
-public class PlayerInfo {
+public final class PlayerInfo {
 
     private final String name, nickname;
     private final Skin skin;
     private final EntityType entityType;
 
-    protected PlayerInfo(final String name, final String nickname, final Skin skin, final EntityType entityType) {
+    PlayerInfo(final String name, final String nickname, final Skin skin, final EntityType entityType) {
         if (name == null) {
             throw new IllegalArgumentException("Input real name can't be null.");
         }
@@ -64,7 +64,7 @@ public class PlayerInfo {
      * @return a {@link Boolean} that indicates whether the disguise had changed the player's name
      */
     public boolean hasName() {
-        return nickname != null && !nickname.equals(name);
+        return nickname != null && !nickname.isEmpty() && !nickname.equals(name);
     }
 
     /**

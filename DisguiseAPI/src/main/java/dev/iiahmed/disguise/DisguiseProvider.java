@@ -2,6 +2,7 @@ package dev.iiahmed.disguise;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -9,10 +10,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public abstract class DisguiseProvider {
 
-    protected final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
+    private final Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
+    private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
     protected Plugin plugin;
 
     /**
@@ -48,14 +51,19 @@ public abstract class DisguiseProvider {
                 name = name.substring(0, 16);
             }
 
+            if (!namePattern.matcher(name).matches()) {
+                return DisguiseResponse.FAIL_NAME_INVALID;
+            }
+
             if (DisguiseUtil.isPlayerOnline(name)) {
                 return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
             }
 
             try {
                 DisguiseUtil.PROFILE_NAME.set(profile, name);
-                DisguiseUtil.register(name);
-            } catch (IllegalAccessException e) {
+                DisguiseUtil.register(name, player);
+            } catch (final IllegalAccessException e) {
+                // shouldn't happen
                 return DisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
             }
         }
@@ -82,7 +90,6 @@ public abstract class DisguiseProvider {
             }
             oldName = info.getName();
         }
-        DisguiseUtil.register(oldName);
         playerInfo.put(player.getUniqueId(), new PlayerInfo(oldName, disguise.getName(),
                 new Skin(oldTextures, oldSignature), disguise.getEntityType()));
 
@@ -112,25 +119,25 @@ public abstract class DisguiseProvider {
             return UndisguiseResponse.FAIL_ALREADY_UNDISGUISED;
         }
 
-        if (!player.isOnline()) {
+        final GameProfile profile = DisguiseUtil.getProfile(player);
+        if (profile == null) {
+            if (player.isOnline()) {
+                // shouldn't happen
+                return UndisguiseResponse.FAIL_PROFILE_NOT_FOUND;
+            }
             final PlayerInfo info = playerInfo.remove(player.getUniqueId());
-            DisguiseUtil.unregister(info.getName());
-            DisguiseUtil.unregister(info.getNickname());
+            if(info.hasName()) {
+                DisguiseUtil.unregister(info.getNickname());
+            }
             return UndisguiseResponse.SUCCESS;
         }
 
-        final GameProfile profile = DisguiseUtil.getProfile(player);
-        if (profile == null) {
-            return UndisguiseResponse.FAIL_PROFILE_NOT_FOUND;
-        }
-
         final PlayerInfo info = playerInfo.get(player.getUniqueId());
-
         if (info.hasName()) {
             try {
                 DisguiseUtil.PROFILE_NAME.set(profile, info.getName());
                 DisguiseUtil.unregister(info.getNickname());
-            } catch (IllegalAccessException e) {
+            } catch (final IllegalAccessException e) {
                 return UndisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
             }
         }
@@ -171,7 +178,7 @@ public abstract class DisguiseProvider {
         if (playerInfo.containsKey(player.getUniqueId())) {
             return playerInfo.get(player.getUniqueId());
         }
-        return new PlayerInfo(player.getName(), null, null, null);
+        return new PlayerInfo(player.getName(), null, null, EntityType.PLAYER);
     }
 
     /**
@@ -183,7 +190,7 @@ public abstract class DisguiseProvider {
 
     /**
      * @param refreshed the refreshed {@link Player}
-     * @param targets   the needed {@link Player}s to receive packets
+     * @param targets   the needed {@link Player}s to receive refresh packets
      */
     abstract public void refreshAsEntity(@NotNull final Player refreshed, final boolean remove, final Player... targets);
 

@@ -8,7 +8,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
-public class DisguiseManager {
+public final class DisguiseManager {
 
     private static final DisguiseProvider PROVIDER;
     private static boolean expantionRegistered = false;
@@ -73,7 +73,7 @@ public class DisguiseManager {
     }
 
     /**
-     * sets the plugin for the provider and registers the litsners
+     * Sets the plugin for the provider and registers the litsners
      */
     public static void setPlugin(@NotNull final Plugin plugin) {
         final Plugin old = PROVIDER.getPlugin();

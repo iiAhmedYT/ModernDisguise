@@ -1,18 +1,15 @@
 ![](assets/ModernDisguise.png)
 
-## Description
-
+## 💬 Description
 ModernDisguise is a free lightweight open-source high quality library to help you add a disguise system to your
 minecraft plugin
 
-## Features
-
+## 😎 Features
 - Change a player's name (Server & Client sided)
 - Change a player's skin (Server & Client sided)
 - Change a player's entity type (Client sided & other players only)
 
-## Supported versions
-
+## ✅ Supported versions
 - 1.8.8 (1_8_R3)
 - 1.9.4 (1_9_R2)
 - 1.10.x (1_10_R1)
@@ -26,12 +23,12 @@ minecraft plugin
 - 1.18.x (1_18_R1, 1_18_R2)
 - 1.19.x (1_19_R1, 1_19_R2)
 
-## WARNING
-
+## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this plugin will add a ChatColor#RESET to the end of every message
 to disable Mojang's Chat-Report feature.
 
-## Maven
+## ➕ Add to your project
+### Maven
 Add this repo to your repositories:
 
 ```xml
@@ -42,17 +39,34 @@ Add this repo to your repositories:
 ```
 
 and then add this dependancy:
-
 ```xml
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
     <scope>compile</scope>
 </dependency>
 ```
-
-## Gradle
+and you can relocate them as well, here's an example maven-shade-plugin config:
+```xml
+<configuration>
+    <filters>
+        <filter>
+            <artifact>*:*</artifact>
+            <excludes>
+                <exclude>META-INF/</exclude>
+            </excludes>
+        </filter>
+    </filters>
+    <relocations>
+        <relocation>
+            <pattern>dev.iiahmed.disguise</pattern>
+            <shadedPattern>your.own.package.disguise</shadedPattern>
+        </relocation>
+    </relocations>
+</configuration>
+```
+### Gradle
 Add this repo to your repositories block:
 
 ```groovy
@@ -68,12 +82,11 @@ and now add dependency:
 
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:1.5'
+    implementation 'dev.iiahmed:ModernDisguise:1.6'
 }
 ```
 
-## Usage
-
+## 🧑‍💻 Usage
 Here's an example usage of the API (easiest):
 
 ```java
@@ -110,7 +123,6 @@ public class ExampleClass implements Listener {
 ```
 
 Here's an advanced way of using it:
-
 ```java
 import dev.iiahmed.disguise.*;
 
@@ -142,7 +154,7 @@ public class ExampleClass implements Listener {
         // there are 7 responses other than DisguiseResponse#SUCCESS
         switch (response) {
             case SUCCESS -> player.sendMessage("Disguise is successful.");
-            case FAIL_NAME_ALREADY_ONLINE -> player.sendMessage("There's already an online player with that nickname.");
+            case FAIL_NAME_ALREADY_ONLINE -> player.sendMessage("There's already an online player with that name.");
             default -> player.sendMessage("Disguise is unsuccessful with the reason " + response.toString());
         }
     }
@@ -152,10 +164,9 @@ public class ExampleClass implements Listener {
 
 There's way more to it but I'd rather you figure it out on your own by checking the DisguiseProvider class :)
 
-## Building
+## 🏗️ Building
 ###### 1- Building Spigot Versions
 All these versions have to be built using Spigot's BuildTools
-
 - 1.8.8
 - 1.9.4
 - 1.10.2
@@ -175,5 +186,15 @@ Versions from now-on should be built with the ```--remapped``` flag
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature
 
 Congratulations! Now you can build ModernDisguise with the command ```mvn clean install```
-## License
+## 🪪 License
 This project is licensed under the [GPL-3.0 License](LICENSE.md)
+## ☀️ Credits
+Shoutout to those people for helping me test this project and helping me find every single bug
+
+- [Bermine](https://github.com/Bermiin)
+- [Timury](https://github.com/MrKotex)
+- [noobi](https://youtube.com/@noobilyat)
+
+And Thanks JetBrains for providing me an Open-Source development tools License ❤️
+
+![](assets/JetBrains.png)

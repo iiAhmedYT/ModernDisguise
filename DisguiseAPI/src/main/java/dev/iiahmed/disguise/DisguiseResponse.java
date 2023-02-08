@@ -23,6 +23,10 @@ public enum DisguiseResponse {
      */
     FAIL_ENTITY_NOT_SUPPORTED,
     /**
+     * Returns when the disguised name is NOT valid
+     */
+    FAIL_NAME_INVALID,
+    /**
      * Returns when there's an online player with the picked name
      */
     FAIL_NAME_ALREADY_ONLINE,

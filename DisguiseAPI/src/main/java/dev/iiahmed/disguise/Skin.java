@@ -1,6 +1,6 @@
 package dev.iiahmed.disguise;
 
-public class Skin {
+public final class Skin {
 
     private final String textures, signature;
 

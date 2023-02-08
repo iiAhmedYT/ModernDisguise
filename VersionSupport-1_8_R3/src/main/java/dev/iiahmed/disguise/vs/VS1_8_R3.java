@@ -20,7 +20,7 @@ public final class VS1_8_R3 extends DisguiseProvider {
         try {
             id = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("a");
             id.setAccessible(true);
-        } catch (NoSuchFieldException e) {
+        } catch (final NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
@@ -44,7 +44,6 @@ public final class VS1_8_R3 extends DisguiseProvider {
                 ep));
         player.updateInventory();
         for (final Player serverPlayer : Bukkit.getOnlinePlayers()) {
-            if (serverPlayer == player) continue;
             serverPlayer.hidePlayer(player);
             serverPlayer.showPlayer(player);
         }
@@ -62,7 +61,7 @@ public final class VS1_8_R3 extends DisguiseProvider {
             final EntityLiving entity = (EntityLiving) DisguiseUtil.createEntity(type, p.world);
             spawn = new PacketPlayOutSpawnEntityLiving(entity);
             id.set(spawn, refreshed.getEntityId());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Couldn't change entityID for " + refreshed.getName(), e);
         }
         final PacketPlayOutEntityDestroy destroy = new PacketPlayOutEntityDestroy(refreshed.getEntityId());

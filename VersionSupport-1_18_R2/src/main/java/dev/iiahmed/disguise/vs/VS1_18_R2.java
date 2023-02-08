@@ -23,7 +23,7 @@ public final class VS1_18_R2 extends DisguiseProvider {
         try {
             id = ClientboundAddEntityPacket.class.getDeclaredField("c");
             id.setAccessible(true);
-        } catch (NoSuchFieldException e) {
+        } catch (final NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
@@ -49,7 +49,6 @@ public final class VS1_18_R2 extends DisguiseProvider {
                 ep));
         player.updateInventory();
         for (final Player serverPlayer : Bukkit.getOnlinePlayers()) {
-            if (serverPlayer == player) continue;
             serverPlayer.hidePlayer(plugin, player);
             serverPlayer.showPlayer(plugin, player);
         }
@@ -67,7 +66,7 @@ public final class VS1_18_R2 extends DisguiseProvider {
             final Entity entity = (Entity) DisguiseUtil.createEntity(type, rfep.getLevel());
             spawn = new ClientboundAddEntityPacket(entity);
             id.set(spawn, refreshed.getEntityId());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
         final ClientboundRemoveEntitiesPacket destroy = new ClientboundRemoveEntitiesPacket(refreshed.getEntityId());

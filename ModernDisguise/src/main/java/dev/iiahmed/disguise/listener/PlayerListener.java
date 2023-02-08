@@ -13,7 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerListener implements Listener {
+public final class PlayerListener implements Listener {
 
     private final DisguiseProvider provider = DisguiseManager.getProvider();
     private final boolean supportsChat = DisguiseUtil.INT_VER > 18;
@@ -21,26 +21,18 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        DisguiseUtil.register(player.getName());
-        try {
-            DisguiseUtil.inject(player, new PacketListener(player));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        DisguiseUtil.inject(player, new PacketListener(player));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
-        try {
-            DisguiseUtil.uninject(player);
-        } catch (Exception ignored) {
-        }
+        DisguiseUtil.uninject(player);
         if (!provider.isDisguised(player)) {
             return;
         }
         final UndisguiseResponse response = provider.undisguise(player);
-        if (!response.name().equals("SUCCESS")) {
+        if (!"SUCCESS".equals(response.name())) {
             provider.getPlugin().getLogger().info("Undisguise failed on leave");
         }
     }

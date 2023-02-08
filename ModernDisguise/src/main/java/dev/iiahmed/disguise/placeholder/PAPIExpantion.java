@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PAPIExpantion extends PlaceholderExpansion {
+public final class PAPIExpantion extends PlaceholderExpansion {
 
     private final DisguiseProvider provider = DisguiseManager.getProvider();
 
@@ -28,14 +28,13 @@ public class PAPIExpantion extends PlaceholderExpansion {
     }
 
     @Override
-    public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
+    public @Nullable String onPlaceholderRequest(final Player player, @NotNull String params) {
         if (player == null) {
             return "";
         }
 
         String request = params.toLowerCase();
         PlayerInfo info = provider.getInfo(player);
-
         switch (request) {
             case "name":
                 return info.getNickname();

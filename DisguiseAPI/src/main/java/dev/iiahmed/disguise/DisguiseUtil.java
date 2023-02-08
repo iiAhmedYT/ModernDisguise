@@ -20,18 +20,21 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class DisguiseUtil {
 
     public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(24);
     public static final int INT_VER = Integer.parseInt(VERSION.split("_")[1]);
     public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
-    private static final HashSet<String> NAMES = new HashSet<>();
+    private static final String HANDLER_NAME = "ModernDisguise";
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITIY_FIELDS = new HashMap<>();
-    public static int found, living, registered;
+    private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
+    private static Map PLAYERS_MAP;
     public static Field PROFILE_NAME, CONNECTION, NETWORK_MANAGER, CHANNEL;
     private static Class<?> CRAFT_PLAYER, ENTITY_LIVING, ENTITY_TYPES, WORLD;
     private static Method GET_PROFILE, GET_HANDLE;
+    public static int found, living, registered;
 
     static {
         try {
@@ -61,14 +64,23 @@ public final class DisguiseUtil {
                     "net.minecraft.network." : PREFIX)
                     + "NetworkManager");
             CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ? "channel" : (INT_VER > 18 || VERSION.equals("1_18_R2") ? "m" : "k"));
-        } catch (Exception exception) {
+            final Field listFiled = Bukkit.getServer().getClass().getDeclaredField("playerList");
+            listFiled.setAccessible(true);
+            final Class<?> playerListClass = Class.forName((INT_VER >= 17 ?
+                    PREFIX + "players." : PREFIX)
+                    + "PlayerList");
+            final Object playerList = listFiled.get(Bukkit.getServer());
+            final Field playersByName = playerListClass.getDeclaredField("playersByName");
+            playersByName.setAccessible(true);
+            PLAYERS_MAP = (Map) playersByName.get(playerList);
+        } catch (final Exception exception) {
             exception.printStackTrace();
         }
 
         for (final EntityType type : EntityType.values()) {
             final StringBuilder builder = new StringBuilder("Entity");
             boolean cap = true;
-            for (char c : type.name().toCharArray()) {
+            for (final char c : type.name().toCharArray()) {
                 if (c == '_') {
                     cap = true;
                     continue;
@@ -103,11 +115,11 @@ public final class DisguiseUtil {
         if (INT_VER < 17) {
             return getClass(PREFIX + name);
         }
-        for (String path : Arrays.asList("animal", "monster", "ambient", "npc", "raid",
+        for (final String path : Arrays.asList("animal", "monster", "ambient", "npc", "raid",
                 "monster.warden", "monster.piglin", "monster.hoglin", "boss.wither",
                 "boss.enderdragon", "animal.allay", "animal.axolotl", "animal.camel",
                 "animal.frog", "animal.goat", "animal.horse")) {
-            Class<?> clazz = getClass("net.minecraft.world.entity." + path + "." + name);
+            final Class<?> clazz = getClass("net.minecraft.world.entity." + path + "." + name);
             if (clazz != null) {
                 return clazz;
             }
@@ -121,7 +133,7 @@ public final class DisguiseUtil {
      * @param entityClass the class of the NMS entity
      * @return null if the NMS entity was NOT found
      */
-    private static Constructor<?> findConstructor(final Class<?> entityClass, final EntityType type) {
+    private static Constructor<?> findConstructor(@NotNull final Class<?> entityClass, @NotNull final EntityType type) {
         Constructor<?> constructor = getConstructor(entityClass, WORLD);
         if (constructor != null) {
             return constructor;
@@ -137,7 +149,7 @@ public final class DisguiseUtil {
         if (constructor != null) {
             try {
                 ENTITIY_FIELDS.put(type, field.get(null));
-            } catch (Exception ignored) {
+            } catch (final Exception ignored) {
             }
         }
         return constructor;
@@ -151,7 +163,7 @@ public final class DisguiseUtil {
     public static Class<?> getClass(@NotNull final String path) {
         try {
             return Class.forName(path);
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
             return null;
         }
     }
@@ -164,20 +176,20 @@ public final class DisguiseUtil {
     private static Constructor<?> getConstructor(@NotNull final Class<?> clazz, final Class<?>... classes) {
         try {
             return clazz.getDeclaredConstructor(classes);
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
             return null;
         }
     }
 
     /**
-     * A nullable {@link Class#getField(String)} (String)} instead of throwing exceptions
+     * A nullable {@link Class#getDeclaredField(String)} (String)} instead of throwing exceptions
      *
-     * @return null if the {@link Class} was NOT found
+     * @return null if the {@link Field} was NOT found
      */
     public static Field getField(@NotNull final Class<?> clazz, @NotNull final String field) {
         try {
             return clazz.getDeclaredField(field);
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
             return null;
         }
     }
@@ -196,9 +208,9 @@ public final class DisguiseUtil {
         final Constructor<?> constructor = ENTITIES.get(type);
         final Object entity;
         if (constructor.getParameterCount() == 1) {
-            entity = constructor.newInstance(WORLD.cast(world));
+            entity = constructor.newInstance(world);
         } else {
-            entity = constructor.newInstance(ENTITY_TYPES.cast(ENTITIY_FIELDS.get(type)), WORLD.cast(world));
+            entity = constructor.newInstance(ENTITIY_FIELDS.get(type), world);
         }
         return entity;
     }
@@ -216,7 +228,7 @@ public final class DisguiseUtil {
     public static GameProfile getProfile(@NotNull final Player player) {
         try {
             return (GameProfile) GET_PROFILE.invoke(CRAFT_PLAYER.cast(player));
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
             return null;
         }
     }
@@ -226,8 +238,8 @@ public final class DisguiseUtil {
      */
     @SuppressWarnings("unused")
     public static Skin getSkin(@NotNull final Player player) {
-        GameProfile profile = getProfile(player);
-        if(profile == null) {
+        final GameProfile profile = getProfile(player);
+        if (profile == null) {
             return new Skin(null, null);
         }
         String textures = null, signature = null;
@@ -260,8 +272,8 @@ public final class DisguiseUtil {
             }
 
             return (JSONObject) new JSONParser().parse(builder.toString());
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException("Failed to Scan/Parse the URL", e);
+        } catch (final IOException | ParseException exception) {
+            throw new RuntimeException("Failed to Scan/Parse the URL", exception);
         }
     }
 
@@ -269,9 +281,15 @@ public final class DisguiseUtil {
      * Registeres a name as an online player to disallow {@link Player}s to register as
      *
      * @param name the registered name
+     * @param player the registered player
      */
-    public static void register(@NotNull final String name) {
-        NAMES.add(name.toLowerCase(Locale.ENGLISH));
+    public static void register(@NotNull final String name, @NotNull final Player player) {
+        try {
+            final Object entityPlayer = GET_HANDLE.invoke(CRAFT_PLAYER.cast(player));
+            PLAYERS_MAP.put(IS_13_R2_PLUS ? name.toLowerCase(Locale.ENGLISH) : name, entityPlayer);
+        } catch (final Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     /**
@@ -280,7 +298,7 @@ public final class DisguiseUtil {
      * @param name the unregistered name
      */
     public static void unregister(@NotNull final String name) {
-        NAMES.remove(name.toLowerCase(Locale.ENGLISH));
+        PLAYERS_MAP.remove(IS_13_R2_PLUS? name.toLowerCase(Locale.ENGLISH) : name);
     }
 
     /**
@@ -290,7 +308,20 @@ public final class DisguiseUtil {
      * @param name the checked name
      */
     public static boolean isPlayerOnline(@NotNull final String name) {
-        return NAMES.contains(name.toLowerCase(Locale.ENGLISH));
+        final String lowercase = name.toLowerCase(Locale.ENGLISH);
+        if (IS_13_R2_PLUS) {
+            return PLAYERS_MAP.containsKey(lowercase);
+        }
+        for (final Object obj : PLAYERS_MAP.values()) {
+            if (obj == null) {
+                continue;
+            }
+            final String playerName = obj.toString().toLowerCase(Locale.ENGLISH);
+            if (lowercase.equals(playerName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -299,14 +330,14 @@ public final class DisguiseUtil {
      * @param player  the player getting injected into
      * @param handler the {@link ChannelHandler} injected into the channel
      */
-    public static void inject(@NotNull final Player player, @NotNull final ChannelHandler handler) throws Exception {
-        Object entityPlayer = GET_HANDLE.invoke(CRAFT_PLAYER.cast(player));
-        Object connection = CONNECTION.get(entityPlayer);
-        Object networkManager = NETWORK_MANAGER.get(connection);
-        Channel ch = (Channel) CHANNEL.get(networkManager);
+    public static void inject(@NotNull final Player player, @NotNull final ChannelHandler handler) {
+        final Channel ch = getChannel(player);
+        if (ch == null) {
+            return;
+        }
         ch.eventLoop().submit(() -> {
-            if (ch.pipeline().get("ModernDisguise") == null) {
-                ch.pipeline().addBefore("packet_handler", "ModernDisguise", handler);
+            if (ch.pipeline().get(HANDLER_NAME) == null) {
+                ch.pipeline().addBefore("packet_handler", HANDLER_NAME, handler);
             }
         });
     }
@@ -316,16 +347,31 @@ public final class DisguiseUtil {
      *
      * @param player the player getting uninjected out of
      */
-    public static void uninject(@NotNull final Player player) throws Exception {
-        Object entityPlayer = GET_HANDLE.invoke(CRAFT_PLAYER.cast(player));
-        Object connection = CONNECTION.get(entityPlayer);
-        Object networkManager = NETWORK_MANAGER.get(connection);
-        Channel ch = (Channel) CHANNEL.get(networkManager);
+    public static void uninject(@NotNull final Player player) {
+        final Channel ch = getChannel(player);
+        if (ch == null) {
+            return;
+        }
         ch.eventLoop().submit(() -> {
-            if (ch.pipeline().get("ModernDisguise") != null) {
-                ch.pipeline().remove("ModernDisguise");
+            if (ch.pipeline().get(HANDLER_NAME) != null) {
+                ch.pipeline().remove(HANDLER_NAME);
             }
         });
+    }
+
+    /**
+     * @return the {@link Player}'s netty channel
+     */
+    private static Channel getChannel(@NotNull final Player player) {
+        try {
+            final Object entityPlayer = GET_HANDLE.invoke(CRAFT_PLAYER.cast(player));
+            final Object connection = CONNECTION.get(entityPlayer);
+            final Object networkManager = NETWORK_MANAGER.get(connection);
+            return (Channel) CHANNEL.get(networkManager);
+        } catch (final Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
     }
 
 }

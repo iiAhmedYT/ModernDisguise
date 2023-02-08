@@ -44,7 +44,7 @@ public final class Disguise {
      * @return a {@link Boolean} that indicates whether the disguise will change the player's name
      */
     public boolean hasName() {
-        return name != null && !fakename;
+        return name != null && !name.isEmpty() && !fakename;
     }
 
     /**
@@ -131,23 +131,13 @@ public final class Disguise {
             String texture = null, signature = null;
             switch (skinAPI) {
                 case MOJANG_UUID:
-                    final JSONArray mojangArray = (JSONArray) object.get("properties");
-                    for (Object o : mojangArray) {
-                        final JSONObject jsonObject = (JSONObject) o;
-                        if (jsonObject == null) continue;
-
-                        if (jsonObject.get("value") != null) {
-                            texture = (String) jsonObject.get("value");
-                        }
-
-                        if (jsonObject.get("signature") != null) {
-                            signature = (String) jsonObject.get("signature");
-                        }
-                    }
-                    break;
                 case MINETOOLS_UUID:
-                    final JSONObject raw = (JSONObject) object.get("raw");
-                    final JSONArray array = (JSONArray) raw.get("properties");
+                    final JSONArray array;
+                    if (skinAPI.name().equals("MOJANG_UUID")) {
+                        array = (JSONArray) object.get("properties");
+                    } else {
+                        array = (JSONArray) ((JSONObject) object.get("raw")).get("properties");
+                    }
                     for (Object o : array) {
                         final JSONObject jsonObject = (JSONObject) o;
                         if (jsonObject == null) continue;

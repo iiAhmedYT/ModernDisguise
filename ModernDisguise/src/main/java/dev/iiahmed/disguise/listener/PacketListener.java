@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
-public class PacketListener extends ChannelDuplexHandler {
+public final class PacketListener extends ChannelDuplexHandler {
 
     private static final Field PLAYER_ID;
 
@@ -22,7 +22,7 @@ public class PacketListener extends ChannelDuplexHandler {
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
                     + "PacketPlayOutNamedEntitySpawn");
             PLAYER_ID = namedEntitySpawn.getDeclaredField("b");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
         PLAYER_ID.setAccessible(true);
@@ -45,7 +45,7 @@ public class PacketListener extends ChannelDuplexHandler {
         UUID playerID;
         try {
             playerID = (UUID) PLAYER_ID.get(packet);
-        } catch (Exception exception) {
+        } catch (final Exception exception) {
             exception.printStackTrace();
             playerID = null;
         }
