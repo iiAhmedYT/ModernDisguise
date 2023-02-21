@@ -1,8 +1,8 @@
 package dev.iiahmed.disguise;
 
 import dev.iiahmed.disguise.listener.PlayerListener;
-import dev.iiahmed.disguise.vs.*;
 import dev.iiahmed.disguise.placeholder.PAPIExpantion;
+import dev.iiahmed.disguise.vs.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

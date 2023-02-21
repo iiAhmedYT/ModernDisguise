@@ -5,9 +5,10 @@ ModernDisguise is a free lightweight open-source high quality library to help yo
 minecraft plugin
 
 ## 😎 Features
-- Change a player's name (Server & Client sided)
-- Change a player's skin (Server & Client sided)
-- Change a player's entity type (Client sided & other players only)
+You can change the player's:
+- Name (Server side)
+- Skin (Server side)
+- EntityType (up to 60 entities) (Client side & other players only can see it)
 
 ## ✅ Supported versions
 - 1.8.8 (1_8_R3)
@@ -43,7 +44,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -68,7 +69,6 @@ and you can relocate them as well, here's an example maven-shade-plugin config:
 ```
 ### Gradle
 Add this repo to your repositories block:
-
 ```groovy
 repositories {
     maven {
@@ -79,10 +79,9 @@ repositories {
 ```
 
 and now add dependency:
-
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:1.6'
+    implementation 'dev.iiahmed:ModernDisguise:1.7'
 }
 ```
 
@@ -151,7 +150,7 @@ public class ExampleClass implements Listener {
                 .setEntityType(EntityType.ZOMBIE)
                 .build();
         DisguiseResponse response = provider.disguise(player, disguise);
-        // there are 7 responses other than DisguiseResponse#SUCCESS
+        // there are 8 responses other than DisguiseResponse#SUCCESS
         switch (response) {
             case SUCCESS -> player.sendMessage("Disguise is successful.");
             case FAIL_NAME_ALREADY_ONLINE -> player.sendMessage("There's already an online player with that name.");
@@ -193,7 +192,7 @@ Shoutout to those people for helping me test this project and helping me find ev
 
 - [Bermine](https://github.com/Bermiin)
 - [Timury](https://github.com/MrKotex)
-- [noobi](https://youtube.com/@noobilyat)
+- [noobi](https://github.com/c0dingnoobi)
 
 And Thanks JetBrains for providing me an Open-Source development tools License ❤️
 

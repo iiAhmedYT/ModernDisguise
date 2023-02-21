@@ -6,11 +6,6 @@ package dev.iiahmed.disguise;
 public enum UndisguiseResponse {
 
     /**
-     * Returns when the MC version of the server is NOT supported
-     * which most likely is NOT going to happen
-     */
-    FAIL_VERSION_NOT_SUPPORTED,
-    /**
      * Returns when undisguising an already undisguied player
      */
     FAIL_ALREADY_UNDISGUISED,

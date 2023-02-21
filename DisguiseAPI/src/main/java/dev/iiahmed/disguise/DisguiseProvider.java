@@ -26,7 +26,11 @@ public abstract class DisguiseProvider {
      * @return the response of the disguise action (like reasons of failure or so)
      * @see DisguiseProvider#undisguise(Player)
      */
-    public @NotNull DisguiseResponse disguise(@NotNull final Player player, @NotNull final Disguise disguise) {
+    public final @NotNull DisguiseResponse disguise(@NotNull final Player player, @NotNull final Disguise disguise) {
+        if (!isVersionSupported()) {
+            return DisguiseResponse.FAIL_VERSION_NOT_SUPPORTED;
+        }
+
         if (plugin == null || !plugin.isEnabled()) {
             return DisguiseResponse.FAIL_PLUGIN_NOT_INITIALIZED;
         }
@@ -114,7 +118,7 @@ public abstract class DisguiseProvider {
      * @return the response of the undisguise action (like reasons of failure or so)
      * @see DisguiseProvider#disguise(Player, Disguise)
      */
-    public @NotNull UndisguiseResponse undisguise(@NotNull final Player player) {
+    public final @NotNull UndisguiseResponse undisguise(@NotNull final Player player) {
         if (!isDisguised(player)) {
             return UndisguiseResponse.FAIL_ALREADY_UNDISGUISED;
         }
@@ -126,7 +130,7 @@ public abstract class DisguiseProvider {
                 return UndisguiseResponse.FAIL_PROFILE_NOT_FOUND;
             }
             final PlayerInfo info = playerInfo.remove(player.getUniqueId());
-            if(info.hasName()) {
+            if (info.hasName()) {
                 DisguiseUtil.unregister(info.getNickname());
             }
             return UndisguiseResponse.SUCCESS;
@@ -158,7 +162,7 @@ public abstract class DisguiseProvider {
      * @param player the {@link Player} being checked
      * @return true if the {@link Player} is disguised, false if the {@link Player} is not.
      */
-    public boolean isDisguised(@NotNull final Player player) {
+    public final boolean isDisguised(@NotNull final Player player) {
         return playerInfo.containsKey(player.getUniqueId());
     }
 
@@ -166,7 +170,7 @@ public abstract class DisguiseProvider {
      * @param player the {@link Player} being checked
      * @return true if the {@link Player} is disguised as an entity, false if the {@link Player} is not.
      */
-    public boolean isDisguisedAsEntity(@NotNull final Player player) {
+    public final boolean isDisguisedAsEntity(@NotNull final Player player) {
         return playerInfo.containsKey(player.getUniqueId()) && getInfo(player).hasEntity();
     }
 
@@ -174,7 +178,7 @@ public abstract class DisguiseProvider {
      * @param player the {@link Player} you're grabbing info about
      * @return the known info about a {@link Player}
      */
-    public @NotNull PlayerInfo getInfo(@NotNull final Player player) {
+    public final @NotNull PlayerInfo getInfo(@NotNull final Player player) {
         if (playerInfo.containsKey(player.getUniqueId())) {
             return playerInfo.get(player.getUniqueId());
         }
@@ -195,9 +199,16 @@ public abstract class DisguiseProvider {
     abstract public void refreshAsEntity(@NotNull final Player refreshed, final boolean remove, final Player... targets);
 
     /**
+     * @return false if version is NOT supported
+     */
+    public boolean isVersionSupported() {
+        return true;
+    }
+
+    /**
      * @return the plugin used plugin to register listeners & refresh {@link Player}s
      */
-    public Plugin getPlugin() {
+    public final Plugin getPlugin() {
         return this.plugin;
     }
 
