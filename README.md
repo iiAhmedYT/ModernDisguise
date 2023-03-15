@@ -4,6 +4,8 @@
 ModernDisguise is a free lightweight open-source high quality library to help you add a disguise system to your
 minecraft plugin
 
+Here's the [SpigotMC Forum](https://www.spigotmc.org/threads/moderndisguise-a-lightweight-free-open-source-disguise-library.582167/)
+
 ## 😎 Features
 You can change the player's:
 - Name (Server side)
