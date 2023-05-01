@@ -202,7 +202,7 @@ public abstract class DisguiseProvider {
      * @return false if version is NOT supported
      */
     public boolean isVersionSupported() {
-        return true;
+        return DisguiseUtil.IS_SUPPORTED;
     }
 
     /**

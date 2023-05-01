@@ -28,6 +28,7 @@ public final class DisguiseUtil {
     public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
     public static final Field PROFILE_NAME;
     private static final String HANDLER_NAME = "ModernDisguise";
+    public static final boolean IS_SUPPORTED;
     private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITIY_FIELDS = new HashMap<>();
@@ -58,6 +59,7 @@ public final class DisguiseUtil {
             throw new RuntimeException("Failed to load ModernDisguise's primary features", exception);
         }
 
+        IS_SUPPORTED = true;
         final Class<?> entityLiving;
         try {
             entityLiving = Class.forName((obf ?
