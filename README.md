@@ -24,7 +24,7 @@ You can change the player's:
 - 1.16.x (1_16_R1, 1_16_R2, 1_16_R3)
 - 1.17.x (1_17_R1)
 - 1.18.x (1_18_R1, 1_18_R2)
-- 1.19.x (1_19_R1, 1_19_R2)
+- 1.19.x (1_19_R1, 1_19_R2, 1_19_R3)
 
 ## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this plugin will add a ChatColor#RESET to the end of every message
@@ -46,7 +46,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>1.7</version>
+    <version>1.8</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -83,7 +83,7 @@ repositories {
 and now add dependency:
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:1.7'
+    implementation 'dev.iiahmed:ModernDisguise:1.8'
 }
 ```
 
@@ -181,7 +181,7 @@ All these versions have to be built using Spigot's BuildTools
 Versions from now-on should be built with the ```--remapped``` flag
 - 1.17.1
 - 1.18.1, 1.18.2
-- 1.19.2, 1.19.3
+- 1.19.2, 1.19.3, 1.19.4
 
 ###### 2- Cloning
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature

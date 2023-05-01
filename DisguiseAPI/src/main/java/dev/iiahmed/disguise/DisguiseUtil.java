@@ -26,50 +26,28 @@ public final class DisguiseUtil {
     public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(24);
     public static final int INT_VER = Integer.parseInt(VERSION.split("_")[1]);
     public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
+    public static final Field PROFILE_NAME;
     private static final String HANDLER_NAME = "ModernDisguise";
+    private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITIY_FIELDS = new HashMap<>();
-    private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
-    private static Map PLAYERS_MAP;
-    public static Field PROFILE_NAME, CONNECTION, NETWORK_MANAGER, CHANNEL;
-    private static Class<?> ENTITY_LIVING, ENTITY_TYPES, WORLD;
-    private static Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
+    private static final Field CONNECTION, NETWORK_MANAGER, CHANNEL;
+    private static final Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
+    private static final Class<?> ENTITY_TYPES, WORLD;
+    private static final Map PLAYERS_MAP;
     public static int found, living, registered;
 
     static {
+        final boolean obf = INT_VER >= 17;
         try {
             final Class<?> craftPlayer = Class.forName("org.bukkit.craftbukkit.v" + VERSION + ".entity.CraftPlayer");
             GET_PROFILE = craftPlayer.getMethod("getProfile");
             GET_HANDLE = craftPlayer.getMethod("getHandle");
             PROFILE_NAME = GameProfile.class.getDeclaredField("name");
             PROFILE_NAME.setAccessible(true);
-            ENTITY_LIVING = Class.forName((INT_VER >= 17 ?
-                    "net.minecraft.world.entity." : PREFIX)
-                    + "EntityLiving");
-            WORLD = Class.forName((INT_VER >= 17 ?
-                    "net.minecraft.world.level." : PREFIX)
-                    + "World");
-            ENTITY_TYPES = Class.forName((INT_VER >= 17 ?
-                    "net.minecraft.world.entity." : PREFIX)
-                    + "EntityTypes");
-            GET_ENTITY = ENTITY_TYPES.getMethod("a", String.class);
-            final Class<?> entityPlayer = Class.forName((INT_VER >= 17 ?
-                    PREFIX + "level." : PREFIX)
-                    + "EntityPlayer");
-            CONNECTION = entityPlayer.getDeclaredField(INT_VER >= 17 ? "b" : "playerConnection");
-            final Class<?> playerConnection = Class.forName((INT_VER >= 17 ?
-                    PREFIX + "network." : PREFIX)
-                    + "PlayerConnection");
-            NETWORK_MANAGER = playerConnection.getDeclaredField(INT_VER < 17 ?
-                    "networkManager" : (INT_VER > 18 ? "b" : "a"));
-            final Class<?> networkManager = Class.forName((INT_VER >= 17 ?
-                    "net.minecraft.network." : PREFIX)
-                    + "NetworkManager");
-            CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ?
-                    "channel" : (INT_VER > 18 || VERSION.equals("1_18_R2") ? "m" : "k"));
             final Field listFiled = Bukkit.getServer().getClass().getDeclaredField("playerList");
             listFiled.setAccessible(true);
-            final Class<?> playerListClass = Class.forName((INT_VER >= 17 ?
+            final Class<?> playerListClass = Class.forName((obf ?
                     PREFIX + "players." : PREFIX)
                     + "PlayerList");
             final Object playerList = listFiled.get(Bukkit.getServer());
@@ -77,7 +55,38 @@ public final class DisguiseUtil {
             playersByName.setAccessible(true);
             PLAYERS_MAP = (Map) playersByName.get(playerList);
         } catch (final Exception exception) {
-            exception.printStackTrace();
+            throw new RuntimeException("Failed to load ModernDisguise's primary features", exception);
+        }
+
+        final Class<?> entityLiving;
+        try {
+            entityLiving = Class.forName((obf ?
+                    "net.minecraft.world.entity." : PREFIX)
+                    + "EntityLiving");
+            WORLD = Class.forName((obf ?
+                    "net.minecraft.world.level." : PREFIX)
+                    + "World");
+            ENTITY_TYPES = Class.forName((obf ?
+                    "net.minecraft.world.entity." : PREFIX)
+                    + "EntityTypes");
+            GET_ENTITY = ENTITY_TYPES.getMethod("a", String.class);
+
+            final Class<?> entityPlayer = Class.forName((obf ?
+                    PREFIX + "level." : PREFIX)
+                    + "EntityPlayer");
+            CONNECTION = entityPlayer.getDeclaredField(obf ? "b" : "playerConnection");
+            final Class<?> playerConnection = Class.forName((obf ?
+                    PREFIX + "network." : PREFIX)
+                    + "PlayerConnection");
+            NETWORK_MANAGER = playerConnection.getDeclaredField(INT_VER < 17 ?
+                    "networkManager" : (INT_VER > 18 ? "b" : "a"));
+            final Class<?> networkManager = Class.forName((obf ?
+                    "net.minecraft.network." : PREFIX)
+                    + "NetworkManager");
+            CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ?
+                    "channel" : (INT_VER > 18 || VERSION.equals("1_18_R2") ? "m" : "k"));
+        } catch (final Exception exception) {
+            throw new RuntimeException("Failed to load ModernDisguise's secondary features (disguising as entities)", exception);
         }
 
         final HashSet<String> unprefixed = setOf("ALLAY", "AXOLOTL", "CAMEL", "FROG", "GOAT", "WARDEN");
@@ -98,7 +107,7 @@ public final class DisguiseUtil {
                 continue;
             }
             found++;
-            if (!ENTITY_LIVING.isAssignableFrom(clazz)) {
+            if (!entityLiving.isAssignableFrom(clazz)) {
                 continue;
             }
             living++;

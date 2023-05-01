@@ -7,7 +7,7 @@
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.7</version>
+    <version>1.8</version>
 
     <distributionManagement>
         <repository>
@@ -20,24 +20,25 @@
         <module>ModernDisguise</module>
         <module>DisguiseAPI</module>
 
-        <module>VersionSupport-Fallback</module>
-        <module>VersionSupport-1_8_R3</module>
-        <module>VersionSupport-1_9_R2</module>
-        <module>VersionSupport-1_10_R1</module>
-        <module>VersionSupport-1_11_R1</module>
-        <module>VersionSupport-1_12_R1</module>
-        <module>VersionSupport-1_13_R1</module>
-        <module>VersionSupport-1_13_R2</module>
-        <module>VersionSupport-1_14_R1</module>
-        <module>VersionSupport-1_15_R1</module>
-        <module>VersionSupport-1_16_R1</module>
-        <module>VersionSupport-1_16_R2</module>
-        <module>VersionSupport-1_16_R3</module>
-        <module>VersionSupport-1_17_R1</module>
-        <module>VersionSupport-1_18_R1</module>
-        <module>VersionSupport-1_18_R2</module>
-        <module>VersionSupport-1_19_R1</module>
-        <module>VersionSupport-1_19_R2</module>
+        <module>VS-Fallback</module>
+        <module>VS-1_8_R3</module>
+        <module>VS-1_9_R2</module>
+        <module>VS-1_10_R1</module>
+        <module>VS-1_11_R1</module>
+        <module>VS-1_12_R1</module>
+        <module>VS-1_13_R1</module>
+        <module>VS-1_13_R2</module>
+        <module>VS-1_14_R1</module>
+        <module>VS-1_15_R1</module>
+        <module>VS-1_16_R1</module>
+        <module>VS-1_16_R2</module>
+        <module>VS-1_16_R3</module>
+        <module>VS-1_17_R1</module>
+        <module>VS-1_18_R1</module>
+        <module>VS-1_18_R2</module>
+        <module>VS-1_19_R1</module>
+        <module>VS-1_19_R2</module>
+        <module>VS-1_19_R3</module>
     </modules>
 
     <build>
