@@ -31,7 +31,7 @@ public final class DisguiseUtil {
     public static final boolean IS_SUPPORTED;
     private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
-    private static final HashMap<EntityType, Object> ENTITIY_FIELDS = new HashMap<>();
+    private static final HashMap<EntityType, Object> ENTITY_FIELDS = new HashMap<>();
     private static final Field CONNECTION, NETWORK_MANAGER, CHANNEL;
     private static final Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
     private static final Class<?> ENTITY_TYPES, WORLD;
@@ -115,7 +115,7 @@ public final class DisguiseUtil {
             living++;
             final Constructor<?> constructor = findConstructor(clazz, type);
             if (constructor == null) {
-                ENTITIY_FIELDS.remove(type);
+                ENTITY_FIELDS.remove(type);
                 continue;
             }
             registered++;
@@ -161,11 +161,11 @@ public final class DisguiseUtil {
                 return null;
             }
             if (INT_VER == 13) {
-                ENTITIY_FIELDS.put(type, obj);
+                ENTITY_FIELDS.put(type, obj);
             } else {
                 final Optional<?> o = (Optional<?>) obj;
                 if (o.isPresent()) {
-                    ENTITIY_FIELDS.put(type, o.get());
+                    ENTITY_FIELDS.put(type, o.get());
                 } else {
                     return null;
                 }
@@ -218,7 +218,7 @@ public final class DisguiseUtil {
         if (constructor.getParameterCount() == 1) {
             entity = constructor.newInstance(world);
         } else {
-            entity = constructor.newInstance(ENTITIY_FIELDS.get(type), world);
+            entity = constructor.newInstance(ENTITY_FIELDS.get(type), world);
         }
         return entity;
     }
