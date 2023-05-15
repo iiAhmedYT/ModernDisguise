@@ -30,6 +30,7 @@ public final class DisguiseUtil {
     private static final String HANDLER_NAME = "ModernDisguise";
     public static final boolean IS_SUPPORTED;
     private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
+    private static final boolean IS_8_R3 = "1_8_R3".equals(VERSION);
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITY_FIELDS = new HashMap<>();
     private static final Field CONNECTION, NETWORK_MANAGER, CHANNEL;
@@ -272,6 +273,10 @@ public final class DisguiseUtil {
      * @param name the checked name
      */
     public static boolean isPlayerOnline(@NotNull final String name) {
+        if (IS_8_R3) {
+            return org.bukkit.Bukkit.getPlayer(name) != null;
+        }
+
         final String lowercase = name.toLowerCase(Locale.ENGLISH);
         if (IS_13_R2_PLUS) {
             return PLAYERS_MAP.containsKey(lowercase);
