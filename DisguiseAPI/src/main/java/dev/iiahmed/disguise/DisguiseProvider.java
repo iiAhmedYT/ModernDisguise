@@ -52,7 +52,7 @@ public abstract class DisguiseProvider {
         if (disguise.hasName() && !disguise.getName().equals(player.getName())) {
             String name = disguise.getName();
             if (name.length() > 16) {
-                name = name.substring(0, 16);
+                return DisguiseResponse.FAIL_NAME_TOO_LONG;
             }
 
             if (!namePattern.matcher(name).matches()) {
