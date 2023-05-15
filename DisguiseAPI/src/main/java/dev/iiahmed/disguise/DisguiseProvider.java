@@ -14,9 +14,33 @@ import java.util.regex.Pattern;
 
 public abstract class DisguiseProvider {
 
-    private final Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
+    private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
+    private int nameLength = 16;
+
     private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
     protected Plugin plugin;
+
+    /**
+     * Set the username {@link Pattern} that is 
+     * used to validate nicknames.
+     * 
+     * @param pattern the name pattern
+     */
+    public DisguiseProvider setNamePattern(@NotNull final Pattern pattern) {
+        this.namePattern = pattern;
+        return this;
+    }
+
+    /**
+     * Set the maximum username length
+     * allowed for nicknames.
+     * 
+     * @param length the max length
+     */
+    public DisguiseProvider setNameLength(final int length) {
+        this.nameLength = length;
+        return this;
+    }
 
     /**
      * Disguises a {@link Player} with a valid {@link Disguise}
@@ -51,7 +75,7 @@ public abstract class DisguiseProvider {
 
         if (disguise.hasName() && !disguise.getName().equals(player.getName())) {
             String name = disguise.getName();
-            if (name.length() > 16) {
+            if (name.length() > length) {
                 name = name.substring(0, 16);
             }
 
