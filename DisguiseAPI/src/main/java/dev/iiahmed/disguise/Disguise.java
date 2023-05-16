@@ -106,7 +106,7 @@ public final class Disguise {
          * This method sets the new name of the nicked player
          *
          * @param name the replacement of the actual player name
-         * @param fake whether should the plugin replace the name or only replace it with a specific placeholder
+         * @param fake whether the plugin should keep the player's name 
          * @return the disguise builder
          */
         public Builder setName(final String name, final boolean fake) {
