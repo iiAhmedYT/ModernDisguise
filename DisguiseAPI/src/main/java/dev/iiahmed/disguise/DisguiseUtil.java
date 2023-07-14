@@ -266,29 +266,6 @@ public final class DisguiseUtil {
     }
 
     /**
-     * Checks if any {@link Player} is online with X name since the {@link Bukkit#getPlayer(String)}
-     * is deprecated in most new versions and doesn't support original names
-     *
-     * @param name the checked name
-     */
-    public static boolean isPlayerOnline(@NotNull final String name) {
-        final String lowercase = name.toLowerCase(Locale.ENGLISH);
-        if (IS_13_R2_PLUS) {
-            return PLAYERS_MAP.containsKey(lowercase);
-        }
-        for (final Object obj : PLAYERS_MAP.keySet()) {
-            if (obj == null) {
-                continue;
-            }
-            final String playerName = obj.toString().toLowerCase(Locale.ENGLISH);
-            if (lowercase.equals(playerName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Injects into the {@link Player}'s netty {@link Channel}
      *
      * @param player  the player getting injected into

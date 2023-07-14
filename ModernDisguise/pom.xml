@@ -217,6 +217,13 @@
 
         <dependency>
             <groupId>dev.iiahmed</groupId>
+            <artifactId>VS-1_20_R1</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.iiahmed</groupId>
             <artifactId>VS-Fallback</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>

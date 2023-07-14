@@ -2,6 +2,7 @@ package dev.iiahmed.disguise;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -26,6 +27,7 @@ public abstract class DisguiseProvider {
      * 
      * @param pattern the name pattern
      */
+    @SuppressWarnings("unused")
     public DisguiseProvider setNamePattern(@NotNull final Pattern pattern) {
         this.namePattern = pattern;
         return this;
@@ -37,6 +39,7 @@ public abstract class DisguiseProvider {
      * 
      * @param length the max length
      */
+    @SuppressWarnings("unused")
     public DisguiseProvider setNameLength(final int length) {
         this.nameLength = length;
         return this;
@@ -75,7 +78,7 @@ public abstract class DisguiseProvider {
 
         if (disguise.hasName() && !disguise.getName().equals(player.getName())) {
             String name = disguise.getName();
-            if (name.length() > length) {
+            if (name.length() > nameLength) {
                 return DisguiseResponse.FAIL_NAME_TOO_LONG;
             }
 
@@ -83,7 +86,8 @@ public abstract class DisguiseProvider {
                 return DisguiseResponse.FAIL_NAME_INVALID;
             }
 
-            if (DisguiseUtil.isPlayerOnline(name)) {
+            final Player searched = Bukkit.getPlayer(name);
+            if (searched != null && searched.isOnline()) {
                 return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
             }
 
