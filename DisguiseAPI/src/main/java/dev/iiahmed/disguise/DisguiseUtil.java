@@ -76,12 +76,13 @@ public final class DisguiseUtil {
             final Class<?> entityPlayer = Class.forName((obf ?
                     PREFIX + "level." : PREFIX)
                     + "EntityPlayer");
-            CONNECTION = entityPlayer.getDeclaredField(obf ? "b" : "playerConnection");
+            CONNECTION = entityPlayer.getDeclaredField(obf ? (INT_VER < 20 ? "b" : "c") : "playerConnection");
+            CONNECTION.setAccessible(true);
             final Class<?> playerConnection = Class.forName((obf ?
-                    PREFIX + "network." : PREFIX)
-                    + "PlayerConnection");
+                    PREFIX + "network." : PREFIX) + "PlayerConnection");
             NETWORK_MANAGER = playerConnection.getDeclaredField(INT_VER < 17 ?
-                    "networkManager" : (INT_VER > 18 ? "b" : "a"));
+                    "networkManager" : (INT_VER > 18 ? (INT_VER < 20 ? "b" : "h") : "a"));
+            NETWORK_MANAGER.setAccessible(true);
             final Class<?> networkManager = Class.forName((obf ?
                     "net.minecraft.network." : PREFIX)
                     + "NetworkManager");
@@ -242,7 +243,7 @@ public final class DisguiseUtil {
     }
 
     /**
-     * Registeres a name as an online player to disallow {@link Player}s to register as
+     * Registers a name as an online player to disallow {@link Player}s to register as
      *
      * @param name the registered name
      * @param player the registered player
@@ -257,7 +258,7 @@ public final class DisguiseUtil {
     }
 
     /**
-     * Unegisteres a name as an online player to allow {@link Player}s to register as
+     * Unregisters a name as an online player to allow {@link Player}s to register as
      *
      * @param name the unregistered name
      */
@@ -284,9 +285,9 @@ public final class DisguiseUtil {
     }
 
     /**
-     * Uninjects out of the {@link Player}'s netty channel
+     * Un-injects out of the {@link Player}'s netty channel
      *
-     * @param player the player getting uninjected out of
+     * @param player the player getting un-injected out of
      */
     public static void uninject(@NotNull final Player player) {
         final Channel ch = getChannel(player);
