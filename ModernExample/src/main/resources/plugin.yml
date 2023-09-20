@@ -1,0 +1,9 @@
+name: ModernExample
+version: '${project.version}'
+main: dev.iiahmed.mexmpl.ModernExample
+authors: [ iiAhmedYT ]
+description: An example implementation to test the functionality of the plugin
+api-version: "1.13"
+commands:
+  disguise:
+    description: A test command for disguising

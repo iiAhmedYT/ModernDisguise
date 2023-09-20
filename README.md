@@ -28,8 +28,8 @@ You can change the player's:
 - 1.20.x (1_20_R1)
 
 ## ⚠️ WARNING
-On versions that support Mojang Chat-Reports this plugin will add a ChatColor#RESET to the end of every message
-to disable Mojang's Chat-Report feature.
+On versions that support Mojang Chat-Reports this plugin will have to disable them.
+
 
 ## ➕ Add to your project
 ### Maven

@@ -19,6 +19,7 @@
     <modules>
         <module>ModernDisguise</module>
         <module>DisguiseAPI</module>
+        <module>ModernExample</module>
 
         <module>VS-Fallback</module>
         <module>VS-1_8_R3</module>

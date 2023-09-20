@@ -4,7 +4,6 @@ import dev.iiahmed.disguise.DisguiseManager;
 import dev.iiahmed.disguise.DisguiseProvider;
 import dev.iiahmed.disguise.DisguiseUtil;
 import dev.iiahmed.disguise.UndisguiseResponse;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -37,10 +36,18 @@ public final class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(final AsyncPlayerChatEvent event) {
-        if (supportsChat) {
-            event.setMessage(event.getMessage() + ChatColor.RESET);
+        if (!supportsChat) {
+            return;
+        }
+        event.setCancelled(true);
+        Player sender = event.getPlayer();
+        for (Player receiver : event.getRecipients()) {
+            receiver.sendMessage(event.getFormat()
+                    .replace("%1$s", sender.getName())
+                    .replace("%2$s", event.getMessage())
+            );
         }
     }
 
