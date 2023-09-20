@@ -28,8 +28,7 @@ You can change the player's:
 - 1.20.x (1_20_R1)
 
 ## ⚠️ WARNING
-On versions that support Mojang Chat-Reports this plugin will have to disable them.
-
+On versions that support Mojang Chat-Reports this library disables that feature in order for disguised players to chat.
 
 ## ➕ Add to your project
 ### Maven
