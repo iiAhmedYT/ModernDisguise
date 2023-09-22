@@ -72,6 +72,9 @@ public final class DisguiseManager {
             case "1_20_R1":
                 PROVIDER = new VS1_20_R1();
                 break;
+            case "1_20_R2":
+                PROVIDER = new VS1_20_R2();
+                break;
             default:
                 PROVIDER = new VS_Unavailable();
                 break;

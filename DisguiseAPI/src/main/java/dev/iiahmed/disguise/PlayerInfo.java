@@ -34,23 +34,10 @@ public final class PlayerInfo {
     }
 
     /**
-     * @return the original textures of the disguised player's skin
+     * @return the skin info of the player
      */
-    public String getTextures() {
-        if(skin == null) {
-            return null;
-        }
-        return skin.getTextures();
-    }
-
-    /**
-     * @return the original signature of the disguised player's skin
-     */
-    public String getSignature() {
-        if(skin == null) {
-            return null;
-        }
-        return skin.getSignature();
+    public Skin getSkin() {
+        return skin;
     }
 
     /**

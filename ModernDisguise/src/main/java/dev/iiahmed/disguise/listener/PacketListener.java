@@ -14,14 +14,16 @@ import java.util.UUID;
 
 public final class PacketListener extends ChannelDuplexHandler {
 
+    private static final String PACKET_NAME;
     private static final Field PLAYER_ID;
 
     static {
         try {
+            PACKET_NAME = DisguiseUtil.IS_20_R2_PLUS? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
             final Class<?> namedEntitySpawn = Class.forName((DisguiseUtil.INT_VER >= 17 ?
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
-                    + "PacketPlayOutNamedEntitySpawn");
-            PLAYER_ID = namedEntitySpawn.getDeclaredField("b");
+                    + PACKET_NAME);
+            PLAYER_ID = namedEntitySpawn.getDeclaredField(DisguiseUtil.IS_20_R2_PLUS? "d" : "b");
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +39,7 @@ public final class PacketListener extends ChannelDuplexHandler {
 
     @Override
     public void write(final ChannelHandlerContext context, final Object packet, final ChannelPromise promise) throws Exception {
-        if (packet == null || !"PacketPlayOutNamedEntitySpawn".equals(packet.getClass().getSimpleName())) {
+        if (packet == null || !PACKET_NAME.equals(packet.getClass().getSimpleName())) {
             super.write(context, packet, promise);
             return;
         }

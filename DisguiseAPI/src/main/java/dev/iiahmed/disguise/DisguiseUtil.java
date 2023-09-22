@@ -30,6 +30,7 @@ public final class DisguiseUtil {
     private static final String HANDLER_NAME = "ModernDisguise";
     public static final boolean IS_SUPPORTED;
     private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
+    public static final boolean IS_20_R2_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION);
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITY_FIELDS = new HashMap<>();
     private static final Field CONNECTION, NETWORK_MANAGER, CHANNEL;
@@ -79,15 +80,16 @@ public final class DisguiseUtil {
             CONNECTION = entityPlayer.getDeclaredField(obf ? (INT_VER < 20 ? "b" : "c") : "playerConnection");
             CONNECTION.setAccessible(true);
             final Class<?> playerConnection = Class.forName((obf ?
-                    PREFIX + "network." : PREFIX) + "PlayerConnection");
+                    PREFIX + "network." : PREFIX) + (IS_20_R2_PLUS? "ServerCommonPacketListenerImpl" : "PlayerConnection"));
             NETWORK_MANAGER = playerConnection.getDeclaredField(INT_VER < 17 ?
-                    "networkManager" : (INT_VER > 18 ? (INT_VER < 20 ? "b" : "h") : "a"));
+                    "networkManager" : (INT_VER > 18 ? (INT_VER < 20 ? "b" : IS_20_R2_PLUS? "c" : "h") : "a"));
             NETWORK_MANAGER.setAccessible(true);
             final Class<?> networkManager = Class.forName((obf ?
                     "net.minecraft.network." : PREFIX)
                     + "NetworkManager");
-            CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ?
-                    "channel" : (INT_VER > 18 || VERSION.equals("1_18_R2") ? "m" : "k"));
+            CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ? "channel"
+                    : (INT_VER > 18 || VERSION.equals("1_18_R2")
+                    ? (IS_20_R2_PLUS? "n" : "m") : "k"));
         } catch (final Exception exception) {
             throw new RuntimeException("Failed to load ModernDisguise's secondary features (disguising as entities)", exception);
         }

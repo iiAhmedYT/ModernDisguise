@@ -100,12 +100,11 @@ public abstract class DisguiseProvider {
             }
         }
 
-        String oldTextures = null, oldSignature = null;
+        Skin oldSkin = null;
         if (disguise.hasSkin()) {
             final Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
             if (optional.isPresent()) {
-                oldTextures = optional.get().getValue();
-                oldSignature = optional.get().getSignature();
+                oldSkin = getSkin(optional.get());
                 profile.getProperties().removeAll("textures");
             }
             profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
@@ -117,13 +116,11 @@ public abstract class DisguiseProvider {
                 DisguiseUtil.unregister(info.getNickname());
             }
             if (info.hasSkin()) {
-                oldTextures = info.getTextures();
-                oldSignature = info.getSignature();
+                oldSkin = info.getSkin();
             }
             oldName = info.getName();
         }
-        playerInfo.put(player.getUniqueId(), new PlayerInfo(oldName, disguise.getName(),
-                new Skin(oldTextures, oldSignature), disguise.getEntityType()));
+        playerInfo.put(player.getUniqueId(), new PlayerInfo(oldName, disguise.getName(), oldSkin, disguise.getEntityType()));
 
         if (disguise.hasName() || disguise.hasSkin()) {
             final boolean flying = player.isFlying();
@@ -175,8 +172,9 @@ public abstract class DisguiseProvider {
         }
 
         if (info.hasSkin()) {
+            final Skin skin = info.getSkin();
             profile.getProperties().removeAll("textures");
-            profile.getProperties().put("textures", new Property("textures", info.getTextures(), info.getSignature()));
+            profile.getProperties().put("textures", new Property("textures", skin.getTextures(), skin.getSignature()));
         }
 
         playerInfo.remove(player.getUniqueId());
@@ -225,6 +223,13 @@ public abstract class DisguiseProvider {
      * @param targets   the needed {@link Player}s to receive refresh packets
      */
     abstract public void refreshAsEntity(@NotNull final Player refreshed, final boolean remove, final Player... targets);
+
+    /**
+     * @param property the property
+     */
+    public Skin getSkin(final Property property) {
+        return new Skin(property.getValue(), property.getSignature());
+    }
 
     /**
      * @return false if version is NOT supported
