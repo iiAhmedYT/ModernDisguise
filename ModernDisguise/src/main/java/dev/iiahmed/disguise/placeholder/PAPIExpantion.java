@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class PAPIExpantion extends PlaceholderExpansion {
+public final class PAPIExpansion extends PlaceholderExpansion {
 
     private final DisguiseProvider provider = DisguiseManager.getProvider();
 
