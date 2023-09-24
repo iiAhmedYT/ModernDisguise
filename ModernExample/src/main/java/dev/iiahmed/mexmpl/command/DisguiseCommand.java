@@ -6,8 +6,10 @@ import dev.iiahmed.mexmpl.ModernExample;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class DisguiseCommand implements CommandExecutor {
@@ -37,14 +39,34 @@ public class DisguiseCommand implements CommandExecutor {
             return true;
         }
 
-        Disguise disguise = Disguise.builder()
-                .setName("BillPoopyPoo", false)
-                .setSkin(SkinAPI.MOJANG_UUID, "427110da-51ab-4032-8672-6faf50872543")
-                .build();
+        if (args.length == 0) {
+            player.sendMessage("/disguisetest player");
+            player.sendMessage("/disguisetest mob");
+            return true;
+        }
+
+        final String sub = args[0].toLowerCase(Locale.ENGLISH);
+        Disguise disguise;
+        switch (sub) {
+            default:
+                player.sendMessage("/disguisetest player");
+                player.sendMessage("/disguisetest mob");
+                return true;
+            case "player":
+                disguise = Disguise.builder()
+                        .setName("BillPoopyPoo", false)
+                        .setSkin(SkinAPI.MOJANG_UUID, "427110da-51ab-4032-8672-6faf50872543")
+                        .build();
+                break;
+            case "mob":
+                disguise = Disguise.builder()
+                        .setEntityType(EntityType.ZOMBIE)
+                        .build();
+        }
+
         long time = System.currentTimeMillis();
         DisguiseResponse response = this.provider.disguise(player, disguise);
-        player.sendMessage("Response is: " + response.name() + ", took " + (
-                System.currentTimeMillis() - time) + "ms");
+        player.sendMessage("Response is: " + response.name() + ", took " + (System.currentTimeMillis() - time) + "ms");
         return true;
     }
 
