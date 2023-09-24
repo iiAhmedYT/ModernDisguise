@@ -225,7 +225,7 @@ public abstract class DisguiseProvider {
     abstract public void refreshAsEntity(@NotNull final Player refreshed, final boolean remove, final Player... targets);
 
     /**
-     * @param property the property
+     * @param property the textures property that includes the skin's base64 {@link String}
      */
     public Skin getSkin(final Property property) {
         return new Skin(property.getValue(), property.getSignature());
