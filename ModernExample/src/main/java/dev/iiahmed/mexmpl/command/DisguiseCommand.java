@@ -62,6 +62,7 @@ public class DisguiseCommand implements CommandExecutor {
                 disguise = Disguise.builder()
                         .setEntityType(EntityType.ZOMBIE)
                         .build();
+                break;
         }
 
         long time = System.currentTimeMillis();
