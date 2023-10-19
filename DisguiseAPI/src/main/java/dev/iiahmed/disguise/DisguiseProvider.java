@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public abstract class DisguiseProvider {
 
     private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
+    private boolean overrideChat = true;
     private int nameLength = 16;
 
     private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
@@ -31,6 +32,30 @@ public abstract class DisguiseProvider {
     public DisguiseProvider setNamePattern(@NotNull final Pattern pattern) {
         this.namePattern = pattern;
         return this;
+    }
+
+    /**
+     * Controls the ability of ModernDisguise to modify the chat behavior for servers
+     * utilizing the Mojang Report feature, enabling disguised players to interact with chat.
+     * This setting is designed to be compatible with existing chat plugins and should not
+     * disrupt their functionality.
+     *
+     * @param overrideChat A boolean flag to allow or disallow the chat system override.
+     * @see DisguiseProvider#shouldOverrideChat()
+     */
+    @SuppressWarnings("unused")
+    public void allowOverrideChat(boolean overrideChat) {
+        this.overrideChat = overrideChat;
+    }
+
+    /**
+     * Determines whether ModernDisguise is currently configured to override the server's chat system.
+     *
+     * @return True if ModernDisguise is set to override the chat system, false otherwise.
+     * @see DisguiseProvider#allowOverrideChat(boolean)
+     */
+    public boolean shouldOverrideChat() {
+        return overrideChat;
     }
 
     /**

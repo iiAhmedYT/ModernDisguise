@@ -36,9 +36,9 @@ public final class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChat(final AsyncPlayerChatEvent event) {
-        if (!supportsChat) {
+        if (!supportsChat || !provider.shouldOverrideChat()) {
             return;
         }
         event.setCancelled(true);

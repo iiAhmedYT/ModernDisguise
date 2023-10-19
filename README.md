@@ -29,6 +29,21 @@ You can change the player's:
 
 ## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this library disables that feature in order for disguised players to chat.
+You can disable it by using DisguiseProvider#allowOverrideChat(false)
+
+Example:
+```java
+public class ExampleClass {
+
+    private final DisguiseProvider provider = DisguiseManager.getProvider();
+
+    public ExampleClass() {
+        DisguiseManager.setPlugin(ExamplePlugin.getInstance());
+        provider.allowOverrideChat(false);
+    }
+
+}
+```
 
 ## ➕ Add to your project
 ### Maven
