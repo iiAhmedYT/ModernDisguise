@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public abstract class DisguiseProvider {
 
     private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
-    private boolean overrideChat = true;
+    private boolean overrideChat = DisguiseUtil.INT_VER > 18;;
     private int nameLength = 16;
 
     private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
@@ -35,6 +35,18 @@ public abstract class DisguiseProvider {
     }
 
     /**
+     * Set the maximum username length
+     * allowed for nicknames.
+     *
+     * @param length the max length
+     */
+    @SuppressWarnings("unused")
+    public DisguiseProvider setNameLength(final int length) {
+        this.nameLength = length;
+        return this;
+    }
+
+    /**
      * Controls the ability of ModernDisguise to modify the chat behavior for servers
      * utilizing the Mojang Report feature, enabling disguised players to interact with chat.
      * This setting is designed to be compatible with existing chat plugins and should not
@@ -43,7 +55,6 @@ public abstract class DisguiseProvider {
      * @param overrideChat A boolean flag to allow or disallow the chat system override.
      * @see DisguiseProvider#shouldOverrideChat()
      */
-    @SuppressWarnings("unused")
     public void allowOverrideChat(boolean overrideChat) {
         this.overrideChat = overrideChat;
     }
@@ -56,18 +67,6 @@ public abstract class DisguiseProvider {
      */
     public boolean shouldOverrideChat() {
         return overrideChat;
-    }
-
-    /**
-     * Set the maximum username length
-     * allowed for nicknames.
-     * 
-     * @param length the max length
-     */
-    @SuppressWarnings("unused")
-    public DisguiseProvider setNameLength(final int length) {
-        this.nameLength = length;
-        return this;
     }
 
     /**

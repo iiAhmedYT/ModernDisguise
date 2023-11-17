@@ -1,40 +1,37 @@
 package dev.iiahmed.disguise;
 
+import java.util.UUID;
+
 public enum SkinAPI {
 
     /**
      * Official Mojang Skin API (RECOMMENDED)
      */
-    MOJANG_UUID("https://sessionserver.mojang.com/session/minecraft/profile/%uuid%?unsigned=false"),
+    MOJANG("https://sessionserver.mojang.com/session/minecraft/profile/%uuid%?unsigned=false"),
 
     /**
      * MineSkin Skin API
      */
-    MINESKIN_UUID("https://api.mineskin.org/get/uuid/%uuid%"),
+    MINESKIN("https://api.mineskin.org/get/uuid/%uuid%"),
 
     /**
      * MineTools Skin API
      */
-    MINETOOLS_UUID("https://api.minetools.eu/profile/%uuid%"),
+    MINETOOLS("https://api.minetools.eu/profile/%uuid%"),
     ;
 
     private final String url;
 
-    SkinAPI(String url) {
+    SkinAPI(final String url) {
         this.url = url;
     }
 
-    public String format(String replacement) {
+    public String format(final UUID uuid) {
+        final String replacement = String.valueOf(uuid).replaceAll("-", "");
         if (url.contains("%uuid%")) {
-            return url.replace("%uuid%", replacement.replaceAll("-", ""));
+            return url.replace("%uuid%", replacement);
         }
-        if (url.contains("%name%")) {
-            return url.replace("%name%", replacement);
-        }
-        if (url.contains("%id%")) {
-            return url.replace("%id%", replacement);
-        }
-        return url + replacement.replaceAll("-", "");
+        return url + replacement;
     }
 
 }

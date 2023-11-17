@@ -18,6 +18,7 @@ public class DisguiseCommand implements CommandExecutor {
 
     public DisguiseCommand() {
         DisguiseManager.setPlugin(ModernExample.getInstance());
+        provider.allowOverrideChat(false);
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -55,7 +56,7 @@ public class DisguiseCommand implements CommandExecutor {
             case "player":
                 disguise = Disguise.builder()
                         .setName("BillPoopyPoo", false)
-                        .setSkin(SkinAPI.MOJANG_UUID, "427110da-51ab-4032-8672-6faf50872543")
+                        .setSkin("StraightSexual", SkinAPI.MOJANG)
                         .build();
                 break;
             case "mob":

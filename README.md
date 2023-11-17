@@ -61,7 +61,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>2.1</version>
+    <version>2.2</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -98,7 +98,7 @@ repositories {
 and now add dependency:
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:2.1'
+    implementation 'dev.iiahmed:ModernDisguise:2.2'
 }
 ```
 
@@ -126,9 +126,9 @@ public class ExampleClass implements Listener {
                 // the boolean is whether this is a fake nickname or not
                 .setName("BillBobbyBob", false)
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
-                // which is more recommended
+                // or even Disguise.Builder#setSkin(uuid, skinAPI)
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
-                .setSkin(SkinAPI.MOJANG_UUID, "example-uuid")
+                .setSkin("example-name", SkinAPI.MOJANG) // You don't have to specify an API (mojang is default)
                 // this will change the player into a zombie for others only
                 .setEntityType(EntityType.ZOMBIE)
                 .build();
@@ -160,9 +160,9 @@ public class ExampleClass implements Listener {
                 // the boolean is whether this is a fake nickname or not
                 .setName("BillBobbyBob", false)
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
-                // which is more recommended
-                // it's recommended to run this async since #setSkin from API could block the mainthread
-                .setSkin(SkinAPI.MOJANG_UUID, "example-uuid")
+                // or even Disguise.Builder#setSkin(uuid, skinAPI)
+                // it's recommended to run this async since #setSkin from an online API will block the mainthread
+                .setSkin("example-name", SkinAPI.MOJANG) // You don't have to specify an API (mojang is default)
                 // this will change the player into a zombie for others only
                 .setEntityType(EntityType.ZOMBIE)
                 .build();

@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public final class PlayerListener implements Listener {
 
     private final DisguiseProvider provider = DisguiseManager.getProvider();
-    private final boolean supportsChat = DisguiseUtil.INT_VER > 18;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent event) {
@@ -38,7 +37,7 @@ public final class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChat(final AsyncPlayerChatEvent event) {
-        if (!supportsChat || !provider.shouldOverrideChat()) {
+        if (!provider.shouldOverrideChat()) {
             return;
         }
         event.setCancelled(true);
