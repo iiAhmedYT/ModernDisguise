@@ -7,6 +7,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.annotation.*;
+import revxrsal.commands.command.CommandActor;
 
 @Command("disguise")
 @SuppressWarnings("unused")
@@ -17,6 +18,16 @@ public class DisguiseCommand {
     public DisguiseCommand() {
         DisguiseManager.setPlugin(ModernExample.getInstance());
         provider.allowOverrideChat(false);
+    }
+
+    @Subcommand("info")
+    public void info(
+            final CommandActor actor
+            )
+    {
+        actor.reply("Found enitities: " + DisguiseUtil.found);
+        actor.reply("Extends LivingEntity: " + DisguiseUtil.living);
+        actor.reply("Has a Constructor (aka. Registered): " + DisguiseUtil.registered);
     }
 
     @Subcommand("player")
