@@ -48,7 +48,7 @@ public class DisguiseCommand {
     @Subcommand("entity")
     public @NotNull DisguiseResponse asEntity(
             final Player player,
-            @Flag("entity") @Default("ZOMBIE") EntityType type
+            @Default("ZOMBIE") EntityType type
     )
     {
         Disguise disguise = Disguise.builder()
@@ -58,7 +58,6 @@ public class DisguiseCommand {
     }
 
     @Command("undisguise")
-    @Subcommand("entity")
     public @NotNull UndisguiseResponse undisguise(
             final Player player
     )

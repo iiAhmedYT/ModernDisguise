@@ -10,11 +10,11 @@ import revxrsal.commands.process.ResponseHandler;
 public final class ModernExample extends JavaPlugin {
 
     private static ModernExample instance;
-    private final BukkitCommandHandler handler = BukkitCommandHandler.create(this);
 
     @Override
     public void onEnable() {
         instance = this;
+        BukkitCommandHandler handler = BukkitCommandHandler.create(this);
         handler.registerResponseHandler(DisguiseResponse.class, ResponseHandler::reply);
         handler.registerResponseHandler(UndisguiseResponse.class, ResponseHandler::reply);
         handler.register(new DisguiseCommand());

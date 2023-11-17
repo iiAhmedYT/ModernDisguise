@@ -69,10 +69,16 @@ public final class DisguiseUtil {
             WORLD = Class.forName((obf ?
                     "net.minecraft.world.level." : PREFIX)
                     + "World");
-            ENTITY_TYPES = Class.forName((obf ?
-                    "net.minecraft.world.entity." : PREFIX)
-                    + "EntityTypes");
-            GET_ENTITY = ENTITY_TYPES.getMethod("a", String.class);
+
+            if (INT_VER >= 13) {
+                ENTITY_TYPES = Class.forName((obf ?
+                        "net.minecraft.world.entity." : PREFIX)
+                        + "EntityTypes");
+                GET_ENTITY = ENTITY_TYPES.getMethod("a", String.class);
+            } else {
+                ENTITY_TYPES = null;
+                GET_ENTITY = null;
+            }
 
             final Class<?> entityPlayer = Class.forName((obf ?
                     PREFIX + "level." : PREFIX)
