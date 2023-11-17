@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public abstract class DisguiseProvider {
 
     private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
-    private boolean overrideChat = DisguiseUtil.INT_VER > 18;;
+    private boolean overrideChat = DisguiseUtil.INT_VER > 18;
     private int nameLength = 16;
 
     private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
