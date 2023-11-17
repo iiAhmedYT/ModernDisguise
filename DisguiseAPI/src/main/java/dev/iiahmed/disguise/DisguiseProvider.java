@@ -23,9 +23,9 @@ public abstract class DisguiseProvider {
     protected Plugin plugin;
 
     /**
-     * Set the username {@link Pattern} that is 
+     * Set the username {@link Pattern} that is
      * used to validate nicknames.
-     * 
+     *
      * @param pattern the name pattern
      */
     @SuppressWarnings("unused")

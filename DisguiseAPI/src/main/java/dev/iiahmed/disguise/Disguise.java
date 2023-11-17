@@ -69,7 +69,7 @@ public final class Disguise {
      * @return the textures that the disguised player's skin going to be changed for
      */
     public String getTextures() {
-        if(skin == null) {
+        if (skin == null) {
             return null;
         }
         return skin.getTextures();
@@ -79,7 +79,7 @@ public final class Disguise {
      * @return the signature that the disguised player's skin going to be changed for
      */
     public String getSignature() {
-        if(skin == null) {
+        if (skin == null) {
             return null;
         }
         return skin.getSignature();
@@ -110,7 +110,7 @@ public final class Disguise {
          * This method sets the new name of the nicked player
          *
          * @param name the replacement of the actual player name
-         * @param fake whether the plugin should keep the player's name 
+         * @param fake whether the plugin should keep the player's name
          * @return the disguise builder
          */
         public Builder setName(final String name, final boolean fake) {
@@ -142,8 +142,8 @@ public final class Disguise {
         }
 
         /**
-         * @param name this is the Name of the needed player's skin
-         * @param skinAPI     determines the SkinAPI type
+         * @param name    this is the Name of the needed player's skin
+         * @param skinAPI determines the SkinAPI type
          * @return the disguise builder
          */
         @SuppressWarnings("deprecation")
@@ -157,8 +157,8 @@ public final class Disguise {
         }
 
         /**
-         * @param skinAPI     determines the SkinAPI type
-         * @param uuid this is the UUID of the needed player's skin
+         * @param uuid    this is the UUID of the needed player's skin
+         * @param skinAPI determines the SkinAPI type
          * @return the disguise builder
          */
         private Builder setSkin(final UUID uuid, final SkinAPI skinAPI) {

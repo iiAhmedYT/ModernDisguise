@@ -40,7 +40,7 @@ public enum DisguiseResponse {
      */
     FAIL_NAME_CHANGE_EXCEPTION,
     /**
-     * Returns when the provided nickname's length is longer than 16 characters. 
+     * Returns when the provided nickname's length is longer than 16 characters.
      */
     FAIL_NAME_TOO_LONG,
     /**
