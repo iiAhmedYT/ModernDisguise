@@ -30,10 +30,10 @@ public class DisguiseCommand {
         actor.reply(translate("Found enitities: " + foundColor + DisguiseUtil.found));
 
         String livingColor = DisguiseUtil.living < 33? "&c" : "&a"; // 33 is amount of entities living in 1.8.8
-        actor.reply(translate("Extends LivingEntity: " + foundColor + DisguiseUtil.living));
+        actor.reply(translate("Extends LivingEntity: " + livingColor + DisguiseUtil.living));
 
         String registeredColor = DisguiseUtil.registered < 32? "&c" : "&a"; // 32 is amount of entities registered in 1.8.8
-        actor.reply(translate("Has a Constructor (aka. Registered): " + foundColor + DisguiseUtil.registered));
+        actor.reply(translate("Has a Constructor (aka. Registered): " + registeredColor + DisguiseUtil.registered));
     }
 
     @Subcommand("player")
