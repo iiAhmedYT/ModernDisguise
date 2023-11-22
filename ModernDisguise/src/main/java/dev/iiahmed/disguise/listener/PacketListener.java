@@ -48,7 +48,13 @@ public final class PacketListener extends ChannelDuplexHandler {
         try {
             playerID = (UUID) PLAYER_ID.get(packet);
         } catch (final Exception exception) {
-            exception.printStackTrace();
+            provider.getPlugin().getLogger().severe(
+                    "[ModernDisguise] Couldn't get a player's UUID, please report if this ever happens to you.\n"
+                            + "Version: " + DisguiseUtil.VERSION + " (" + DisguiseUtil.INT_VER + ")\n"
+                            + "Packet Name: " + PACKET_NAME + "\n"
+                            + "This error is not supposed to happen however it is harmless & won't block any packet from being sent."
+                            + exception
+            );
             playerID = null;
         }
 
