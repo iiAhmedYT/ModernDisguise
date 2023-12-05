@@ -7,7 +7,7 @@
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.3</version>
+    <version>2.4</version>
 
     <distributionManagement>
         <repository>
@@ -42,6 +42,7 @@
         <module>VS-1_19_R3</module>
         <module>VS-1_20_R1</module>
         <module>VS-1_20_R2</module>
+        <module>VS-1_20_R3</module>
     </modules>
 
     <build>

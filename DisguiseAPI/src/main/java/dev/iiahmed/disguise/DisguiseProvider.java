@@ -202,7 +202,9 @@ public abstract class DisguiseProvider {
         }
 
         playerInfo.remove(player.getUniqueId());
-        refreshAsPlayer(player);
+        if (info.hasName() || info.hasSkin()) {
+            refreshAsPlayer(player);
+        }
         player.teleport(player.getLocation());
 
         return UndisguiseResponse.SUCCESS;
