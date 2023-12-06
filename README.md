@@ -197,7 +197,7 @@ Versions from now-on should be built with the ```--remapped``` flag
 - 1.17.1
 - 1.18.1, 1.18.2
 - 1.19.2, 1.19.3, 1.19.4
-- 1.20.1, 1.20.2
+- 1.20.1, 1.20.2, 1.20.3
 
 ###### 2- Cloning
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature
