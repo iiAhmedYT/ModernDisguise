@@ -202,14 +202,7 @@ public abstract class DisguiseProvider {
         }
 
         playerInfo.remove(player.getUniqueId());
-        if (info.hasName() || info.hasSkin()) {
-            refreshAsPlayer(player);
-        } else {
-            for (Player online : Bukkit.getOnlinePlayers()) {
-                online.hidePlayer(player);
-                online.showPlayer(player);
-            }
-        }
+        refreshAsPlayer(player);
         player.teleport(player.getLocation());
 
         return UndisguiseResponse.SUCCESS;

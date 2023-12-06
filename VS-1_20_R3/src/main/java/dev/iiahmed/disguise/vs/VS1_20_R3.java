@@ -40,6 +40,7 @@ public final class VS1_20_R3 extends DisguiseProvider {
         ep.connection.send(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(ep.getUUID())));
         ep.connection.send(new ClientboundRespawnPacket(ep.createCommonSpawnInfo(ep.serverLevel()), ClientboundRespawnPacket.KEEP_ALL_DATA));
         player.teleport(location);
+        ep.getServer().getPlayerList().sendLevelInfo(ep, ep.serverLevel());
         ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
                 ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
                 ep));
