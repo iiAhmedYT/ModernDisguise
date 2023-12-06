@@ -25,7 +25,7 @@ You can change the player's:
 - 1.17.x (1_17_R1)
 - 1.18.x (1_18_R1, 1_18_R2)
 - 1.19.x (1_19_R1, 1_19_R2, 1_19_R3)
-- 1.20.x (1_20_R1, 1_20_R2)
+- 1.20.x (1_20_R1, 1_20_R2, 1_20_R3)
 
 ## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this library disables that feature in order for disguised players to chat.
