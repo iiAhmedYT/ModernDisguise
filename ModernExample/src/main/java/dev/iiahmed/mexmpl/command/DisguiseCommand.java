@@ -40,16 +40,19 @@ public class DisguiseCommand {
     public @NotNull String asPlayer(
             final Player player,
             @Flag("name") @Default("BillBobbyBob") String name,
-            @Flag("skin") @Default("StraightSexual") String skin,
+            @Flag("skin") @Optional String skin,
             @Flag("api") @Default("MOJANG") SkinAPI api
     )
     {
         long time = System.currentTimeMillis();
-        Disguise disguise = Disguise.builder()
-                .setName(name, false)
-                .setSkin(skin, api)
-                .build();
-        return provider.disguise(player, disguise) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
+        Disguise.Builder builder = Disguise.builder()
+                .setName(name, false);
+
+        if (skin != null) {
+            builder.setSkin(skin, api);
+        }
+
+        return provider.disguise(player, builder.build()) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
     }
 
     @Subcommand("entity")
