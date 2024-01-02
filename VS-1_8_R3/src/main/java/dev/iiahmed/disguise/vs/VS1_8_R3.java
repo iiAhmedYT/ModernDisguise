@@ -57,8 +57,11 @@ public final class VS1_8_R3 extends DisguiseProvider {
         final EntityPlayer p = ((CraftPlayer) refreshed).getHandle();
         final EntityType type = getInfo(refreshed).getEntityType();
         final PacketPlayOutSpawnEntityLiving spawn;
+        final Collection<AttributeInstance> attributeMapBase;
         try {
             final EntityLiving entity = (EntityLiving) DisguiseUtil.createEntity(type, p.world);
+            attributeMapBase = entity.getAttributeMap().a();
+
             spawn = new PacketPlayOutSpawnEntityLiving(entity);
             id.set(spawn, refreshed.getEntityId());
         } catch (final Exception e) {
@@ -66,7 +69,7 @@ public final class VS1_8_R3 extends DisguiseProvider {
         }
         final PacketPlayOutEntityDestroy destroy = new PacketPlayOutEntityDestroy(refreshed.getEntityId());
         final PacketPlayOutEntityTeleport tp = new PacketPlayOutEntityTeleport(p);
-        final PacketPlayOutUpdateAttributes attributes = new PacketPlayOutUpdateAttributes(refreshed.getEntityId(), p.getAttributeMap().a());
+        final PacketPlayOutUpdateAttributes attributes = new PacketPlayOutUpdateAttributes(refreshed.getEntityId(), attributeMapBase);
         for (final Player player : targets) {
             if (player == refreshed) continue;
             final EntityPlayer ep = ((CraftPlayer) player).getHandle();
