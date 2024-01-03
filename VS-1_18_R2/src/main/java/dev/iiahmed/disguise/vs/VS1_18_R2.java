@@ -4,7 +4,8 @@ import dev.iiahmed.disguise.DisguiseProvider;
 import dev.iiahmed.disguise.DisguiseUtil;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 @SuppressWarnings("all")
 public final class VS1_18_R2 extends DisguiseProvider {
@@ -62,16 +64,19 @@ public final class VS1_18_R2 extends DisguiseProvider {
         final ServerPlayer rfep = ((CraftPlayer) refreshed).getHandle();
         final org.bukkit.entity.EntityType type = getInfo(refreshed).getEntityType();
         final ClientboundAddEntityPacket spawn;
+        final Collection<AttributeInstance> attributesSet;
         try {
-            final Entity entity = (Entity) DisguiseUtil.createEntity(type, rfep.getLevel());
+            final LivingEntity entity = (LivingEntity) DisguiseUtil.createEntity(type, rfep.getLevel());
+            attributesSet = entity.getAttributes().getDirtyAttributes();
+
             spawn = new ClientboundAddEntityPacket(entity);
             id.set(spawn, refreshed.getEntityId());
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Couldn't change entityID for " + refreshed.getName(), e);
         }
         final ClientboundRemoveEntitiesPacket destroy = new ClientboundRemoveEntitiesPacket(refreshed.getEntityId());
         final ClientboundTeleportEntityPacket tp = new ClientboundTeleportEntityPacket(rfep);
-        final ClientboundUpdateAttributesPacket attributes = new ClientboundUpdateAttributesPacket(refreshed.getEntityId(), rfep.getAttributes().getDirtyAttributes());
+        final ClientboundUpdateAttributesPacket attributes = new ClientboundUpdateAttributesPacket(refreshed.getEntityId(), attributesSet);
         for (final Player player : targets) {
             if (player == refreshed) continue;
             final ServerPlayer ep = ((CraftPlayer) player).getHandle();

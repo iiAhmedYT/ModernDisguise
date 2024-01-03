@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 public final class VS1_8_R3 extends DisguiseProvider {
 
