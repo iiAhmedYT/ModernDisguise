@@ -16,6 +16,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
@@ -353,17 +354,35 @@ public final class DisguiseUtil {
     /**
      * @return the {@link Skin} of the given {@link Player}
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("all")
     public static @NotNull Skin getSkin(@NotNull final Player player) {
         final GameProfile profile = getProfile(player);
         if (profile == null) {
             return new Skin(null, null);
         }
-        String textures = null, signature = null;
         final Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
         if (optional.isPresent()) {
-            textures = optional.get().getValue();
-            signature = optional.get().getSignature();
+            return getSkin(optional.get());
+        }
+        return new Skin(null, null);
+    }
+
+    /**
+     * @return the {@link Skin} of the given {@link Property}
+     */
+    @SuppressWarnings("all")
+    public static @NotNull Skin getSkin(@NotNull final Property property) {
+        String textures, signature;
+        if (IS_20_R2_PLUS) {
+            try {
+                textures = (String) Property.class.getMethod("value").invoke(property);
+                signature = (String) Property.class.getMethod("signature").invoke(property);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            textures = property.getValue();
+            signature = property.getSignature();
         }
         return new Skin(textures, signature);
     }

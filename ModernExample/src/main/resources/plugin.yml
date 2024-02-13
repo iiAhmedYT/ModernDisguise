@@ -4,3 +4,5 @@ main: dev.iiahmed.mexmpl.ModernExample
 authors: [ iiAhmedYT ]
 description: An example implementation to test the functionality of the plugin
 api-version: "1.13"
+softdepend:
+  - PlaceholderAPI

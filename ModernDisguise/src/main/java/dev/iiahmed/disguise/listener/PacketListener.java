@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public final class PacketListener extends ChannelDuplexHandler {
 
@@ -19,11 +20,11 @@ public final class PacketListener extends ChannelDuplexHandler {
 
     static {
         try {
-            PACKET_NAME = DisguiseUtil.IS_20_R2_PLUS? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
+            PACKET_NAME = DisguiseUtil.IS_20_R2_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
             final Class<?> namedEntitySpawn = Class.forName((DisguiseUtil.INT_VER >= 17 ?
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
                     + PACKET_NAME);
-            PLAYER_ID = namedEntitySpawn.getDeclaredField(DisguiseUtil.IS_20_R2_PLUS? "d" : "b");
+            PLAYER_ID = namedEntitySpawn.getDeclaredField(DisguiseUtil.IS_20_R2_PLUS ? "d" : "b");
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -48,12 +49,13 @@ public final class PacketListener extends ChannelDuplexHandler {
         try {
             playerID = (UUID) PLAYER_ID.get(packet);
         } catch (final Exception exception) {
-            provider.getPlugin().getLogger().severe(
+            provider.getPlugin().getLogger().log(
+                    Level.SEVERE,
                     "[ModernDisguise] Couldn't get a player's UUID, please report if this ever happens to you.\n"
                             + "Version: " + DisguiseUtil.VERSION + " (" + DisguiseUtil.INT_VER + ")\n"
                             + "Packet Name: " + PACKET_NAME + "\n"
-                            + "This error is not supposed to happen however it is harmless & won't block any packet from being sent."
-                            + exception
+                            + "This error is not supposed to happen however it is harmless & won't block any packet from being sent.",
+                    exception
             );
             playerID = null;
         }

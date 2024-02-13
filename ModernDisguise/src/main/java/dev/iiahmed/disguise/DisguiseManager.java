@@ -1,9 +1,7 @@
 package dev.iiahmed.disguise;
 
 import dev.iiahmed.disguise.listener.PlayerListener;
-import dev.iiahmed.disguise.placeholder.PAPIExpansion;
 import dev.iiahmed.disguise.vs.*;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 public final class DisguiseManager {
 
     private static final DisguiseProvider PROVIDER;
-    private static boolean expantionRegistered = false;
 
     static {
         switch (DisguiseUtil.VERSION) {
@@ -101,19 +98,6 @@ public final class DisguiseManager {
     @NotNull
     public static DisguiseProvider getProvider() {
         return PROVIDER;
-    }
-
-    /**
-     * Registers a PlaceholderAPI expantion if PAPI exists
-     */
-    public static void registerExpansion() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            return;
-        }
-        if (!expantionRegistered) {
-            new PAPIExpansion().register();
-            expantionRegistered = true;
-        }
     }
 
 }

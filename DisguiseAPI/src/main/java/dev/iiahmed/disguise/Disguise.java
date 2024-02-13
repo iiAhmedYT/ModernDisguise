@@ -13,13 +13,11 @@ public final class Disguise {
 
     private final String name;
     private final Skin skin;
-    private final boolean fakename;
     private final EntityType entityType;
 
-    private Disguise(final String name, final Skin skin, final boolean fakename, final EntityType entityType) {
+    private Disguise(final String name, final Skin skin, final EntityType entityType) {
         this.name = name;
         this.skin = skin;
-        this.fakename = fakename;
         this.entityType = entityType;
     }
 
@@ -48,7 +46,7 @@ public final class Disguise {
      * @return a {@link Boolean} that indicates whether the disguise will change the player's name
      */
     public boolean hasName() {
-        return name != null && !name.isEmpty() && !fakename;
+        return name != null && !name.isEmpty();
     }
 
     /**
@@ -99,7 +97,6 @@ public final class Disguise {
 
         private String name;
         private Skin skin;
-        private boolean fakename = false;
         private EntityType entityType;
 
         /* we don't allow constructors from outside */
@@ -110,12 +107,10 @@ public final class Disguise {
          * This method sets the new name of the nicked player
          *
          * @param name the replacement of the actual player name
-         * @param fake whether the plugin should keep the player's name
          * @return the disguise builder
          */
-        public Builder setName(final String name, final boolean fake) {
+        public Builder setName(final String name) {
             this.name = name;
-            this.fakename = fake;
             return this;
         }
 
@@ -234,7 +229,7 @@ public final class Disguise {
          * @return a new instance of {@link Disguise} with the collected info
          */
         public Disguise build() {
-            return new Disguise(name, skin, fakename, entityType);
+            return new Disguise(name, skin, entityType);
         }
 
     }

@@ -1,9 +1,7 @@
 package dev.iiahmed.disguise.vs;
 
-import com.mojang.authlib.properties.Property;
 import dev.iiahmed.disguise.DisguiseProvider;
 import dev.iiahmed.disguise.DisguiseUtil;
-import dev.iiahmed.disguise.Skin;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -87,11 +85,6 @@ public final class VS1_20_R3 extends DisguiseProvider {
             ep.connection.send(tp);
             ep.connection.send(attributes);
         }
-    }
-
-    @Override
-    public Skin getSkin(Property property) {
-        return new Skin(property.value(), property.signature());
     }
 
 }

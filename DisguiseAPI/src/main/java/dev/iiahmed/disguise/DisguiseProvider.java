@@ -8,9 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public abstract class DisguiseProvider {
@@ -19,7 +20,7 @@ public abstract class DisguiseProvider {
     private boolean overrideChat = DisguiseUtil.INT_VER > 18;
     private int nameLength = 16;
 
-    private final HashMap<UUID, PlayerInfo> playerInfo = new HashMap<>();
+    private final Map<UUID, PlayerInfo> playerInfo = new ConcurrentHashMap<>();
     protected Plugin plugin;
 
     /**
@@ -128,7 +129,7 @@ public abstract class DisguiseProvider {
         if (disguise.hasSkin()) {
             final Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
             if (optional.isPresent()) {
-                oldSkin = getSkin(optional.get());
+                oldSkin = DisguiseUtil.getSkin(optional.get());
                 profile.getProperties().removeAll("textures");
             }
             profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
@@ -247,13 +248,6 @@ public abstract class DisguiseProvider {
      * @param targets   the needed {@link Player}s to receive refresh packets
      */
     abstract public void refreshAsEntity(@NotNull final Player refreshed, final boolean remove, final Player... targets);
-
-    /**
-     * @param property the textures property that includes the skin's base64 {@link String}
-     */
-    public Skin getSkin(final Property property) {
-        return new Skin(property.getValue(), property.getSignature());
-    }
 
     /**
      * @return false if version is NOT supported

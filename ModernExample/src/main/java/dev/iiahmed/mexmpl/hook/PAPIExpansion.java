@@ -1,4 +1,4 @@
-package dev.iiahmed.disguise.placeholder;
+package dev.iiahmed.mexmpl.hook;
 
 import dev.iiahmed.disguise.DisguiseManager;
 import dev.iiahmed.disguise.DisguiseProvider;

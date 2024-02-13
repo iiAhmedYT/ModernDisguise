@@ -45,8 +45,7 @@ public class DisguiseCommand {
     )
     {
         long time = System.currentTimeMillis();
-        Disguise.Builder builder = Disguise.builder()
-                .setName(name, false);
+        Disguise.Builder builder = Disguise.builder().setName(name);
 
         if (skin != null) {
             builder.setSkin(skin, api);

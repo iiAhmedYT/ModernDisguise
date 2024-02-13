@@ -123,8 +123,7 @@ public class ExampleClass implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Disguise disguise = Disguise.builder()
-                // the boolean is whether this is a fake nickname or not
-                .setName("BillBobbyBob", false)
+                .setName("BillBobbyBob")
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
                 // or even Disguise.Builder#setSkin(uuid, skinAPI)
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
@@ -157,8 +156,7 @@ public class ExampleClass implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Disguise disguise = Disguise.builder()
-                // the boolean is whether this is a fake nickname or not
-                .setName("BillBobbyBob", false)
+                .setName("BillBobbyBob")
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
                 // or even Disguise.Builder#setSkin(uuid, skinAPI)
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
