@@ -24,8 +24,11 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public final class DisguiseUtil {
 
-    public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(24);
-    public static final int INT_VER = Integer.parseInt(VERSION.split("_")[1]);
+    public static final boolean IS_PAPER = findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
+    public static final String VERSION_EXACT = Bukkit.getBukkitVersion().split("-")[0];
+    public static final int INT_VER = Integer.parseInt(VERSION_EXACT.split("\\.")[1]);
+    public static final String VERSION = findVersion();
+
     public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
     public static final Field PROFILE_NAME;
     private static final String HANDLER_NAME = "ModernDisguise";
@@ -131,6 +134,42 @@ public final class DisguiseUtil {
             registered++;
             ENTITIES.put(type, constructor);
         }
+    }
+
+    private static String findVersion() {
+        if (IS_PAPER && INT_VER >= 20) {
+            switch (VERSION_EXACT) {
+                case "1.20":
+                case "1.20.1":
+                    return "1_20_R1";
+                case "1.20.2":
+                case "1.20.3":
+                    return "1_20_R2";
+                case "1.20.4":
+                    return "1_20_R3";
+                // just wild-guessing lol
+                case "1.20.5":
+                    return "1_20_R4";
+                case "1.21":
+                    return "1_21_R1";
+                default:
+                    return "UNKNOWN";
+            }
+        }
+        return Bukkit.getServer().getClass().getPackage().getName().substring(24);
+    }
+
+    /**
+     * Finds any {@link Class} of the provided paths
+     *
+     * @param paths all possible class paths
+     * @return false if the {@link Class} was NOT found
+     */
+    private static boolean findClass(final String... paths) {
+        for (final String path : paths) {
+            if (getClass(path) != null) return true;
+        }
+        return false;
     }
 
     /**
