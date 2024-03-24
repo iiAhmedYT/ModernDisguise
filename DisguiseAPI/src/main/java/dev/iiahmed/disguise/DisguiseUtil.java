@@ -46,7 +46,13 @@ public final class DisguiseUtil {
     static {
         final boolean obf = INT_VER >= 17;
         try {
-            final Class<?> craftPlayer = Class.forName("org.bukkit.craftbukkit.v" + VERSION + ".entity.CraftPlayer");
+            final Class<?> craftPlayer;
+            if (IS_PAPER && (INT_VER > 20 || "1_20_R4".equals(VERSION))) {
+                craftPlayer = Class.forName("org.bukkit.craftbukkit.entity.CraftPlayer");
+            } else {
+                craftPlayer = Class.forName("org.bukkit.craftbukkit.v" + VERSION + ".entity.CraftPlayer");
+            }
+
             GET_PROFILE = craftPlayer.getMethod("getProfile");
             GET_HANDLE = craftPlayer.getMethod("getHandle");
             PROFILE_NAME = GameProfile.class.getDeclaredField("name");
