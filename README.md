@@ -25,7 +25,7 @@ You can change the player's:
 - 1.17.x (1_17_R1)
 - 1.18.x (1_18_R1, 1_18_R2)
 - 1.19.x (1_19_R1, 1_19_R2, 1_19_R3)
-- 1.20.x (1_20_R1, 1_20_R2, 1_20_R3)
+- 1.20.x (1_20_R1, 1_20_R2, 1_20_R3, 1_20_R4)
 
 ## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this library disables that feature in order for disguised players to chat.
@@ -61,7 +61,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>2.5</version>
+    <version>2.6</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -98,7 +98,7 @@ repositories {
 and now add dependency:
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:2.5'
+    implementation 'dev.iiahmed:ModernDisguise:2.6'
 }
 ```
 
@@ -195,7 +195,7 @@ Versions from now-on should be built with the ```--remapped``` flag
 - 1.17.1
 - 1.18.1, 1.18.2
 - 1.19.2, 1.19.3, 1.19.4
-- 1.20.1, 1.20.2, 1.20.4
+- 1.20.1, 1.20.2, 1.20.4, 1.20.5
 
 ###### 2- Cloning
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature
