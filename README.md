@@ -10,7 +10,7 @@ Here's the [SpigotMC Forum](https://www.spigotmc.org/threads/moderndisguise-a-li
 You can change the player's:
 - Name (Server side)
 - Skin (Server side)
-- EntityType (up to 60 entities) (Client side & other players only can see it)
+- EntityType (up to 82 entities) (Client side & other players only can see it)
 
 ## ✅ Supported versions
 - 1.8.8 (1_8_R3)

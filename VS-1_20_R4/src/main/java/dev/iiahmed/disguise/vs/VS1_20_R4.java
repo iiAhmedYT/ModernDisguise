@@ -23,7 +23,7 @@ public final class VS1_20_R4 extends DisguiseProvider {
 
     {
         try {
-            id = ClientboundAddEntityPacket.class.getDeclaredField("c");
+            id = ClientboundAddEntityPacket.class.getDeclaredField("d");
             id.setAccessible(true);
         } catch (final NoSuchFieldException e) {
             throw new RuntimeException(e);

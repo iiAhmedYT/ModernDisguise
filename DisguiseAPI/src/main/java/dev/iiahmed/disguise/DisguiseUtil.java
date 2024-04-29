@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings("all")
 public final class DisguiseUtil {
 
     public static final boolean IS_PAPER = findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
@@ -35,6 +35,7 @@ public final class DisguiseUtil {
     public static final boolean IS_SUPPORTED;
     private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
     public static final boolean IS_20_R2_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION);
+    public static final boolean IS_20_R4_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION) && !"1_20_R2".equals(VERSION) && !"1_20_R3".equals(VERSION);
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITY_FIELDS = new HashMap<>();
     private static final Field CONNECTION, NETWORK_MANAGER, CHANNEL;
@@ -95,35 +96,68 @@ public final class DisguiseUtil {
                     + "EntityPlayer");
             CONNECTION = entityPlayer.getDeclaredField(obf ? (INT_VER < 20 ? "b" : "c") : "playerConnection");
             CONNECTION.setAccessible(true);
-            final Class<?> playerConnection = Class.forName((obf ?
-                    PREFIX + "network." : PREFIX) + (IS_20_R2_PLUS? "ServerCommonPacketListenerImpl" : "PlayerConnection"));
-            NETWORK_MANAGER = playerConnection.getDeclaredField(INT_VER < 17 ?
-                    "networkManager" : (INT_VER > 18 ? (INT_VER < 20 ? "b" : IS_20_R2_PLUS? "c" : "h") : "a"));
+            final Class<?> playerConnection = Class.forName(
+                    (obf ? PREFIX + "network." : PREFIX) + (IS_20_R2_PLUS ? "ServerCommonPacketListenerImpl" : "PlayerConnection"));
+            NETWORK_MANAGER = playerConnection.getDeclaredField(INT_VER < 17 ? "networkManager" :
+                    (
+                            INT_VER <= 18 ? "a" :
+                                    (
+                                            INT_VER < 20 ? "b"
+                                                    : IS_20_R2_PLUS ? (IS_20_R4_PLUS ? "e" : "c") : "h"
+                                    )
+                    )
+            );
             NETWORK_MANAGER.setAccessible(true);
             final Class<?> networkManager = Class.forName((obf ?
                     "net.minecraft.network." : PREFIX)
                     + "NetworkManager");
             CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ? "channel"
-                    : (INT_VER > 18 || VERSION.equals("1_18_R2")
-                    ? (IS_20_R2_PLUS? "n" : "m") : "k"));
+                    : (INT_VER > 18 || VERSION.equals("1_18_R2") ? (IS_20_R2_PLUS ? "n" : "m") : "k"));
         } catch (final Exception exception) {
             throw new RuntimeException("Failed to load ModernDisguise's secondary features (disguising as entities)", exception);
         }
 
-        final HashSet<String> unprefixed = setOf("ALLAY", "AXOLOTL", "CAMEL", "FROG", "GOAT", "WARDEN");
+        final Map<String, String> overrideNames = new HashMap<>();
+        overrideNames.put("ELDER_GUARDIAN", "GuardianElder");
+        overrideNames.put("WITHER_SKELETON", "SkeletonWither");
+        overrideNames.put("STRAY", "SkeletonStray");
+        overrideNames.put("HUSK", "ZombieHusk");
+        overrideNames.put("ZOMBIE_HORSE", "HorseZombie");
+        overrideNames.put("SKELETON_HORSE", "HorseSkeleton");
+        overrideNames.put("DONKEY", "HorseDonkey");
+        overrideNames.put("MULE", "HorseMule");
+        overrideNames.put("ILLUSIONER", "IllagerIllusioner");
+        overrideNames.put("GIANT", "GiantZombie");
+        overrideNames.put("ZOMBIFIED_PIGLIN", "PigZombie");
+        overrideNames.put("MOOSHROOM", "MushroomCow");
+        overrideNames.put("SNOW_GOLEM", "Snowman");
+        overrideNames.put("PUFFERFISH", "PufferFish");
+        overrideNames.put("TRADER_LLAMA", "LlamaTrader");
+        overrideNames.put("WANDERING_TRADER", "VillagerTrader");
+
         for (final EntityType type : EntityType.values()) {
-            final String name = type.name();
-            final StringBuilder builder = new StringBuilder(unprefixed.contains(name) ? "" : "Entity");
-            boolean cap = true;
-            for (final char c : name.toCharArray()) {
-                if (c == '_') {
-                    cap = true;
-                    continue;
-                }
-                builder.append(cap ? c : String.valueOf(c).toLowerCase());
-                cap = false;
+            if (!type.isAlive())  {
+                continue;
             }
-            final Class<?> clazz = findEntity(builder.toString());
+
+            final String name = type.name();
+            final String className;
+            if (overrideNames.containsKey(name)) {
+                className = overrideNames.get(name);
+            } else {
+                final StringBuilder builder = new StringBuilder();
+                boolean cap = true;
+                for (final char c : name.toCharArray()) {
+                    if (c == '_') {
+                        cap = true;
+                        continue;
+                    }
+                    builder.append(cap ? c : String.valueOf(c).toLowerCase());
+                    cap = false;
+                }
+                className = builder.toString();
+            }
+            final Class<?> clazz = findEntity(className);
             if (clazz == null) {
                 continue;
             }
@@ -155,6 +189,7 @@ public final class DisguiseUtil {
                     return "1_20_R3";
                 // just wild-guessing lol
                 case "1.20.5":
+                case "1.20.6":
                     return "1_20_R4";
                 case "1.21":
                     return "1_21_R1";
@@ -188,13 +223,30 @@ public final class DisguiseUtil {
         if (INT_VER < 17) {
             return getClass(PREFIX + name);
         }
-        for (final String path : new String[]{"animal", "monster", "ambient", "npc", "raid",
-                "monster.warden", "monster.piglin", "monster.hoglin", "boss.wither",
-                "boss.enderdragon", "animal.horse", "animal.allay", "animal.axolotl",
-                "animal.camel", "animal.frog", "animal.goat"}) {
-            final Class<?> clazz = getClass("net.minecraft.world.entity." + path + "." + name);
-            if (clazz != null) {
-                return clazz;
+        for (final String path : new String[]{
+                // animals
+                "animal", "animal.allay", "animal.armadillo",
+                "animal.axolotl", "animal.camel", "animal.frog",
+                "animal.horse", "animal.goat", "animal.sniffer",
+
+                // monster
+                "monster", "monster.warden", "monster.piglin", "monster.hoglin", "monster.breeze",
+
+                // other
+                "ambient", "npc", "raid", "boss.wither", "boss.enderdragon",
+
+                // root directory (so far only GlowSquid is like that)
+                ""
+        }) {
+            final String additon = path.isEmpty() ? "" : path + ".";
+            final Class<?> firstTry = getClass("net.minecraft.world.entity." + additon + name);
+            if (firstTry != null) {
+                return firstTry;
+            }
+
+            final Class<?> secondTry = getClass("net.minecraft.world.entity." + additon + "Entity" + name);
+            if (secondTry != null) {
+                return secondTry;
             }
         }
         return null;
@@ -430,15 +482,6 @@ public final class DisguiseUtil {
             signature = property.getSignature();
         }
         return new Skin(textures, signature);
-    }
-
-    /**
-     * Creates a {@link HashSet} of a provided array
-     */
-    public static <E> HashSet<E> setOf(final E... elements) {
-        HashSet<E> set = new HashSet(elements.length);
-        Collections.addAll(set, elements);
-        return set;
     }
 
 }

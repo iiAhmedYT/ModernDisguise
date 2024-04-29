@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>ModernExample</artifactId>
-    <version>${parent.version}</version>
+    <version>${project.parent.version}</version>
     <packaging>jar</packaging>
 
     <name>ModernExample</name>
