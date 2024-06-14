@@ -15,16 +15,25 @@ import java.util.logging.Level;
 
 public final class PacketListener extends ChannelDuplexHandler {
 
+    private static final String BUNDLE_PACKET_NAME = "ClientboundBundlePacket";
     private static final String PACKET_NAME;
     private static final Field PLAYER_ID;
+    private static Field PACKET_LIST;
 
     static {
         try {
-            PACKET_NAME = DisguiseUtil.IS_20_R2_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
+            PACKET_NAME = DisguiseUtil.IS_20_R4_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
             final Class<?> namedEntitySpawn = Class.forName((DisguiseUtil.INT_VER >= 17 ?
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
                     + PACKET_NAME);
-            PLAYER_ID = namedEntitySpawn.getDeclaredField(DisguiseUtil.IS_20_R2_PLUS ? "d" : "b");
+            PLAYER_ID = namedEntitySpawn.getDeclaredField(
+                    DisguiseUtil.IS_20_R4_PLUS ? "e" : DisguiseUtil.IS_20_R2_PLUS ? "d" : "b"
+            );
+            PLAYER_ID.setAccessible(true);
+            if (DisguiseUtil.IS_20_R2_PLUS) {
+                PACKET_LIST = Class.forName("net.minecraft.network.protocol.BundlePacket").getDeclaredField("a");
+                PACKET_LIST.setAccessible(true);
+            }
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -39,15 +48,43 @@ public final class PacketListener extends ChannelDuplexHandler {
     }
 
     @Override
-    public void write(final ChannelHandlerContext context, final Object packet, final ChannelPromise promise) throws Exception {
-        if (packet == null || !PACKET_NAME.equals(packet.getClass().getSimpleName())) {
-            super.write(context, packet, promise);
+    public void write(
+            final ChannelHandlerContext context,
+            final Object packet,
+            final ChannelPromise promise
+    ) throws Exception {
+        if (packet == null) {
+            super.write(context, null, promise);
             return;
         }
 
+        final String name = packet.getClass().getSimpleName();
+        if (PACKET_NAME.equals(name)) {
+            this.handleSpawnPacket(context, packet, packet, promise);
+            return;
+        } else if (BUNDLE_PACKET_NAME.equals(name)) {
+            final Iterable<?> iterable = (Iterable<?>) PACKET_LIST.get(packet);
+            for (final Object bundlePacket : iterable) {
+                final String packetName = bundlePacket.getClass().getSimpleName();
+                if (packetName.equals(PACKET_NAME)) {
+                    this.handleSpawnPacket(context, bundlePacket, packet, promise);
+                    return;
+                }
+            }
+        }
+
+        super.write(context, packet, promise);
+    }
+
+    private void handleSpawnPacket(
+            final ChannelHandlerContext context,
+            final Object spawnPacket,
+            final Object passPacket,
+            final ChannelPromise promise
+    ) throws Exception {
         UUID playerID;
         try {
-            playerID = (UUID) PLAYER_ID.get(packet);
+            playerID = (UUID) PLAYER_ID.get(spawnPacket);
         } catch (final Exception exception) {
             provider.getPlugin().getLogger().log(
                     Level.SEVERE,
@@ -61,7 +98,7 @@ public final class PacketListener extends ChannelDuplexHandler {
         }
 
         if (playerID == null) {
-            super.write(context, packet, promise);
+            super.write(context, passPacket, promise);
             return;
         }
 
@@ -71,7 +108,7 @@ public final class PacketListener extends ChannelDuplexHandler {
             return;
         }
 
-        super.write(context, packet, promise);
+        super.write(context, passPacket, promise);
     }
 
 }

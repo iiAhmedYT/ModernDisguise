@@ -20,35 +20,40 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Level;
 
 @SuppressWarnings("all")
 public final class DisguiseUtil {
 
-    public static final boolean IS_PAPER = findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
     public static final String VERSION_EXACT = Bukkit.getBukkitVersion().split("-")[0];
     public static final int INT_VER = Integer.parseInt(VERSION_EXACT.split("\\.")[1]);
+    public static final boolean IS_FOLIA = findClass("io.papermc.paper.threadedregions.RegionizedServer");
+    public static final boolean IS_PAPER = findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
+
+    // initialize after IS_PAPER is initialized
     public static final String VERSION = findVersion();
+    public static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
+    public static final boolean IS_20_R2_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION);
+    public static final boolean IS_20_R4_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION) && !"1_20_R2".equals(VERSION) && !"1_20_R3".equals(VERSION);
 
     public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
     public static final Field PROFILE_NAME;
     private static final String HANDLER_NAME = "ModernDisguise";
-    public static final boolean IS_SUPPORTED;
-    private static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
-    public static final boolean IS_20_R2_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION);
-    public static final boolean IS_20_R4_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION) && !"1_20_R2".equals(VERSION) && !"1_20_R3".equals(VERSION);
+    public static final boolean PRIMARY, SECONDARY;
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITY_FIELDS = new HashMap<>();
-    private static final Field CONNECTION, NETWORK_MANAGER, CHANNEL;
-    private static final Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
-    private static final Class<?> ENTITY_TYPES, WORLD;
     private static final Map PLAYERS_MAP;
+
+    public static Field CONNECTION, NETWORK_MANAGER, CHANNEL;
+    private static Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
+    private static Class<?> ENTITY_TYPES, WORLD;
     public static int found, living, registered;
 
     static {
         final boolean obf = INT_VER >= 17;
         try {
             final Class<?> craftPlayer;
-            if (IS_PAPER && (INT_VER > 20 || "1_20_R4".equals(VERSION))) {
+            if (IS_PAPER && IS_20_R4_PLUS) {
                 craftPlayer = Class.forName("org.bukkit.craftbukkit.entity.CraftPlayer");
             } else {
                 craftPlayer = Class.forName("org.bukkit.craftbukkit.v" + VERSION + ".entity.CraftPlayer");
@@ -71,8 +76,9 @@ public final class DisguiseUtil {
             throw new RuntimeException("Failed to load ModernDisguise's primary features", exception);
         }
 
-        IS_SUPPORTED = true;
-        final Class<?> entityLiving;
+        PRIMARY = true;
+        boolean secondary;
+        Class<?> entityLiving = null;
         try {
             entityLiving = Class.forName((obf ?
                     "net.minecraft.world.entity." : PREFIX)
@@ -113,67 +119,77 @@ public final class DisguiseUtil {
                     + "NetworkManager");
             CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ? "channel"
                     : (INT_VER > 18 || VERSION.equals("1_18_R2") ? (IS_20_R2_PLUS ? "n" : "m") : "k"));
-        } catch (final Exception exception) {
-            throw new RuntimeException("Failed to load ModernDisguise's secondary features (disguising as entities)", exception);
+            secondary = true;
+        } catch (final Throwable exception) {
+            secondary = false;
+            Bukkit.getServer().getLogger().log(Level.SEVERE, "Failed to load ModernDisguise's secondary features (disguising as entities)", exception);
         }
 
-        final Map<String, String> overrideNames = new HashMap<>();
-        overrideNames.put("ELDER_GUARDIAN", "GuardianElder");
-        overrideNames.put("WITHER_SKELETON", "SkeletonWither");
-        overrideNames.put("STRAY", "SkeletonStray");
-        overrideNames.put("HUSK", "ZombieHusk");
-        overrideNames.put("ZOMBIE_HORSE", "HorseZombie");
-        overrideNames.put("SKELETON_HORSE", "HorseSkeleton");
-        overrideNames.put("DONKEY", "HorseDonkey");
-        overrideNames.put("MULE", "HorseMule");
-        overrideNames.put("ILLUSIONER", "IllagerIllusioner");
-        overrideNames.put("GIANT", "GiantZombie");
-        overrideNames.put("ZOMBIFIED_PIGLIN", "PigZombie");
-        overrideNames.put("MOOSHROOM", "MushroomCow");
-        overrideNames.put("SNOW_GOLEM", "Snowman");
-        overrideNames.put("PUFFERFISH", "PufferFish");
-        overrideNames.put("TRADER_LLAMA", "LlamaTrader");
-        overrideNames.put("WANDERING_TRADER", "VillagerTrader");
+        SECONDARY = secondary;
 
-        for (final EntityType type : EntityType.values()) {
-            if (!type.isAlive())  {
-                continue;
-            }
-
-            final String name = type.name();
-            final String className;
-            if (overrideNames.containsKey(name)) {
-                className = overrideNames.get(name);
-            } else {
-                final StringBuilder builder = new StringBuilder();
-                boolean cap = true;
-                for (final char c : name.toCharArray()) {
-                    if (c == '_') {
-                        cap = true;
-                        continue;
-                    }
-                    builder.append(cap ? c : String.valueOf(c).toLowerCase());
-                    cap = false;
+        if (SECONDARY) {
+            final Map<String, String> overrideNames = new HashMap<String, String>() {
+                {
+                    put("ELDER_GUARDIAN", "GuardianElder");
+                    put("WITHER_SKELETON", "SkeletonWither");
+                    put("STRAY", "SkeletonStray");
+                    put("HUSK", "ZombieHusk");
+                    put("ZOMBIE_HORSE", "HorseZombie");
+                    put("SKELETON_HORSE", "HorseSkeleton");
+                    put("DONKEY", "HorseDonkey");
+                    put("MULE", "HorseMule");
+                    put("ILLUSIONER", "IllagerIllusioner");
+                    put("GIANT", "GiantZombie");
+                    put("ZOMBIFIED_PIGLIN", "PigZombie");
+                    put("MOOSHROOM", "MushroomCow");
+                    put("SNOW_GOLEM", "Snowman");
+                    put("PUFFERFISH", "PufferFish");
+                    put("TRADER_LLAMA", "LlamaTrader");
+                    put("WANDERING_TRADER", "VillagerTrader");
                 }
-                className = builder.toString();
+            };
+
+            for (final EntityType type : EntityType.values()) {
+                if (!type.isAlive())  {
+                    continue;
+                }
+
+                final String name = type.name();
+                final String className;
+                if (overrideNames.containsKey(name)) {
+                    className = overrideNames.get(name);
+                } else {
+                    final StringBuilder builder = new StringBuilder();
+                    boolean cap = true;
+                    for (final char c : name.toCharArray()) {
+                        if (c == '_') {
+                            cap = true;
+                            continue;
+                        }
+                        builder.append(cap ? c : String.valueOf(c).toLowerCase());
+                        cap = false;
+                    }
+                    className = builder.toString();
+                }
+                final Class<?> clazz = findEntity(className);
+                if (clazz == null) {
+                    continue;
+                }
+                found++;
+                if (!entityLiving.isAssignableFrom(clazz)) {
+                    continue;
+                }
+                living++;
+                final Constructor<?> constructor = findConstructor(clazz, type);
+                if (constructor == null) {
+                    ENTITY_FIELDS.remove(type);
+                    continue;
+                }
+                registered++;
+                ENTITIES.put(type, constructor);
             }
-            final Class<?> clazz = findEntity(className);
-            if (clazz == null) {
-                continue;
-            }
-            found++;
-            if (!entityLiving.isAssignableFrom(clazz)) {
-                continue;
-            }
-            living++;
-            final Constructor<?> constructor = findConstructor(clazz, type);
-            if (constructor == null) {
-                ENTITY_FIELDS.remove(type);
-                continue;
-            }
-            registered++;
-            ENTITIES.put(type, constructor);
         }
+
     }
 
     private static String findVersion() {
@@ -187,7 +203,6 @@ public final class DisguiseUtil {
                     return "1_20_R2";
                 case "1.20.4":
                     return "1_20_R3";
-                // just wild-guessing lol
                 case "1.20.5":
                 case "1.20.6":
                     return "1_20_R4";

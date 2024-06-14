@@ -9,29 +9,17 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("all")
-public final class VS1_20_R3 extends DisguiseProvider {
-
-    private final Field id;
-
-    {
-        try {
-            id = ClientboundAddEntityPacket.class.getDeclaredField("c");
-            id.setAccessible(true);
-        } catch (final NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+public final class VS1_21_R1 extends DisguiseProvider {
 
     @Override
     public void refreshAsPlayer(@NotNull final Player player) {
@@ -62,23 +50,36 @@ public final class VS1_20_R3 extends DisguiseProvider {
         if (!isDisguised(refreshed) || targets.length == 0 || !getInfo(refreshed).hasEntity()) {
             return;
         }
-        final ServerPlayer rfep = ((CraftPlayer) refreshed).getHandle();
+
+        final ServerPlayer handle = ((CraftPlayer) refreshed).getHandle();
         final org.bukkit.entity.EntityType type = getInfo(refreshed).getEntityType();
+
         final ClientboundAddEntityPacket spawn;
         final Collection<AttributeInstance> attributesSet;
         try {
-            final LivingEntity entity = (LivingEntity) DisguiseUtil.createEntity(type, rfep.level());
-            attributesSet = entity.getAttributes().getDirtyAttributes();
-
-            spawn = new ClientboundAddEntityPacket(entity);
-            id.set(spawn, refreshed.getEntityId());
+            final LivingEntity entity = (LivingEntity) DisguiseUtil.createEntity(type, handle.level());
+            attributesSet = entity.getAttributes().getAttributesToUpdate();
+            spawn = new ClientboundAddEntityPacket(
+                    handle.getId(),
+                    entity.getUUID(),
+                    handle.getX(),
+                    handle.getY(),
+                    handle.getZ(),
+                    handle.getXRot(),
+                    handle.getYRot(),
+                    entity.getType(),
+                    0,
+                    handle.getDeltaMovement(),
+                    handle.getYHeadRot()
+            );
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
-        final ClientboundTeleportEntityPacket tp = new ClientboundTeleportEntityPacket(rfep);
+        final ClientboundTeleportEntityPacket tp = new ClientboundTeleportEntityPacket(handle);
         final ClientboundUpdateAttributesPacket attributes = new ClientboundUpdateAttributesPacket(refreshed.getEntityId(), attributesSet);
-        final List<Packet<ClientGamePacketListener>> packets = new ArrayList<Packet<ClientGamePacketListener>>(remove ? 4 : 3) {
+
+        final List<Packet<? super ClientGamePacketListener>> packets = new ArrayList<Packet<? super ClientGamePacketListener>>() {
             {
                 if (remove) {
                     add(new ClientboundRemoveEntitiesPacket(refreshed.getEntityId()));
