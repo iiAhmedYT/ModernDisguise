@@ -13,7 +13,6 @@ import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,17 +20,6 @@ import java.util.List;
 
 @SuppressWarnings("all")
 public final class VS1_20_R4 extends DisguiseProvider {
-
-    private final Field id;
-
-    {
-        try {
-            id = ClientboundAddEntityPacket.class.getDeclaredField("d");
-            id.setAccessible(true);
-        } catch (final NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public void refreshAsPlayer(@NotNull final Player player) {
@@ -84,7 +72,6 @@ public final class VS1_20_R4 extends DisguiseProvider {
                     handle.getDeltaMovement(),
                     handle.getYHeadRot()
             );
-            id.set(spawn, refreshed.getEntityId());
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
