@@ -95,14 +95,16 @@ public abstract class DisguiseProvider {
             return DisguiseResponse.FAIL_ENTITY_NOT_SUPPORTED;
         }
 
-        String oldName = player.getName();
+        String realName = player.getName();
+        String nickname = realName;
         final GameProfile profile = DisguiseUtil.getProfile(player);
         if (!player.isOnline() || profile == null) {
             return DisguiseResponse.FAIL_PROFILE_NOT_FOUND;
         }
 
         if (disguise.hasName() && !disguise.getName().equals(player.getName())) {
-            String name = disguise.getName();
+            final String name = disguise.getName();
+
             if (name.length() > nameLength) {
                 return DisguiseResponse.FAIL_NAME_TOO_LONG;
             }
@@ -111,11 +113,12 @@ public abstract class DisguiseProvider {
                 return DisguiseResponse.FAIL_NAME_INVALID;
             }
 
-            final Player searched = Bukkit.getPlayer(name);
-            if (searched != null && searched.isOnline()) {
+            final Player found = Bukkit.getPlayer(name);
+            if (found != null && found.isOnline()) {
                 return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
             }
 
+            nickname = name;
             try {
                 DisguiseUtil.PROFILE_NAME.set(profile, name);
                 DisguiseUtil.register(name, player);
@@ -125,27 +128,42 @@ public abstract class DisguiseProvider {
             }
         }
 
-        Skin oldSkin = null;
+        Skin realSkin = null;
         if (disguise.hasSkin()) {
             final Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
             if (optional.isPresent()) {
-                oldSkin = DisguiseUtil.getSkin(optional.get());
+                realSkin = DisguiseUtil.getSkin(optional.get());
                 profile.getProperties().removeAll("textures");
             }
             profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
         }
 
+        EntityType type = disguise.getEntityType();
         if (isDisguised(player)) {
             final PlayerInfo info = playerInfo.remove(player.getUniqueId());
             if (info.hasName()) {
                 DisguiseUtil.unregister(info.getNickname());
+                if (disguise.hasName()) nickname = info.getNickname();
             }
             if (info.hasSkin()) {
-                oldSkin = info.getSkin();
+                realSkin = info.getSkin();
             }
-            oldName = info.getName();
+            realName = info.getName();
+
+            if (info.hasEntity() && !disguise.hasEntity()) {
+                type = info.getEntityType();
+            }
         }
-        playerInfo.put(player.getUniqueId(), new PlayerInfo(oldName, disguise.getName(), oldSkin, disguise.getEntityType()));
+
+        playerInfo.put(
+                player.getUniqueId(),
+                new PlayerInfo(
+                        realName,
+                        nickname,
+                        realSkin,
+                        type
+                )
+        );
 
         if (disguise.hasName() || disguise.hasSkin()) {
             final boolean flying = player.isFlying();
