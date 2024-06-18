@@ -22,7 +22,7 @@ public final class PacketListener extends ChannelDuplexHandler {
 
     static {
         try {
-            PACKET_NAME = DisguiseUtil.IS_20_R4_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
+            PACKET_NAME = DisguiseUtil.IS_20_R2_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
             final Class<?> namedEntitySpawn = Class.forName((DisguiseUtil.INT_VER >= 17 ?
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
                     + PACKET_NAME);
