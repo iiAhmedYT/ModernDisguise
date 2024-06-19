@@ -32,16 +32,20 @@ public final class VS1_16_R1 extends DisguiseProvider {
             return;
         }
         final Location location = player.getLocation();
-        final long seed = player.getWorld().getSeed();
         final EntityPlayer ep = ((CraftPlayer) player).getHandle();
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                 ep));
-        final World world = ep.world;
-        ep.playerConnection.sendPacket(new PacketPlayOutRespawn(world.getTypeKey(),
-                world.getDimensionKey(),
-                seed, ep.playerInteractManager.getGameMode(),
-                ep.playerInteractManager.getGameMode(), false, false, true));
+        ep.playerConnection.sendPacket(
+                new PacketPlayOutRespawn(
+                        ep.world.getTypeKey(),
+                        ep.world.getDimensionKey(),
+                        player.getWorld().getSeed(),
+                        ep.playerInteractManager.getGameMode(),
+                        ep.playerInteractManager.getGameMode(),
+                        false, false, true
+                )
+        );
         player.teleport(location);
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,

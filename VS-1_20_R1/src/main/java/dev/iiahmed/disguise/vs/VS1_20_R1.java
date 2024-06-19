@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Collections;
 
-@SuppressWarnings("all")
 public final class VS1_20_R1 extends DisguiseProvider {
 
     @Override
@@ -25,14 +24,19 @@ public final class VS1_20_R1 extends DisguiseProvider {
             return;
         }
         final Location location = player.getLocation();
-        final long seed = player.getWorld().getSeed();
         final ServerPlayer ep = ((CraftPlayer) player).getHandle();
         ep.connection.send(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(ep.getUUID())));
-        final Level level = ep.level();
-        ep.connection.send(new ClientboundRespawnPacket(level.dimensionTypeId(),
-                level.dimension(), seed, ep.gameMode.getGameModeForPlayer(),
-                ep.gameMode.getGameModeForPlayer(), false, false, ClientboundRespawnPacket.KEEP_ALL_DATA,
-                ep.getLastDeathLocation(), player.getPortalCooldown()));
+        ep.connection.send(
+                new ClientboundRespawnPacket(
+                        ep.level().dimensionTypeId(),
+                        ep.level().dimension(),
+                        player.getWorld().getSeed(),
+                        ep.gameMode.getGameModeForPlayer(),
+                        ep.gameMode.getGameModeForPlayer(),
+                        false, false, ClientboundRespawnPacket.KEEP_ALL_DATA,
+                        ep.getLastDeathLocation(), player.getPortalCooldown()
+                )
+        );
         player.teleport(location);
         ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
                 ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,

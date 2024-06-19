@@ -13,22 +13,9 @@ import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 
-@SuppressWarnings("all")
 public final class VS1_18_R2 extends DisguiseProvider {
-
-    private final Field id;
-
-    {
-        try {
-            id = ClientboundAddEntityPacket.class.getDeclaredField("c");
-            id.setAccessible(true);
-        } catch (final NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public void refreshAsPlayer(@NotNull final Player player) {
@@ -36,15 +23,20 @@ public final class VS1_18_R2 extends DisguiseProvider {
             return;
         }
         final Location location = player.getLocation();
-        final long seed = player.getWorld().getSeed();
         final ServerPlayer ep = ((CraftPlayer) player).getHandle();
         ep.connection.send(new ClientboundPlayerInfoPacket(
                 ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,
                 ep));
-        final Level level = ep.level;
-        ep.connection.send(new ClientboundRespawnPacket(level.dimensionTypeRegistration(),
-                level.dimension(), seed, ep.gameMode.getGameModeForPlayer(),
-                ep.gameMode.getGameModeForPlayer(), false, false, true));
+        ep.connection.send(
+                new ClientboundRespawnPacket(
+                        ep.level.dimensionTypeRegistration(),
+                        ep.level.dimension(),
+                        player.getWorld().getSeed(),
+                        ep.gameMode.getGameModeForPlayer(),
+                        ep.gameMode.getGameModeForPlayer(),
+                        false, false, true
+                )
+        );
         player.teleport(location);
         ep.connection.send(new ClientboundPlayerInfoPacket(
                 ClientboundPlayerInfoPacket.Action.ADD_PLAYER,
@@ -61,21 +53,31 @@ public final class VS1_18_R2 extends DisguiseProvider {
         if (!isDisguised(refreshed) || targets.length == 0 || !getInfo(refreshed).hasEntity()) {
             return;
         }
-        final ServerPlayer rfep = ((CraftPlayer) refreshed).getHandle();
+        final ServerPlayer handle = ((CraftPlayer) refreshed).getHandle();
         final org.bukkit.entity.EntityType type = getInfo(refreshed).getEntityType();
         final ClientboundAddEntityPacket spawn;
         final Collection<AttributeInstance> attributesSet;
         try {
-            final LivingEntity entity = (LivingEntity) DisguiseUtil.createEntity(type, rfep.getLevel());
+            final LivingEntity entity = (LivingEntity) DisguiseUtil.createEntity(type, handle.getLevel());
             attributesSet = entity.getAttributes().getDirtyAttributes();
 
-            spawn = new ClientboundAddEntityPacket(entity);
-            id.set(spawn, refreshed.getEntityId());
+            spawn = new ClientboundAddEntityPacket(
+                    handle.getId(),
+                    entity.getUUID(),
+                    handle.getX(),
+                    handle.getY(),
+                    handle.getZ(),
+                    handle.getXRot(),
+                    handle.getYRot(),
+                    entity.getType(),
+                    0,
+                    handle.getDeltaMovement()
+            );
         } catch (final Exception e) {
             throw new RuntimeException("Couldn't change entityID for " + refreshed.getName(), e);
         }
         final ClientboundRemoveEntitiesPacket destroy = new ClientboundRemoveEntitiesPacket(refreshed.getEntityId());
-        final ClientboundTeleportEntityPacket tp = new ClientboundTeleportEntityPacket(rfep);
+        final ClientboundTeleportEntityPacket tp = new ClientboundTeleportEntityPacket(handle);
         final ClientboundUpdateAttributesPacket attributes = new ClientboundUpdateAttributesPacket(refreshed.getEntityId(), attributesSet);
         for (final Player player : targets) {
             if (player == refreshed) continue;

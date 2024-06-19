@@ -25,38 +25,29 @@ import java.util.logging.Level;
 @SuppressWarnings("all")
 public final class DisguiseUtil {
 
-    public static final String VERSION_EXACT = Bukkit.getBukkitVersion().split("-")[0];
-    public static final int INT_VER = Integer.parseInt(VERSION_EXACT.split("\\.")[1]);
-    public static final boolean IS_FOLIA = findClass("io.papermc.paper.threadedregions.RegionizedServer");
-    public static final boolean IS_PAPER = findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
-
-    // initialize after IS_PAPER is initialized
-    public static final String VERSION = findVersion();
-    public static final boolean IS_13_R2_PLUS = INT_VER > 12 && !"1_13_R1".equals(VERSION);
-    public static final boolean IS_20_R2_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION);
-    public static final boolean IS_20_R4_PLUS = INT_VER > 19 && !"1_20_R1".equals(VERSION) && !"1_20_R2".equals(VERSION) && !"1_20_R3".equals(VERSION);
-
-    public static final String PREFIX = "net.minecraft.server." + (INT_VER < 17 ? "v" + VERSION + "." : "");
-    public static final Field PROFILE_NAME;
     private static final String HANDLER_NAME = "ModernDisguise";
-    public static final boolean PRIMARY, SECONDARY;
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITY_FIELDS = new HashMap<>();
-    private static final Map PLAYERS_MAP;
+    public static final String PREFIX = "net.minecraft.server." + (Version.MINOR < 17 ? "v" + Version.NMS + "." : "");
+
+    public static final Field PROFILE_NAME;
+    public static final boolean PRIMARY, SECONDARY;
 
     public static Field CONNECTION, NETWORK_MANAGER, CHANNEL;
-    private static Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
-    private static Class<?> ENTITY_TYPES, WORLD;
     public static int found, living, registered;
 
+    private static Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
+    private static Class<?> ENTITY_TYPES, WORLD;
+    private static final Map PLAYERS_MAP;
+
     static {
-        final boolean obf = INT_VER >= 17;
+        final boolean obf = Version.MINOR >= 17;
         try {
             final Class<?> craftPlayer;
-            if (IS_PAPER && IS_20_R4_PLUS) {
+            if (Version.IS_PAPER && Version.IS_20_R4_PLUS) {
                 craftPlayer = Class.forName("org.bukkit.craftbukkit.entity.CraftPlayer");
             } else {
-                craftPlayer = Class.forName("org.bukkit.craftbukkit.v" + VERSION + ".entity.CraftPlayer");
+                craftPlayer = Class.forName("org.bukkit.craftbukkit.v" + Version.NMS + ".entity.CraftPlayer");
             }
 
             GET_PROFILE = craftPlayer.getMethod("getProfile");
@@ -87,7 +78,7 @@ public final class DisguiseUtil {
                     "net.minecraft.world.level." : PREFIX)
                     + "World");
 
-            if (INT_VER >= 13) {
+            if (Version.MINOR >= 13) {
                 ENTITY_TYPES = Class.forName((obf ?
                         "net.minecraft.world.entity." : PREFIX)
                         + "EntityTypes");
@@ -100,16 +91,16 @@ public final class DisguiseUtil {
             final Class<?> entityPlayer = Class.forName((obf ?
                     PREFIX + "level." : PREFIX)
                     + "EntityPlayer");
-            CONNECTION = entityPlayer.getDeclaredField(obf ? (INT_VER < 20 ? "b" : "c") : "playerConnection");
+            CONNECTION = entityPlayer.getDeclaredField(obf ? (Version.MINOR < 20 ? "b" : "c") : "playerConnection");
             CONNECTION.setAccessible(true);
             final Class<?> playerConnection = Class.forName(
-                    (obf ? PREFIX + "network." : PREFIX) + (IS_20_R2_PLUS ? "ServerCommonPacketListenerImpl" : "PlayerConnection"));
-            NETWORK_MANAGER = playerConnection.getDeclaredField(INT_VER < 17 ? "networkManager" :
+                    (obf ? PREFIX + "network." : PREFIX) + (Version.IS_20_R2_PLUS ? "ServerCommonPacketListenerImpl" : "PlayerConnection"));
+            NETWORK_MANAGER = playerConnection.getDeclaredField(Version.MINOR < 17 ? "networkManager" :
                     (
-                            INT_VER <= 18 ? "a" :
+                            Version.MINOR <= 18 ? "a" :
                                     (
-                                            INT_VER < 20 ? "b"
-                                                    : IS_20_R2_PLUS ? (IS_20_R4_PLUS ? "e" : "c") : "h"
+                                            Version.MINOR < 20 ? "b"
+                                                    : Version.IS_20_R2_PLUS ? (Version.IS_20_R4_PLUS ? "e" : "c") : "h"
                                     )
                     )
             );
@@ -117,8 +108,8 @@ public final class DisguiseUtil {
             final Class<?> networkManager = Class.forName((obf ?
                     "net.minecraft.network." : PREFIX)
                     + "NetworkManager");
-            CHANNEL = networkManager.getDeclaredField(INT_VER < 17 ? "channel"
-                    : (INT_VER > 18 || VERSION.equals("1_18_R2") ? (IS_20_R2_PLUS ? "n" : "m") : "k"));
+            CHANNEL = networkManager.getDeclaredField(Version.MINOR < 17 ? "channel"
+                    : (Version.MINOR > 18 || Version.NMS.equals("1_18_R2") ? (Version.IS_20_R2_PLUS ? "n" : "m") : "k"));
             secondary = true;
         } catch (final Throwable exception) {
             secondary = false;
@@ -192,36 +183,13 @@ public final class DisguiseUtil {
 
     }
 
-    private static String findVersion() {
-        if (IS_PAPER && INT_VER >= 20) {
-            switch (VERSION_EXACT) {
-                case "1.20":
-                case "1.20.1":
-                    return "1_20_R1";
-                case "1.20.2":
-                case "1.20.3":
-                    return "1_20_R2";
-                case "1.20.4":
-                    return "1_20_R3";
-                case "1.20.5":
-                case "1.20.6":
-                    return "1_20_R4";
-                case "1.21":
-                    return "1_21_R1";
-                default:
-                    return "UNKNOWN";
-            }
-        }
-        return Bukkit.getServer().getClass().getPackage().getName().substring(24);
-    }
-
     /**
      * Finds any {@link Class} of the provided paths
      *
      * @param paths all possible class paths
      * @return false if the {@link Class} was NOT found
      */
-    private static boolean findClass(final String... paths) {
+    public static boolean findClass(final String... paths) {
         for (final String path : paths) {
             if (getClass(path) != null) return true;
         }
@@ -235,7 +203,7 @@ public final class DisguiseUtil {
      * @return null if the NMS entity was NOT found
      */
     private static Class<?> findEntity(final String name) {
-        if (INT_VER < 17) {
+        if (Version.MINOR < 17) {
             return getClass(PREFIX + name);
         }
         for (final String path : new String[]{
@@ -274,7 +242,7 @@ public final class DisguiseUtil {
      * @return null if the NMS entity was NOT found
      */
     private static Constructor<?> findConstructor(@NotNull final Class<?> entityClass, final EntityType type) {
-        if (INT_VER < 13) {
+        if (Version.MINOR < 13) {
             return getConstructor(entityClass, WORLD);
         }
         try {
@@ -282,7 +250,7 @@ public final class DisguiseUtil {
             if (obj == null) {
                 return null;
             }
-            if (INT_VER == 13) {
+            if (Version.MINOR == 13) {
                 ENTITY_FIELDS.put(type, obj);
             } else {
                 final Optional<?> o = (Optional<?>) obj;
@@ -372,7 +340,7 @@ public final class DisguiseUtil {
     public static void register(@NotNull final String name, @NotNull final Player player) {
         try {
             final Object entityPlayer = GET_HANDLE.invoke(player);
-            PLAYERS_MAP.put(IS_13_R2_PLUS ? name.toLowerCase(Locale.ENGLISH) : name, entityPlayer);
+            PLAYERS_MAP.put(Version.IS_13_R2_PLUS ? name.toLowerCase(Locale.ENGLISH) : name, entityPlayer);
         } catch (final Exception exception) {
             exception.printStackTrace();
         }
@@ -384,7 +352,7 @@ public final class DisguiseUtil {
      * @param name the unregistered name
      */
     public static void unregister(@NotNull final String name) {
-        PLAYERS_MAP.remove(IS_13_R2_PLUS ? name.toLowerCase(Locale.ENGLISH) : name);
+        PLAYERS_MAP.remove(Version.IS_13_R2_PLUS ? name.toLowerCase(Locale.ENGLISH) : name);
     }
 
     /**
@@ -484,8 +452,8 @@ public final class DisguiseUtil {
      */
     @SuppressWarnings("all")
     public static @NotNull Skin getSkin(@NotNull final Property property) {
-        String textures, signature;
-        if (IS_20_R2_PLUS) {
+        final String textures, signature;
+        if (Version.IS_20_R2_PLUS) {
             try {
                 textures = (String) Property.class.getMethod("value").invoke(property);
                 signature = (String) Property.class.getMethod("signature").invoke(property);

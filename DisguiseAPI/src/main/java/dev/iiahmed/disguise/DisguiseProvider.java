@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public abstract class DisguiseProvider {
 
     private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
-    private boolean overrideChat = DisguiseUtil.INT_VER > 18;
+    private boolean overrideChat = Version.MINOR > 18;
     private int nameLength = 16;
 
     private final Map<UUID, PlayerInfo> playerInfo = new ConcurrentHashMap<>();
@@ -56,6 +56,7 @@ public abstract class DisguiseProvider {
      * @param overrideChat A boolean flag to allow or disallow the chat system override.
      * @see DisguiseProvider#shouldOverrideChat()
      */
+    @SuppressWarnings("unused")
     public void allowOverrideChat(boolean overrideChat) {
         this.overrideChat = overrideChat;
     }
@@ -167,9 +168,17 @@ public abstract class DisguiseProvider {
 
         if (disguise.hasName() || disguise.hasSkin()) {
             final boolean flying = player.isFlying();
-            refreshAsPlayer(player);
+            final int foodLevel = player.getFoodLevel();
+            final float saturation = player.getSaturation();
+            final float exhaustion = player.getExhaustion();
+
+            this.refreshAsPlayer(player);
+
             player.teleport(player.getLocation());
             player.setFlying(flying);
+            player.setFoodLevel(foodLevel);
+            player.setSaturation(saturation);
+            player.setExhaustion(exhaustion);
         }
 
         if (disguise.hasEntity()) {

@@ -11,7 +11,7 @@ public final class DisguiseManager {
     private static final DisguiseProvider PROVIDER;
 
     static {
-        switch (DisguiseUtil.VERSION) {
+        switch (Version.NMS) {
             case "1_8_R3":
                 PROVIDER = new VS1_8_R3();
                 break;

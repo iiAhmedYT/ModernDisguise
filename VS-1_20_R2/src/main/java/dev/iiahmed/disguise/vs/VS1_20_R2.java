@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Collections;
 
-@SuppressWarnings("all")
 public final class VS1_20_R2 extends DisguiseProvider {
 
     @Override
@@ -26,7 +25,12 @@ public final class VS1_20_R2 extends DisguiseProvider {
         final Location location = player.getLocation();
         final ServerPlayer ep = ((CraftPlayer) player).getHandle();
         ep.connection.send(new ClientboundPlayerInfoRemovePacket(Collections.singletonList(ep.getUUID())));
-        ep.connection.send(new ClientboundRespawnPacket(ep.createCommonSpawnInfo(ep.serverLevel()), ClientboundRespawnPacket.KEEP_ALL_DATA));
+        ep.connection.send(
+                new ClientboundRespawnPacket(
+                        ep.createCommonSpawnInfo(ep.serverLevel()),
+                        ClientboundRespawnPacket.KEEP_ALL_DATA
+                )
+        );
         player.teleport(location);
         ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
                 ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,

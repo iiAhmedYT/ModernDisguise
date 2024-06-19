@@ -36,9 +36,14 @@ public final class VS1_13_R2 extends DisguiseProvider {
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                 ep));
-        final World world = ep.world;
-        ep.playerConnection.sendPacket(new PacketPlayOutRespawn(ep.dimension, world.getDifficulty(),
-                world.getWorldData().getType(), ep.playerInteractManager.getGameMode()));
+        ep.playerConnection.sendPacket(
+                new PacketPlayOutRespawn(
+                        ep.dimension,
+                        ep.world.getDifficulty(),
+                        ep.world.getWorldData().getType(),
+                        ep.playerInteractManager.getGameMode()
+                )
+        );
         player.teleport(location);
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,

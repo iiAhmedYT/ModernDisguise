@@ -3,6 +3,7 @@ package dev.iiahmed.disguise.listener;
 import dev.iiahmed.disguise.DisguiseManager;
 import dev.iiahmed.disguise.DisguiseProvider;
 import dev.iiahmed.disguise.DisguiseUtil;
+import dev.iiahmed.disguise.Version;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -22,15 +23,15 @@ public final class PacketListener extends ChannelDuplexHandler {
 
     static {
         try {
-            PACKET_NAME = DisguiseUtil.IS_20_R2_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
-            final Class<?> namedEntitySpawn = Class.forName((DisguiseUtil.INT_VER >= 17 ?
+            PACKET_NAME = Version.IS_20_R2_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
+            final Class<?> namedEntitySpawn = Class.forName((Version.MINOR >= 17 ?
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
                     + PACKET_NAME);
             PLAYER_ID = namedEntitySpawn.getDeclaredField(
-                    DisguiseUtil.IS_20_R4_PLUS ? "e" : DisguiseUtil.IS_20_R2_PLUS ? "d" : "b"
+                    Version.IS_20_R4_PLUS ? "e" : Version.IS_20_R2_PLUS ? "d" : "b"
             );
             PLAYER_ID.setAccessible(true);
-            if (DisguiseUtil.IS_20_R2_PLUS) {
+            if (Version.IS_20_R2_PLUS) {
                 PACKET_LIST = Class.forName("net.minecraft.network.protocol.BundlePacket").getDeclaredField("a");
                 PACKET_LIST.setAccessible(true);
             }
@@ -89,7 +90,7 @@ public final class PacketListener extends ChannelDuplexHandler {
             provider.getPlugin().getLogger().log(
                     Level.SEVERE,
                     "[ModernDisguise] Couldn't get a player's UUID, please report if this ever happens to you.\n"
-                            + "Version: " + DisguiseUtil.VERSION + " (" + DisguiseUtil.INT_VER + ")\n"
+                            + "Version: " + Version.NMS + " (" + Version.VERSION_EXACT + ")\n"
                             + "Packet Name: " + PACKET_NAME + "\n"
                             + "This error is not supposed to happen however it is harmless & won't block any packet from being sent.",
                     exception
