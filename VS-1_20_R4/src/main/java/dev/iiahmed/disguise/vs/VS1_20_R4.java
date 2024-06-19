@@ -1,7 +1,7 @@
 package dev.iiahmed.disguise.vs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.DisguiseUtil;
+import dev.iiahmed.disguise.util.DisguiseUtil;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;

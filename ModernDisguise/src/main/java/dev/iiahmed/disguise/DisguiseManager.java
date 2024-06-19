@@ -1,6 +1,7 @@
 package dev.iiahmed.disguise;
 
 import dev.iiahmed.disguise.listener.PlayerListener;
+import dev.iiahmed.disguise.util.Version;
 import dev.iiahmed.disguise.vs.*;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

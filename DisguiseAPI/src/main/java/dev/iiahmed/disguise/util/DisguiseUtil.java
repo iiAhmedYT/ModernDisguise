@@ -1,7 +1,10 @@
-package dev.iiahmed.disguise;
+package dev.iiahmed.disguise.util;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import dev.iiahmed.disguise.Skin;
+import dev.iiahmed.disguise.util.reflection.FieldAccessor;
+import dev.iiahmed.disguise.util.reflection.Reflections;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import org.bukkit.Bukkit;
@@ -22,26 +25,29 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 
-@SuppressWarnings("all")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class DisguiseUtil {
 
     private static final String HANDLER_NAME = "ModernDisguise";
     private static final HashMap<EntityType, Constructor<?>> ENTITIES = new HashMap<>();
     private static final HashMap<EntityType, Object> ENTITY_FIELDS = new HashMap<>();
-    public static final String PREFIX = "net.minecraft.server." + (Version.MINOR < 17 ? "v" + Version.NMS + "." : "");
+    public static final String PREFIX = "net.minecraft.server." + (Version.isBelow(17) ? "v" + Version.NMS + "." : "");
 
     public static final Field PROFILE_NAME;
     public static final boolean PRIMARY, SECONDARY;
 
-    public static Field CONNECTION, NETWORK_MANAGER, CHANNEL;
+    public static Field CONNECTION;
+    public static Field NETWORK_MANAGER;
+    public static FieldAccessor<Channel> CHANNEL;
     public static int found, living, registered;
 
-    private static Method GET_PROFILE, GET_HANDLE, GET_ENTITY;
+    private static final Method GET_PROFILE, GET_HANDLE;
+    private static Method GET_ENTITY;
     private static Class<?> ENTITY_TYPES, WORLD;
     private static final Map PLAYERS_MAP;
 
     static {
-        final boolean obf = Version.MINOR >= 17;
+        final boolean obf = Version.isOrOver(17);
         try {
             final Class<?> craftPlayer;
             if (Version.IS_PAPER && Version.IS_20_R4_PLUS) {
@@ -78,38 +84,33 @@ public final class DisguiseUtil {
                     "net.minecraft.world.level." : PREFIX)
                     + "World");
 
-            if (Version.MINOR >= 13) {
+            if (Version.isOrOver(13)) {
                 ENTITY_TYPES = Class.forName((obf ?
                         "net.minecraft.world.entity." : PREFIX)
                         + "EntityTypes");
                 GET_ENTITY = ENTITY_TYPES.getMethod("a", String.class);
-            } else {
-                ENTITY_TYPES = null;
-                GET_ENTITY = null;
             }
 
             final Class<?> entityPlayer = Class.forName((obf ?
                     PREFIX + "level." : PREFIX)
                     + "EntityPlayer");
-            CONNECTION = entityPlayer.getDeclaredField(obf ? (Version.MINOR < 20 ? "b" : "c") : "playerConnection");
+            CONNECTION = entityPlayer.getDeclaredField(obf ? (Version.isBelow(20) ? "b" : "c") : "playerConnection");
             CONNECTION.setAccessible(true);
             final Class<?> playerConnection = Class.forName(
-                    (obf ? PREFIX + "network." : PREFIX) + (Version.IS_20_R2_PLUS ? "ServerCommonPacketListenerImpl" : "PlayerConnection"));
-            NETWORK_MANAGER = playerConnection.getDeclaredField(Version.MINOR < 17 ? "networkManager" :
-                    (
-                            Version.MINOR <= 18 ? "a" :
-                                    (
-                                            Version.MINOR < 20 ? "b"
-                                                    : Version.IS_20_R2_PLUS ? (Version.IS_20_R4_PLUS ? "e" : "c") : "h"
-                                    )
+                    (obf ? PREFIX + "network." : PREFIX) + (Version.IS_20_R2_PLUS ? "ServerCommonPacketListenerImpl" : "PlayerConnection")
+            );
+            NETWORK_MANAGER = playerConnection.getDeclaredField(
+                    Version.isBelow(17) ? "networkManager" : (
+                            Version.isOrBelow(18) ? "a" : (
+                                            Version.isBelow(20) ? "b" : Version.IS_20_R2_PLUS ? (Version.IS_20_R4_PLUS ? "e" : "c") : "h"
+                            )
                     )
             );
             NETWORK_MANAGER.setAccessible(true);
             final Class<?> networkManager = Class.forName((obf ?
                     "net.minecraft.network." : PREFIX)
                     + "NetworkManager");
-            CHANNEL = networkManager.getDeclaredField(Version.MINOR < 17 ? "channel"
-                    : (Version.MINOR > 18 || Version.NMS.equals("1_18_R2") ? (Version.IS_20_R2_PLUS ? "n" : "m") : "k"));
+            CHANNEL = Reflections.getField(networkManager, Channel.class);
             secondary = true;
         } catch (final Throwable exception) {
             secondary = false;
@@ -184,27 +185,14 @@ public final class DisguiseUtil {
     }
 
     /**
-     * Finds any {@link Class} of the provided paths
-     *
-     * @param paths all possible class paths
-     * @return false if the {@link Class} was NOT found
-     */
-    public static boolean findClass(final String... paths) {
-        for (final String path : paths) {
-            if (getClass(path) != null) return true;
-        }
-        return false;
-    }
-
-    /**
      * Finds the {@link Class} of any NMS entity
      *
      * @param name the name of the NMS entity
      * @return null if the NMS entity was NOT found
      */
     private static Class<?> findEntity(final String name) {
-        if (Version.MINOR < 17) {
-            return getClass(PREFIX + name);
+        if (Version.isBelow(17)) {
+            return Reflections.getClass(PREFIX + name);
         }
         for (final String path : new String[]{
                 // animals
@@ -222,12 +210,12 @@ public final class DisguiseUtil {
                 ""
         }) {
             final String additon = path.isEmpty() ? "" : path + ".";
-            final Class<?> firstTry = getClass("net.minecraft.world.entity." + additon + name);
+            final Class<?> firstTry = Reflections.getClass("net.minecraft.world.entity." + additon + name);
             if (firstTry != null) {
                 return firstTry;
             }
 
-            final Class<?> secondTry = getClass("net.minecraft.world.entity." + additon + "Entity" + name);
+            final Class<?> secondTry = Reflections.getClass("net.minecraft.world.entity." + additon + "Entity" + name);
             if (secondTry != null) {
                 return secondTry;
             }
@@ -242,15 +230,15 @@ public final class DisguiseUtil {
      * @return null if the NMS entity was NOT found
      */
     private static Constructor<?> findConstructor(@NotNull final Class<?> entityClass, final EntityType type) {
-        if (Version.MINOR < 13) {
-            return getConstructor(entityClass, WORLD);
+        if (Version.isBelow(13)) {
+            return Reflections.getConstructor(entityClass, WORLD);
         }
         try {
             final Object obj = GET_ENTITY.invoke(null, type.name().toLowerCase(Locale.ENGLISH));
             if (obj == null) {
                 return null;
             }
-            if (Version.MINOR == 13) {
+            if (Version.is(13)) {
                 ENTITY_FIELDS.put(type, obj);
             } else {
                 final Optional<?> o = (Optional<?>) obj;
@@ -263,33 +251,7 @@ public final class DisguiseUtil {
         } catch (final Exception ignored) {
             return null;
         }
-        return getConstructor(entityClass, ENTITY_TYPES, WORLD);
-    }
-
-    /**
-     * A nullable {@link Class#forName(String)} instead of throwing exceptions
-     *
-     * @return null if the {@link Class} was NOT found
-     */
-    public static Class<?> getClass(@NotNull final String path) {
-        try {
-            return Class.forName(path);
-        } catch (final Exception ignored) {
-            return null;
-        }
-    }
-
-    /**
-     * A nullable {@link Class#getDeclaredConstructor(Class[])} instead of throwing exceptions
-     *
-     * @return null if the {@link Constructor} was NOT found
-     */
-    private static Constructor<?> getConstructor(@NotNull final Class<?> clazz, final Class<?>... classes) {
-        try {
-            return clazz.getDeclaredConstructor(classes);
-        } catch (final Exception ignored) {
-            return null;
-        }
+        return Reflections.getConstructor(entityClass, ENTITY_TYPES, WORLD);
     }
 
     /**
@@ -342,7 +304,7 @@ public final class DisguiseUtil {
             final Object entityPlayer = GET_HANDLE.invoke(player);
             PLAYERS_MAP.put(Version.IS_13_R2_PLUS ? name.toLowerCase(Locale.ENGLISH) : name, entityPlayer);
         } catch (final Exception exception) {
-            exception.printStackTrace();
+            Bukkit.getLogger().log(Level.SEVERE, "[ModernDisguise] Couldn't put into players map player: " + player.getName(), exception);
         }
     }
 
@@ -398,9 +360,9 @@ public final class DisguiseUtil {
             final Object entityPlayer = GET_HANDLE.invoke(player);
             final Object connection = CONNECTION.get(entityPlayer);
             final Object networkManager = NETWORK_MANAGER.get(connection);
-            return (Channel) CHANNEL.get(networkManager);
+            return CHANNEL.get(networkManager);
         } catch (final Exception exception) {
-            exception.printStackTrace();
+            Bukkit.getLogger().log(Level.SEVERE, "[ModernDisguise] Couldn't hook into player: " + player.getName(), exception);
             return null;
         }
     }
@@ -410,16 +372,7 @@ public final class DisguiseUtil {
      */
     public static JSONObject getJSONObject(@NotNull final String urlString) {
         try {
-            final URL url = new URL(urlString);
-            final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "ModernDisguiseAPI/v1.0");
-            connection.setRequestMethod("GET");
-            connection.connect();
-            if (connection.getResponseCode() != 200) {
-                throw new RuntimeException("The used URL doesn't seem to be working (the api is down?) " + urlString);
-            }
-
-            final Scanner scanner = new Scanner(url.openStream());
+            final Scanner scanner = getScanner(urlString);
             final StringBuilder builder = new StringBuilder();
             while (scanner.hasNext()) {
                 builder.append(scanner.next());
@@ -429,6 +382,19 @@ public final class DisguiseUtil {
         } catch (final IOException | ParseException exception) {
             throw new RuntimeException("Failed to Scan/Parse the URL", exception);
         }
+    }
+
+    private static @NotNull Scanner getScanner(@NotNull String urlString) throws IOException {
+        final URL url = new URL(urlString);
+        final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setRequestProperty("User-Agent", "ModernDisguiseAPI/v1.0");
+        connection.setRequestMethod("GET");
+        connection.connect();
+        if (connection.getResponseCode() != 200) {
+            throw new RuntimeException("The used URL doesn't seem to be working (the api is down?) " + urlString);
+        }
+
+        return new Scanner(url.openStream());
     }
 
     /**

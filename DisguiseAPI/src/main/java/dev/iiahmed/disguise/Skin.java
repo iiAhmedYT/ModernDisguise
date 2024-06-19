@@ -1,5 +1,6 @@
 package dev.iiahmed.disguise;
 
+import dev.iiahmed.disguise.util.DisguiseUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

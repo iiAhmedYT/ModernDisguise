@@ -1,12 +1,11 @@
 package dev.iiahmed.disguise.vs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.DisguiseUtil;
+import dev.iiahmed.disguise.util.DisguiseUtil;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;

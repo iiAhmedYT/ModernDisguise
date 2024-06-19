@@ -2,15 +2,16 @@ package dev.iiahmed.disguise.listener;
 
 import dev.iiahmed.disguise.DisguiseManager;
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.DisguiseUtil;
-import dev.iiahmed.disguise.Version;
+import dev.iiahmed.disguise.util.DisguiseUtil;
+import dev.iiahmed.disguise.util.Version;
+import dev.iiahmed.disguise.util.reflection.FieldAccessor;
+import dev.iiahmed.disguise.util.reflection.Reflections;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -18,27 +19,22 @@ public final class PacketListener extends ChannelDuplexHandler {
 
     private static final String BUNDLE_PACKET_NAME = "ClientboundBundlePacket";
     private static final String PACKET_NAME;
-    private static final Field PLAYER_ID;
-    private static Field PACKET_LIST;
+    private static final FieldAccessor<UUID> PLAYER_ID;
+    private static FieldAccessor<?> PACKET_LIST;
 
     static {
         try {
             PACKET_NAME = Version.IS_20_R2_PLUS ? "PacketPlayOutSpawnEntity" : "PacketPlayOutNamedEntitySpawn";
-            final Class<?> namedEntitySpawn = Class.forName((Version.MINOR >= 17 ?
+            final Class<?> namedEntitySpawn = Class.forName((Version.isOrOver(17) ?
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
                     + PACKET_NAME);
-            PLAYER_ID = namedEntitySpawn.getDeclaredField(
-                    Version.IS_20_R4_PLUS ? "e" : Version.IS_20_R2_PLUS ? "d" : "b"
-            );
-            PLAYER_ID.setAccessible(true);
+            PLAYER_ID = Reflections.getField(namedEntitySpawn, UUID.class);
             if (Version.IS_20_R2_PLUS) {
-                PACKET_LIST = Class.forName("net.minecraft.network.protocol.BundlePacket").getDeclaredField("a");
-                PACKET_LIST.setAccessible(true);
+                PACKET_LIST = Reflections.getField(Class.forName("net.minecraft.network.protocol.BundlePacket"), Iterable.class);
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
-        PLAYER_ID.setAccessible(true);
     }
 
     private final DisguiseProvider provider = DisguiseManager.getProvider();
@@ -85,7 +81,7 @@ public final class PacketListener extends ChannelDuplexHandler {
     ) throws Exception {
         UUID playerID;
         try {
-            playerID = (UUID) PLAYER_ID.get(spawnPacket);
+            playerID = PLAYER_ID.get(spawnPacket);
         } catch (final Exception exception) {
             provider.getPlugin().getLogger().log(
                     Level.SEVERE,

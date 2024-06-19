@@ -2,6 +2,8 @@ package dev.iiahmed.disguise;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import dev.iiahmed.disguise.util.DisguiseUtil;
+import dev.iiahmed.disguise.util.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -17,7 +19,7 @@ import java.util.regex.Pattern;
 public abstract class DisguiseProvider {
 
     private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
-    private boolean overrideChat = Version.MINOR > 18;
+    private boolean overrideChat = Version.isOver(18);
     private int nameLength = 16;
 
     private final Map<UUID, PlayerInfo> playerInfo = new ConcurrentHashMap<>();

@@ -2,7 +2,7 @@ package dev.iiahmed.disguise.listener;
 
 import dev.iiahmed.disguise.DisguiseManager;
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.DisguiseUtil;
+import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.UndisguiseResponse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -1,12 +1,13 @@
-package dev.iiahmed.disguise;
+package dev.iiahmed.disguise.util;
 
+import dev.iiahmed.disguise.util.reflection.Reflections;
 import org.bukkit.Bukkit;
 
-public class Version {
+public final class Version {
 
     public static final String VERSION_EXACT = Bukkit.getBukkitVersion().split("-")[0];
-    public static final boolean IS_FOLIA = DisguiseUtil.findClass("io.papermc.paper.threadedregions.RegionizedServer");
-    public static final boolean IS_PAPER = DisguiseUtil.findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
+    public static final boolean IS_FOLIA = Reflections.findClass("io.papermc.paper.threadedregions.RegionizedServer");
+    public static final boolean IS_PAPER = Reflections.findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
 
     public static final int MAJOR, MINOR, PATCH;
 
@@ -23,20 +24,53 @@ public class Version {
     public static final boolean IS_20_R2_PLUS = isOrOver(1, 20, 2);
     public static final boolean IS_20_R4_PLUS = isOrOver(1, 20, 5);
 
-    public static boolean isOver(final int minor) {
-        return MINOR > minor;
+    public static boolean is(final int minor) {
+        return MINOR == minor;
     }
 
-    public static boolean isOrOver(final int minor) {
-        return MINOR >= minor;
+    public static boolean is(final int major, final int minor, final int patch) {
+        return MAJOR == major && MINOR == minor && PATCH == patch;
+    }
+
+    public static boolean isOver(final int minor) {
+        return MINOR > minor;
     }
 
     public static boolean isOver(final int major, final int minor, final int patch) {
         return MAJOR > major || MINOR > minor || PATCH > patch;
     }
 
+    public static boolean isOrOver(final int minor) {
+        return MINOR >= minor;
+    }
+
     public static boolean isOrOver(final int major, final int minor, final int patch) {
         return isOver(major, minor, patch) || (MAJOR == major && MINOR == minor && PATCH == patch);
+    }
+
+    public static boolean isBelow(final int minor) {
+        return MINOR < minor;
+    }
+
+    public static boolean isBelow(final int major, final int minor, final int patch) {
+        if (MAJOR < major) {
+            return true;
+        } else if (MAJOR == major) {
+            if (MINOR < minor) {
+                return true;
+            } else if (MINOR == minor) {
+                return PATCH < patch;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isOrBelow(final int minor) {
+        return MINOR <= minor;
+    }
+
+    public static boolean isOrBelow(final int major, final int minor, final int patch) {
+        return isBelow(major, minor, patch) || (MAJOR == major && MINOR == minor && PATCH == patch);
     }
 
     private static String findVersion() {

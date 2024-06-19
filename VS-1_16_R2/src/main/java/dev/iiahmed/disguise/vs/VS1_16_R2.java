@@ -1,7 +1,7 @@
 package dev.iiahmed.disguise.vs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.DisguiseUtil;
+import dev.iiahmed.disguise.util.DisguiseUtil;
 import net.minecraft.server.v1_16_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
