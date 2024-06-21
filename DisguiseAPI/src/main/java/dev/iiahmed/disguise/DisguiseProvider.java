@@ -143,7 +143,7 @@ public abstract class DisguiseProvider {
 
         EntityType type = disguise.getEntityType();
         if (isDisguised(player)) {
-            final PlayerInfo info = playerInfo.remove(player.getUniqueId());
+            final PlayerInfo info = this.playerInfo.remove(player.getUniqueId());
             if (info.hasName()) {
                 DisguiseUtil.unregister(info.getNickname());
                 if (disguise.hasName()) nickname = info.getNickname();
@@ -208,14 +208,14 @@ public abstract class DisguiseProvider {
                 // shouldn't happen
                 return UndisguiseResponse.FAIL_PROFILE_NOT_FOUND;
             }
-            final PlayerInfo info = playerInfo.remove(player.getUniqueId());
+            final PlayerInfo info = this.playerInfo.remove(player.getUniqueId());
             if (info.hasName()) {
                 DisguiseUtil.unregister(info.getNickname());
             }
             return UndisguiseResponse.SUCCESS;
         }
 
-        final PlayerInfo info = playerInfo.get(player.getUniqueId());
+        final PlayerInfo info = this.playerInfo.get(player.getUniqueId());
         if (info.hasName()) {
             try {
                 DisguiseUtil.PROFILE_NAME.set(profile, info.getName());
@@ -231,8 +231,8 @@ public abstract class DisguiseProvider {
             profile.getProperties().put("textures", new Property("textures", skin.getTextures(), skin.getSignature()));
         }
 
-        playerInfo.remove(player.getUniqueId());
-        refreshAsPlayer(player);
+        this.playerInfo.remove(player.getUniqueId());
+        this.refreshAsPlayer(player);
         player.teleport(player.getLocation());
 
         return UndisguiseResponse.SUCCESS;
@@ -243,7 +243,7 @@ public abstract class DisguiseProvider {
      * @return true if the {@link Player} is disguised, false if the {@link Player} is not.
      */
     public final boolean isDisguised(@NotNull final Player player) {
-        return playerInfo.containsKey(player.getUniqueId());
+        return this.playerInfo.containsKey(player.getUniqueId());
     }
 
     /**
@@ -251,7 +251,7 @@ public abstract class DisguiseProvider {
      * @return true if the {@link Player} is disguised as an entity, false if the {@link Player} is not.
      */
     public final boolean isDisguisedAsEntity(@NotNull final Player player) {
-        return playerInfo.containsKey(player.getUniqueId()) && getInfo(player).hasEntity();
+        return this.playerInfo.containsKey(player.getUniqueId()) && getInfo(player).hasEntity();
     }
 
     /**
@@ -259,8 +259,8 @@ public abstract class DisguiseProvider {
      * @return the known info about a {@link Player}
      */
     public final @NotNull PlayerInfo getInfo(@NotNull final Player player) {
-        if (playerInfo.containsKey(player.getUniqueId())) {
-            return playerInfo.get(player.getUniqueId());
+        if (this.playerInfo.containsKey(player.getUniqueId())) {
+            return this.playerInfo.get(player.getUniqueId());
         }
         return new PlayerInfo(player.getName(), null, null, EntityType.PLAYER);
     }

@@ -29,9 +29,10 @@ public final class PlayerListener implements Listener {
         if (!provider.isDisguised(player)) {
             return;
         }
+
         final UndisguiseResponse response = provider.undisguise(player);
         if (!"SUCCESS".equals(response.name())) {
-            provider.getPlugin().getLogger().info("Undisguise failed on leave");
+            provider.getPlugin().getLogger().info("Undisguising player " + player.getName() + "  failed on leave");
         }
     }
 
