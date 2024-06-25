@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -291,6 +292,21 @@ public final class DisguiseUtil {
         } catch (final Exception ignored) {
             return null;
         }
+    }
+
+    /**
+     * Finds an online player by their name.
+     *
+     * @param name the name of the player to look for, must not be null
+     * @return the player with the specified name, or null if not found
+     */
+    @Nullable
+    public static Player getPlayer(@NotNull final String name) {
+        final String lowercase = name.toLowerCase(Locale.ENGLISH);
+        for (final Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getName().toLowerCase(Locale.ENGLISH).equals(lowercase)) return player;
+        }
+        return null;
     }
 
     /**

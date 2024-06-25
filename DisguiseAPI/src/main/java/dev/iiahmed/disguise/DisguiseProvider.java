@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.util.Version;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -116,7 +115,7 @@ public abstract class DisguiseProvider {
                 return DisguiseResponse.FAIL_NAME_INVALID;
             }
 
-            final Player found = Bukkit.getPlayer(name);
+            final Player found = DisguiseUtil.getPlayer(name);
             if (found != null && found.isOnline()) {
                 return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
             }

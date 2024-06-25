@@ -115,9 +115,6 @@ public class ExampleClass implements Listener {
 
     public ExampleClass() {
         DisguiseManager.setPlugin(ExamplePlugin.getInstance());
-        // this is optional (it registers a PlaceholderAPI expansion for you)
-        // placeholders are: %nick_name%, %nick_realname%, %nick_is_nicked% (%nick_is_disguised%)
-        DisguiseManager.registerExpansion();
     }
 
     @EventHandler
@@ -148,9 +145,6 @@ public class ExampleClass implements Listener {
 
     public ExampleClass() {
         DisguiseManager.setPlugin(ExamplePlugin.getInstance());
-        // this is optional (it registers a PlaceholderAPI expansion for you)
-        // placeholders are: %nick_name%, %nick_realname%, %nick_is_nicked% (%nick_is_disguised%)
-        DisguiseManager.registerExpansion();
     }
 
     @EventHandler
