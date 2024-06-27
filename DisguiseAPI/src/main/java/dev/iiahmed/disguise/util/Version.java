@@ -37,7 +37,16 @@ public final class Version {
     }
 
     public static boolean isOver(final int major, final int minor, final int patch) {
-        return MAJOR > major || MINOR > minor || PATCH > patch;
+        if (MAJOR > major) {
+            return true;
+        } else if (MAJOR == major) {
+            if (MINOR > minor) {
+                return true;
+            } else if (MINOR == minor) {
+                return PATCH > patch;
+            }
+        }
+        return false;
     }
 
     public static boolean isOrOver(final int minor) {
