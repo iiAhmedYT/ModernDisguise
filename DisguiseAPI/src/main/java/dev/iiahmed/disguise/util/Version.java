@@ -54,7 +54,7 @@ public final class Version {
     }
 
     public static boolean isOrOver(final int major, final int minor, final int patch) {
-        return isOver(major, minor, patch) || (MAJOR == major && MINOR == minor && PATCH == patch);
+        return is(major, minor, patch) || isOver(major, minor, patch);
     }
 
     public static boolean isBelow(final int minor) {
@@ -79,7 +79,7 @@ public final class Version {
     }
 
     public static boolean isOrBelow(final int major, final int minor, final int patch) {
-        return isBelow(major, minor, patch) || (MAJOR == major && MINOR == minor && PATCH == patch);
+        return is(major, minor, patch) || isBelow(major, minor, patch);
     }
 
     private static String findVersion() {

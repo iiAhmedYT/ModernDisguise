@@ -3,6 +3,7 @@ package dev.iiahmed.mexmpl.command;
 import dev.iiahmed.disguise.*;
 
 import dev.iiahmed.disguise.util.DisguiseUtil;
+import dev.iiahmed.disguise.util.Version;
 import dev.iiahmed.mexmpl.ModernExample;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.EntityType;
@@ -77,8 +78,25 @@ public class DisguiseCommand {
         return provider.undisguise(player) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
     }
 
+    @Command("modernversion")
+    public String isVersion(
+            final int major,
+            final int minor,
+            final int patch
+    ) {
+        final boolean is = Version.is(major, minor, patch);
+        final boolean over = Version.isOver(major, minor, patch);
+        final boolean below = Version.isBelow(major, minor, patch);
+
+        return translate("&eIs Exact: " + color(is) + "&e, Is Over: " + color(over) + "&e, Is Below: " + color(below));
+    }
+
     private String translate(final String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    private String color(final boolean bool) {
+        return (bool ? "&a" : "&c") + bool;
     }
 
 }

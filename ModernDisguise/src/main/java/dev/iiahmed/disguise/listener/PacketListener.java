@@ -29,7 +29,7 @@ public final class PacketListener extends ChannelDuplexHandler {
                     "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX)
                     + PACKET_NAME);
             PLAYER_ID = Reflections.getField(namedEntitySpawn, UUID.class);
-            if (Version.IS_20_R2_PLUS) {
+            if (Version.isOrOver(20)) {
                 PACKET_LIST = Reflections.getField(Class.forName("net.minecraft.network.protocol.BundlePacket"), Iterable.class);
             }
         } catch (final Exception e) {
