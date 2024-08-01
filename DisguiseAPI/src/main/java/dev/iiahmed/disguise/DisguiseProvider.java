@@ -60,7 +60,7 @@ public abstract class DisguiseProvider {
      * @see DisguiseProvider#shouldOverrideChat()
      */
     @SuppressWarnings("unused")
-    public void allowOverrideChat(boolean overrideChat) {
+    public void allowOverrideChat(final boolean overrideChat) {
         this.overrideChat = overrideChat;
     }
 

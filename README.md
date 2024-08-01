@@ -63,7 +63,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>2.9</version>
+    <version>3.0</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -100,7 +100,7 @@ repositories {
 and now add dependency:
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:2.9'
+    implementation 'dev.iiahmed:ModernDisguise:3.0'
 }
 ```
 
@@ -206,6 +206,11 @@ Versions from now-on should be built with the ```--remapped``` flag
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature
 
 Congratulations! Now you can build ModernDisguise with the command ```mvn clean install```
+
+###### 3- Changing Version
+Well, to be honest with maven its too much work to change the versions, however, not on my watch!
+Just run ``mvn versions:set -DnewVersion=VERSION-HERE``, example: ``mvn versions:set -DnewVersion=3.0``
+
 ## 🪪 License
 This project is licensed under the [GPL-3.0 License](LICENSE.md)
 ## ☀️ Credits
