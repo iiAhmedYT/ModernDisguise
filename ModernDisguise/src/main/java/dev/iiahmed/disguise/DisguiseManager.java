@@ -92,10 +92,11 @@ public final class DisguiseManager {
     /**
      * Sets the plugin for the provider and registers the litsners
      */
-    public static void setPlugin(@NotNull final Plugin plugin) {
+    public static void initialize(@NotNull final Plugin plugin, final boolean entityDisguises) {
         final Plugin old = PROVIDER.getPlugin();
         if (old == null || !old.isEnabled()) {
             PROVIDER.plugin = plugin;
+            PROVIDER.entityDisguises = entityDisguises;
             plugin.getServer().getPluginManager().registerEvents(new PlayerListener(), plugin);
         }
     }

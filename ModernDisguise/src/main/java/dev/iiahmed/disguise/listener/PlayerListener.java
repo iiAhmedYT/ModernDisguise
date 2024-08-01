@@ -19,13 +19,17 @@ public final class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        DisguiseUtil.inject(player, new PacketListener(player));
+        if (provider.performEntityDisguises()) {
+            DisguiseUtil.inject(player, new PacketListener(player));
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
-        DisguiseUtil.uninject(player);
+        if (provider.performEntityDisguises()) {
+            DisguiseUtil.uninject(player);
+        }
         if (!provider.isDisguised(player)) {
             return;
         }
@@ -41,9 +45,10 @@ public final class PlayerListener implements Listener {
         if (!provider.shouldOverrideChat()) {
             return;
         }
+
         event.setCancelled(true);
-        Player sender = event.getPlayer();
-        for (Player receiver : event.getRecipients()) {
+        final Player sender = event.getPlayer();
+        for (final Player receiver : event.getRecipients()) {
             receiver.sendMessage(event.getFormat()
                     .replace("%1$s", sender.getName())
                     .replace("%2$s", event.getMessage())

@@ -39,7 +39,8 @@ public class ExampleClass {
     private final DisguiseProvider provider = DisguiseManager.getProvider();
 
     public ExampleClass() {
-        DisguiseManager.setPlugin(ExamplePlugin.getInstance());
+        boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
+        DisguiseManager.initialize(ExamplePlugin.getInstance(), allowEntities);
         provider.allowOverrideChat(false);
     }
 
@@ -109,12 +110,16 @@ Here's an example usage of the API (easiest):
 ```java
 import dev.iiahmed.disguise.*;
 
+import java.util.regex.Pattern;
+
 public class ExampleClass implements Listener {
 
     private final DisguiseProvider provider = DisguiseManager.getProvider();
 
     public ExampleClass() {
-        DisguiseManager.setPlugin(ExamplePlugin.getInstance());
+        boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
+        DisguiseManager.initialize(ExamplePlugin.getInstance(), allowEntities);
+        provider.allowOverrideChat(false);
     }
 
     @EventHandler
@@ -144,7 +149,11 @@ public class ExampleClass implements Listener {
     private final DisguiseProvider provider = DisguiseManager.getProvider();
 
     public ExampleClass() {
-        DisguiseManager.setPlugin(ExamplePlugin.getInstance());
+        boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
+        DisguiseManager.initialize(ExamplePlugin.getInstance(), allowEntities);
+        provider.allowOverrideChat(false);
+        provider.setNameLength(16);
+        provider.setNamePattern(Pattern.compile("^[a-zA-Z0-9_]{1,16}$"));
     }
 
     @EventHandler

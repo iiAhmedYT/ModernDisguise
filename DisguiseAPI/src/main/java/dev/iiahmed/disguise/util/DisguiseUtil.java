@@ -302,6 +302,11 @@ public final class DisguiseUtil {
      */
     @Nullable
     public static Player getPlayer(@NotNull final String name) {
+        final Player direct = Bukkit.getPlayerExact(name);
+        if (direct != null) {
+            return direct;
+        }
+
         final String lowercase = name.toLowerCase(Locale.ENGLISH);
         for (final Player player : Bukkit.getOnlinePlayers()) {
             if (player.getName().toLowerCase(Locale.ENGLISH).equals(lowercase)) return player;

@@ -22,7 +22,9 @@ public abstract class DisguiseProvider {
     private int nameLength = 16;
 
     private final Map<UUID, PlayerInfo> playerInfo = new ConcurrentHashMap<>();
+
     protected Plugin plugin;
+    protected boolean entityDisguises;
 
     /**
      * Set the username {@link Pattern} that is
@@ -69,7 +71,7 @@ public abstract class DisguiseProvider {
      * @see DisguiseProvider#allowOverrideChat(boolean)
      */
     public boolean shouldOverrideChat() {
-        return overrideChat;
+        return this.overrideChat;
     }
 
     /**
@@ -93,7 +95,7 @@ public abstract class DisguiseProvider {
             return DisguiseResponse.FAIL_EMPTY_DISGUISE;
         }
 
-        if (disguise.hasEntity() && !DisguiseUtil.isEntitySupported(disguise.getEntityType())) {
+        if (disguise.hasEntity() && (!entityDisguises || !DisguiseUtil.isEntitySupported(disguise.getEntityType()))) {
             return DisguiseResponse.FAIL_ENTITY_NOT_SUPPORTED;
         }
 
@@ -289,6 +291,14 @@ public abstract class DisguiseProvider {
      */
     public final Plugin getPlugin() {
         return this.plugin;
+    }
+
+    /**
+     * @return whether entity disguises are allowed or not
+     * depends on whether the player initialized it like that or not
+     */
+    public final boolean performEntityDisguises() {
+        return this.entityDisguises;
     }
 
 }

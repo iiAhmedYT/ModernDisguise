@@ -19,7 +19,7 @@ public class DisguiseCommand {
     private final DisguiseProvider provider = DisguiseManager.getProvider();
 
     public DisguiseCommand() {
-        DisguiseManager.setPlugin(ModernExample.getInstance());
+        DisguiseManager.initialize(ModernExample.getInstance(), true);
         provider.allowOverrideChat(false);
     }
 
