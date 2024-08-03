@@ -1,11 +1,6 @@
 package dev.iiahmed.disguise;
 
-import dev.iiahmed.disguise.util.DisguiseUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.util.UUID;
 
@@ -119,14 +114,8 @@ public final class Disguise {
          * @param name this is the Name of the needed player's skin
          * @return the disguise builder
          */
-        @SuppressWarnings("deprecation")
         public Builder setSkin(final String name) {
-            final OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-            if (player == null || player.getUniqueId() == null) {
-                return this;
-            }
-
-            return setSkin(player.getUniqueId(), SkinAPI.MOJANG);
+            return setSkin(name, SkinAPI.MOJANG);
         }
 
         /**
@@ -139,63 +128,21 @@ public final class Disguise {
 
         /**
          * @param name    this is the Name of the needed player's skin
-         * @param skinAPI determines the SkinAPI type
+         * @param api     determines the SkinAPI type
          * @return the disguise builder
          */
-        @SuppressWarnings("deprecation")
-        public Builder setSkin(final String name, final SkinAPI skinAPI) {
-            final OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-            if (player == null || player.getUniqueId() == null) {
-                return this;
-            }
-
-            return setSkin(player.getUniqueId(), skinAPI);
+        @SuppressWarnings("unused")
+        public Builder setSkin(final String name, final SkinAPI api) {
+            return setSkin(api.of(name));
         }
 
         /**
          * @param uuid    this is the UUID of the needed player's skin
-         * @param skinAPI determines the SkinAPI type
+         * @param api     determines the SkinAPI type
          * @return the disguise builder
          */
-        private Builder setSkin(final UUID uuid, final SkinAPI skinAPI) {
-            final String urlString = skinAPI.format(uuid);
-            final JSONObject object = DisguiseUtil.getJSONObject(urlString);
-
-            if (object == null || object.isEmpty()) {
-                return this;
-            }
-
-            String texture = null, signature = null;
-            switch (skinAPI) {
-                case MOJANG:
-                case MINETOOLS:
-                    final JSONArray array;
-                    if (skinAPI.name().equals("MOJANG")) {
-                        array = (JSONArray) object.get("properties");
-                    } else {
-                        array = (JSONArray) ((JSONObject) object.get("raw")).get("properties");
-                    }
-                    for (Object o : array) {
-                        final JSONObject jsonObject = (JSONObject) o;
-                        if (jsonObject == null) continue;
-
-                        if (jsonObject.get("value") != null) {
-                            texture = (String) jsonObject.get("value");
-                        }
-
-                        if (jsonObject.get("signature") != null) {
-                            signature = (String) jsonObject.get("signature");
-                        }
-                    }
-                    break;
-                case MINESKIN:
-                    final JSONObject dataObject = (JSONObject) object.get("data");
-                    final JSONObject texturesObject = (JSONObject) dataObject.get("texture");
-                    texture = (String) texturesObject.get("value");
-                    signature = (String) texturesObject.get("signature");
-                    break;
-            }
-            return setSkin(texture, signature);
+        private Builder setSkin(final UUID uuid, final SkinAPI api) {
+            return setSkin(api.of(uuid));
         }
 
         /**
