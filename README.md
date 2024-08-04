@@ -63,7 +63,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -100,7 +100,7 @@ repositories {
 and now add dependency:
 ```groovy
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:3.0'
+    implementation 'dev.iiahmed:ModernDisguise:3.1'
 }
 ```
 
@@ -128,8 +128,8 @@ public class ExampleClass implements Listener {
         Player player = event.getPlayer();
         Disguise disguise = Disguise.builder()
                 .setName("BillBobbyBob")
-                // you could as well use Disguise.Builder#setSkin(textures, signature)
-                // or even Disguise.Builder#setSkin(uuid, skinAPI)
+                // you could as well use Disguise.Builder#setSkin(Skin)
+                // or even Disguise.Builder#setSkin(uuid)
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
                 .setSkin(SkinAPI.MOJANG, UUID.fromString("d3db29ff-9bc2-4828-993f-3a75929280f5"))
                 // this will change the player into a zombie for others only
