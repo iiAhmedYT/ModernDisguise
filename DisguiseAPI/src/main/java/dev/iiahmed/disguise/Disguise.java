@@ -1,6 +1,7 @@
 package dev.iiahmed.disguise;
 
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.UUID;
 
@@ -111,38 +112,43 @@ public final class Disguise {
         }
 
         /**
-         * @param name this is the Name of the needed player's skin
-         * @return the disguise builder
-         */
-        public Builder setSkin(final String name) {
-            return setSkin(name, SkinAPI.MOJANG);
-        }
-
-        /**
          * @param uuid this is the UUID of the needed player's skin
          * @return the disguise builder
          */
         public Builder setSkin(final UUID uuid) {
-            return setSkin(uuid, SkinAPI.MOJANG);
+            return setSkin(SkinAPI.MOJANG, uuid);
         }
 
         /**
-         * @param name    this is the Name of the needed player's skin
+         * @deprecated now that values are generic it's easier for your IDE to use the SkinAPI provided first
+         *
+         * @param value   this is the value required by the skin api
          * @param api     determines the SkinAPI type
          * @return the disguise builder
+         * @see Disguise.Builder#setSkin(SkinAPI, Object)
          */
-        @SuppressWarnings("unused")
-        public Builder setSkin(final String name, final SkinAPI api) {
-            return setSkin(api.of(name));
+        @Deprecated
+        @ApiStatus.ScheduledForRemoval
+        public <V> Builder setSkin(final V value, final SkinAPI<V> api) {
+            return setSkin(api.of(value));
         }
 
         /**
-         * @param uuid    this is the UUID of the needed player's skin
+         * @param value   this is the value required by the skin api
          * @param api     determines the SkinAPI type
          * @return the disguise builder
          */
-        private Builder setSkin(final UUID uuid, final SkinAPI api) {
-            return setSkin(api.of(uuid));
+        public <V> Builder setSkin(final SkinAPI<V> api, final V value) {
+            return setSkin(api.of(value));
+        }
+
+        /**
+         * @param context   this is the context required by the skin api
+         * @param api       determines the SkinAPI type
+         * @return the disguise builder
+         */
+        public <V> Builder setSkin(final SkinAPI<V> api, final SkinAPI.Context<V> context) {
+            return setSkin(api.of(context));
         }
 
         /**

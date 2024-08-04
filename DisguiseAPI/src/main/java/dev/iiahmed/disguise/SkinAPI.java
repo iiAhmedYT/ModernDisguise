@@ -1,51 +1,107 @@
 package dev.iiahmed.disguise;
 
-import dev.iiahmed.disguise.exception.IDNotFoundException;
 import dev.iiahmed.disguise.util.DisguiseUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
+/**
+ * The {@code SkinAPI} class provides a mechanism to fetch Minecraft player skins using different APIs.
+ * It allows fetching skins based on a generic context value, such as a UUID.
+ *
+ * <p>APIs included by default:</p>
+ * <ul>
+ *     <li>Mojang API</li>
+ *     <li>MineTools API</li>
+ *     <li>MineSkin API</li>
+ * </ul>
+ *
+ * @param <V> the type of the value used for context, typically {@code UUID}
+ */
 @SuppressWarnings("unused")
-public class SkinAPI {
+public class SkinAPI<V> {
 
-    private final Function<Context, Skin> provider;
+    private final Function<Context<V>, Skin> provider;
 
-    public SkinAPI(final Function<Context, Skin> provider) {
+    /**
+     * Constructs a new {@code SkinAPI} with the specified provider function.
+     *
+     * @param provider the function that provides a {@code Skin} given a {@code Context}
+     */
+    public SkinAPI(final Function<Context<V>, Skin> provider) {
         this.provider = provider;
     }
 
-    public Skin of(@NotNull final String name) {
-        return provider.apply(new NameContext(name));
+    /**
+     * Fetches a {@code Skin} using the specified value.
+     *
+     * @param value the value used to identify the context, such as a player's {@code UUID}
+     * @return the fetched {@code Skin}
+     */
+    public Skin of(@NotNull final V value) {
+        return provider.apply(() -> value);
     }
 
-    public Skin of(@NotNull final UUID id) {
-        return provider.apply(new IDContext(id));
+    /**
+     * Fetches a {@code Skin} using the specified {@code Context}.
+     *
+     * @param context the context used to provide a value for fetching the skin
+     * @return the fetched {@code Skin}
+     */
+    public Skin of(@NotNull final Context<V> context) {
+        return provider.apply(context);
     }
 
-    public static SkinAPI MOJANG = new SkinAPI(context -> {
-        final String id = context.getID().orElseThrow(() -> new IDNotFoundException(context.getName().orElse(null))).toString();
+    /**
+     * SkinAPI instance for Mojang's skin service.
+     * This API fetches skins from Mojang's official session server.
+     *
+     * @apiNote Requires a Player UUID
+     */
+    public static final SkinAPI<UUID> MOJANG = new SkinAPI<>(context -> {
+        final String id = context.value().toString();
         final String url = "https://sessionserver.mojang.com/session/minecraft/profile/%uuid%?unsigned=false".replace("%uuid%", id);
         final JSONObject object = DisguiseUtil.getJSONObject(url);
         return extractSkinFromJSON(object);
     });
 
-    public static SkinAPI MINETOOLS = new SkinAPI(context -> {
-        final String id = context.getID().orElseThrow(() -> new IDNotFoundException(context.getName().orElse(null))).toString();
+    /**
+     * SkinAPI instance for MineTools skin service.
+     * This API fetches skins from the MineTools API, a third-party service.
+     *
+     * @apiNote Requires a Player UUID
+     */
+    public static final SkinAPI<UUID> MINETOOLS = new SkinAPI<>(context -> {
+        final String id = context.value().toString();
         final String url = "https://api.minetools.eu/profile/%uuid%".replace("%uuid%", id);
         final JSONObject object = DisguiseUtil.getJSONObject(url);
         return extractSkinFromJSON((JSONObject) object.get("raw"));
     });
 
+    /**
+     * SkinAPI instance for MineSkin skin service.
+     * This API fetches skins from the MineSkin API, a third-party service.
+     *
+     * @apiNote Requires a Skin UUID of their website, example: 808660f5048147aa9846c2e0370e766d
+     */
+    public static final SkinAPI<UUID> MINESKIN = new SkinAPI<>(context -> {
+        final String id = context.value().toString();
+        final String url = "https://api.mineskin.org/get/uuid/%uuid%".replace("%uuid%", id);
+        final JSONObject object = DisguiseUtil.getJSONObject(url);
+        final JSONObject dataObject = (JSONObject) object.get("data");
+        final JSONObject texturesObject = (JSONObject) dataObject.get("texture");
+        return new Skin((String) texturesObject.get("value"), (String) texturesObject.get("signature"));
+    });
+
+    /**
+     * Extracts a {@code Skin} object from a JSON representation.
+     *
+     * @param object the JSON object containing the skin data
+     * @return the extracted {@code Skin}
+     */
     private static Skin extractSkinFromJSON(final JSONObject object) {
         String texture = "", signature = "";
         final JSONArray array = (JSONArray) object.get("properties");
@@ -59,116 +115,19 @@ public class SkinAPI {
         return new Skin(texture, signature);
     }
 
-    public static SkinAPI MINESKIN = new SkinAPI(context -> {
-        final String id = context.getID().orElseThrow(() -> new IDNotFoundException(context.getName().orElse(null))).toString();
-        final String url = "https://api.mineskin.org/get/uuid/%uuid%".replace("%uuid%", id);
-        final JSONObject object = DisguiseUtil.getJSONObject(url);
-        final JSONObject dataObject = (JSONObject) object.get("data");
-        final JSONObject texturesObject = (JSONObject) dataObject.get("texture");
-        return new Skin((String) texturesObject.get("value"), (String) texturesObject.get("signature"));
-    });
+    /**
+     * Represents a context used for providing a value to the {@code SkinAPI}.
+     * This interface allows the {@code SkinAPI} to extract the necessary value for fetching skins.
+     *
+     * @param <V> the type of the context value
+     */
+    public interface Context<V> {
 
-    private static final Map<String, SkinAPI> SKIN_API_MAP = new HashMap<String, SkinAPI>() {
-        {
-            put("MOJANG", MOJANG);
-            put("MINETOOLS", MINETOOLS);
-            put("MINESKIN", MINESKIN);
-        }
-    };
-
-    public static void register(final String name, final Function<Context, Skin> provider) {
-        SKIN_API_MAP.put(name, new SkinAPI(provider));
+        /**
+         * Returns the value associated with this context.
+         *
+         * @return the value of type {@code V}
+         */
+        V value();
     }
-
-    public static Optional<SkinAPI> get(final String name) {
-        return Optional.ofNullable(SKIN_API_MAP.get(name));
-    }
-
-    public enum Requirement {
-        NAME, ID
-    }
-
-    public interface Context {
-
-        Optional<UUID> getID();
-        Optional<String> getName();
-        Requirement providedRequirement();
-
-    }
-
-    @ApiStatus.Internal
-    static class IDContext implements Context {
-
-        private final UUID id;
-        private String name;
-
-        IDContext(final UUID id) {
-            this.id = id;
-        }
-
-        @Override
-        public Optional<UUID> getID() {
-            return Optional.of(this.id);
-        }
-
-        @Override
-        public Optional<String> getName() {
-            if (name != null) {
-                return Optional.of(name);
-            }
-
-            final OfflinePlayer player = Bukkit.getOfflinePlayer(id);
-            if (player != null) {
-                name = player.getName();
-                return Optional.of(name);
-            }
-
-            return Optional.empty();
-        }
-
-        @Override
-        public Requirement providedRequirement() {
-            return Requirement.ID;
-        }
-
-    }
-
-    @ApiStatus.Internal
-    static class NameContext implements Context {
-
-        private final String name;
-        private UUID id;
-
-        NameContext(final String name) {
-            this.name = name;
-        }
-
-        @Override
-        @SuppressWarnings("deprecation")
-        public Optional<UUID> getID() {
-            if (this.id != null) {
-                return Optional.of(this.id);
-            }
-
-            final OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-            if (player != null) {
-                this.id = player.getUniqueId();
-                return Optional.of(this.id);
-            }
-
-            return Optional.empty();
-        }
-
-        @Override
-        public Optional<String> getName() {
-            return Optional.of(this.name);
-        }
-
-        @Override
-        public Requirement providedRequirement() {
-            return Requirement.NAME;
-        }
-
-    }
-
 }

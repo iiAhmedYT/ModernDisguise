@@ -6,6 +6,7 @@ import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.util.Version;
 import dev.iiahmed.mexmpl.ModernExample;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -39,18 +40,18 @@ public class DisguiseCommand {
     }
 
     @Subcommand("player")
+    @SuppressWarnings("deprecation")
     public @NotNull String asPlayer(
             final Player player,
             @Flag("name") @Default("BillBobbyBob") String name,
-            @Flag("skin") @Optional String skin,
-            @Flag("api") @Default("MOJANG") SkinAPI api
+            @Flag("skin") @Optional String skin
     )
     {
         long time = System.currentTimeMillis();
         Disguise.Builder builder = Disguise.builder().setName(name);
 
         if (skin != null) {
-            builder.setSkin(skin, api);
+            builder.setSkin(SkinAPI.MOJANG, Bukkit.getOfflinePlayer(skin).getUniqueId());
         }
 
         return provider.disguise(player, builder.build()) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
