@@ -110,6 +110,7 @@ Here's an example usage of the API (easiest):
 ```java
 import dev.iiahmed.disguise.*;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class ExampleClass implements Listener {
@@ -130,7 +131,7 @@ public class ExampleClass implements Listener {
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
                 // or even Disguise.Builder#setSkin(uuid, skinAPI)
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
-                .setSkin("example-name", SkinAPI.MOJANG) // You don't have to specify an API (mojang is default)
+                .setSkin(SkinAPI.MOJANG, UUID.fromString("d3db29ff-9bc2-4828-993f-3a75929280f5"))
                 // this will change the player into a zombie for others only
                 .setEntityType(EntityType.ZOMBIE)
                 .build();
@@ -164,7 +165,7 @@ public class ExampleClass implements Listener {
                 // you could as well use Disguise.Builder#setSkin(textures, signature)
                 // or even Disguise.Builder#setSkin(uuid, skinAPI)
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
-                .setSkin("example-name", SkinAPI.MOJANG) // You don't have to specify an API (mojang is default)
+                .setSkin(SkinAPI.MOJANG, UUID.fromString("d3db29ff-9bc2-4828-993f-3a75929280f5"))
                 // this will change the player into a zombie for others only
                 .setEntityType(EntityType.ZOMBIE)
                 .build();
