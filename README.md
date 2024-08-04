@@ -162,8 +162,8 @@ public class ExampleClass implements Listener {
         Player player = event.getPlayer();
         Disguise disguise = Disguise.builder()
                 .setName("BillBobbyBob")
-                // you could as well use Disguise.Builder#setSkin(textures, signature)
-                // or even Disguise.Builder#setSkin(uuid, skinAPI)
+                // you could as well use Disguise.Builder#setSkin(Skin)
+                // or even Disguise.Builder#setSkin(uuid)
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
                 .setSkin(SkinAPI.MOJANG, UUID.fromString("d3db29ff-9bc2-4828-993f-3a75929280f5"))
                 // this will change the player into a zombie for others only
