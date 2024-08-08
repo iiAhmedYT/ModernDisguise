@@ -4,9 +4,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.util.Version;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -24,7 +24,7 @@ public abstract class DisguiseProvider {
     private final Map<UUID, PlayerInfo> playerInfo = new ConcurrentHashMap<>();
 
     protected Plugin plugin;
-    protected boolean entityDisguises;
+    protected boolean entityDisguises, checkOnlineNames = true;
 
     /**
      * Set the username {@link Pattern} that is
@@ -51,6 +51,38 @@ public abstract class DisguiseProvider {
     }
 
     /**
+     * Sets whether ModernDisguise should check if a player with a similar name
+     * is currently online before allowing a disguise. This can help prevent
+     * naming conflicts or impersonation issues by ensuring that a nickname
+     * doesn't collide with existing players online.
+     *
+     * @param checkOnlineNames A boolean flag that determines the behavior:
+     *                         - true: Enable online name checks. Disguise names
+     *                           will be validated against currently online player names
+     *                           to prevent duplicates or conflicts.
+     *                         - false: Disable online name checks. Disguise names
+     *                           can be set without regard to currently online player names.
+     *
+     * @see DisguiseProvider#shouldCheckOnlineNames()
+     */
+    @ApiStatus.Experimental
+    public DisguiseProvider checkOnlineNames(final boolean checkOnlineNames) {
+        this.checkOnlineNames = checkOnlineNames;
+        return this;
+    }
+
+    /**
+     * Determines whether ModernDisguise is currently configured to check if players with a similar
+     * name to that being disguised to are currently online while disguising.
+     *
+     * @return True if ModernDisguise is set to check for the names, false otherwise.
+     * @see DisguiseProvider#checkOnlineNames(boolean) (boolean)
+     */
+    public boolean shouldCheckOnlineNames() {
+        return this.checkOnlineNames;
+    }
+
+    /**
      * Controls the ability of ModernDisguise to modify the chat behavior for servers
      * utilizing the Mojang Report feature, enabling disguised players to interact with chat.
      * This setting is designed to be compatible with existing chat plugins and should not
@@ -59,9 +91,9 @@ public abstract class DisguiseProvider {
      * @param overrideChat A boolean flag to allow or disallow the chat system override.
      * @see DisguiseProvider#shouldOverrideChat()
      */
-    @SuppressWarnings("unused")
-    public void allowOverrideChat(final boolean overrideChat) {
+    public DisguiseProvider allowOverrideChat(final boolean overrideChat) {
         this.overrideChat = overrideChat;
+        return this;
     }
 
     /**
@@ -95,7 +127,7 @@ public abstract class DisguiseProvider {
             return DisguiseResponse.FAIL_EMPTY_DISGUISE;
         }
 
-        if (disguise.hasEntity() && (!entityDisguises || !DisguiseUtil.isEntitySupported(disguise.getEntityType()))) {
+        if (disguise.hasEntity() && !entityDisguises) {
             return DisguiseResponse.FAIL_ENTITY_NOT_SUPPORTED;
         }
 
@@ -117,9 +149,11 @@ public abstract class DisguiseProvider {
                 return DisguiseResponse.FAIL_NAME_INVALID;
             }
 
-            final Player found = DisguiseUtil.getPlayer(name);
-            if (found != null && found.isOnline()) {
-                return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
+            if (this.checkOnlineNames) {
+                final Player found = DisguiseUtil.getPlayer(name);
+                if (found != null && found.isOnline()) {
+                    return DisguiseResponse.FAIL_NAME_ALREADY_ONLINE;
+                }
             }
 
             nickname = name;
@@ -142,7 +176,7 @@ public abstract class DisguiseProvider {
             profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
         }
 
-        EntityType type = disguise.getEntityType();
+        Entity entity = disguise.getEntity();
         if (isDisguised(player)) {
             final PlayerInfo info = this.playerInfo.remove(player.getUniqueId());
             if (info.hasName()) {
@@ -155,7 +189,7 @@ public abstract class DisguiseProvider {
             realName = info.getName();
 
             if (info.hasEntity() && !disguise.hasEntity()) {
-                type = info.getEntityType();
+                entity = info.getEntity();
             }
         }
 
@@ -165,7 +199,7 @@ public abstract class DisguiseProvider {
                         realName,
                         nickname,
                         realSkin,
-                        type
+                        entity
                 )
         );
 
@@ -263,7 +297,7 @@ public abstract class DisguiseProvider {
         if (this.playerInfo.containsKey(player.getUniqueId())) {
             return this.playerInfo.get(player.getUniqueId());
         }
-        return new PlayerInfo(player.getName(), null, null, EntityType.PLAYER);
+        return new PlayerInfo(player.getName(), null, null, null);
     }
 
     /**

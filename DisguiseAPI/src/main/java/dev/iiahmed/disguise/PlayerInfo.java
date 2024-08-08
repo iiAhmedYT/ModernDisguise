@@ -6,16 +6,21 @@ public final class PlayerInfo {
 
     private final String name, nickname;
     private final Skin skin;
-    private final EntityType entityType;
+    private final Entity entity;
 
-    PlayerInfo(final String name, final String nickname, final Skin skin, final EntityType entityType) {
+    PlayerInfo(
+            final String name,
+            final String nickname,
+            final Skin skin,
+            final Entity entity
+    ) {
         if (name == null) {
             throw new IllegalArgumentException("Input real name can't be null.");
         }
         this.name = name;
         this.nickname = nickname;
         this.skin = skin;
-        this.entityType = entityType;
+        this.entity = entity;
     }
 
     /**
@@ -43,8 +48,15 @@ public final class PlayerInfo {
     /**
      * @return the {@link EntityType} of the disguised Player
      */
+    public Entity getEntity() {
+        return entity;
+    }
+
+    /**
+     * @return the {@link EntityType} of the disguised Player
+     */
     public EntityType getEntityType() {
-        return entityType == null ? EntityType.PLAYER : entityType;
+        return entity == null? EntityType.PLAYER : entity.getType();
     }
 
     /**
@@ -65,7 +77,7 @@ public final class PlayerInfo {
      * @return a {@link Boolean} that indicates whether the disguise had changed the player's entity
      */
     public boolean hasEntity() {
-        return entityType != null && entityType != EntityType.PLAYER;
+        return entity != null && entity.isValid();
     }
 
 }

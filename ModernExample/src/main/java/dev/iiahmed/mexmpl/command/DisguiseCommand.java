@@ -2,6 +2,7 @@ package dev.iiahmed.mexmpl.command;
 
 import dev.iiahmed.disguise.*;
 
+import dev.iiahmed.disguise.attribute.RangedAttribute;
 import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.util.Version;
 import dev.iiahmed.mexmpl.ModernExample;
@@ -25,17 +26,14 @@ public class DisguiseCommand {
     }
 
     @Subcommand("info")
-    public void info(
-            final CommandActor actor
-    )
-    {
-        String foundColor = dev.iiahmed.disguise.util.DisguiseUtil.found < 56? "&c" : "&a"; // 56 is amount of entities detected on 1.8.8
-        actor.reply(translate("Found enitities: " + foundColor + dev.iiahmed.disguise.util.DisguiseUtil.found));
+    public void info(final CommandActor actor) {
+        String foundColor = DisguiseUtil.found < 56? "&c" : "&a"; // 56 is amount of entities detected on 1.8.8
+        actor.reply(translate("Found enitities: " + foundColor + DisguiseUtil.found));
 
-        String livingColor = dev.iiahmed.disguise.util.DisguiseUtil.living < 33? "&c" : "&a"; // 33 is amount of entities living in 1.8.8
-        actor.reply(translate("Extends LivingEntity: " + livingColor + dev.iiahmed.disguise.util.DisguiseUtil.living));
+        String livingColor = DisguiseUtil.living < 33? "&c" : "&a"; // 33 is amount of entities living in 1.8.8
+        actor.reply(translate("Extends LivingEntity: " + livingColor + DisguiseUtil.living));
 
-        String registeredColor = dev.iiahmed.disguise.util.DisguiseUtil.registered < 32? "&c" : "&a"; // 32 is amount of entities registered in 1.8.8
+        String registeredColor = DisguiseUtil.registered < 32? "&c" : "&a"; // 32 is amount of entities registered in 1.8.8
         actor.reply(translate("Has a Constructor (aka. Registered): " + registeredColor + DisguiseUtil.registered));
     }
 
@@ -45,8 +43,7 @@ public class DisguiseCommand {
             final Player player,
             @Flag("name") @Default("BillBobbyBob") String name,
             @Flag("skin") @Optional String skin
-    )
-    {
+    ) {
         long time = System.currentTimeMillis();
         Disguise.Builder builder = Disguise.builder().setName(name);
 
@@ -61,20 +58,16 @@ public class DisguiseCommand {
     public @NotNull String asEntity(
             final Player player,
             @Default("ZOMBIE") EntityType type
-    )
-    {
-        long time = System.currentTimeMillis();
-        Disguise disguise = Disguise.builder()
-                .setEntityType(type)
+    ) {
+        final long time = System.currentTimeMillis();
+        final Disguise disguise = Disguise.builder()
+                .setEntity(builder -> builder.setType(type).setAttribute(RangedAttribute.SCALE, 1.0D))
                 .build();
         return provider.disguise(player, disguise) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
     }
 
     @Command("undisguise")
-    public @NotNull String undisguise(
-            final Player player
-    )
-    {
+    public @NotNull String undisguise(final Player player) {
         long time = System.currentTimeMillis();
         return provider.undisguise(player) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
     }

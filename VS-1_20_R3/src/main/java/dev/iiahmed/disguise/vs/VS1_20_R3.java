@@ -1,22 +1,24 @@
 package dev.iiahmed.disguise.vs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
+import dev.iiahmed.disguise.Entity;
+import dev.iiahmed.disguise.attribute.Attribute;
 import dev.iiahmed.disguise.util.DisguiseUtil;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_20_R3.CraftRegistry;
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("all")
 public final class VS1_20_R3 extends DisguiseProvider {
@@ -43,7 +45,7 @@ public final class VS1_20_R3 extends DisguiseProvider {
         ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
                 ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
                 ep));
-        player.updateInventory();
+        ep.containerMenu.sendAllDataToRemote(); // originally player.updateInventory();
         for (final Player serverPlayer : Bukkit.getOnlinePlayers()) {
             serverPlayer.hidePlayer(plugin, player);
             serverPlayer.showPlayer(plugin, player);
@@ -56,21 +58,32 @@ public final class VS1_20_R3 extends DisguiseProvider {
             return;
         }
         final ServerPlayer handle = ((CraftPlayer) refreshed).getHandle();
-        final org.bukkit.entity.EntityType type = getInfo(refreshed).getEntityType();
+        final Entity entity = getInfo(refreshed).getEntity();
+
         final ClientboundAddEntityPacket spawn;
         final Collection<AttributeInstance> attributesSet;
         try {
-            final LivingEntity entity = (LivingEntity) DisguiseUtil.createEntity(type, handle.level());
-            attributesSet = entity.getAttributes().getDirtyAttributes();
+            final LivingEntity living = (LivingEntity) DisguiseUtil.createEntity(entity.getType(), handle.level());
+
+            for (final Map.Entry<Attribute, Double> entry : entity.getAttributes().entrySet()) {
+                final Attribute attribute = entry.getKey();
+                final String name = attribute.getKey();
+                final net.minecraft.world.entity.ai.attributes.Attribute holder = CraftRegistry
+                        .getMinecraftRegistry(Registries.ATTRIBUTE)
+                        .getOptional(ResourceLocation.tryParse(name)).get();
+                living.getAttribute(holder).setBaseValue(entry.getValue());
+            }
+
+            attributesSet = living.getAttributes().getDirtyAttributes();
             spawn = new ClientboundAddEntityPacket(
                     handle.getId(),
-                    entity.getUUID(),
+                    living.getUUID(),
                     handle.getX(),
                     handle.getY(),
                     handle.getZ(),
                     handle.getXRot(),
                     handle.getYRot(),
-                    entity.getType(),
+                    living.getType(),
                     0,
                     handle.getDeltaMovement(),
                     handle.getYHeadRot()

@@ -4,18 +4,19 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public final class Disguise {
 
     private final String name;
     private final Skin skin;
-    private final EntityType entityType;
+    private final Entity entity;
 
-    private Disguise(final String name, final Skin skin, final EntityType entityType) {
+    private Disguise(final String name, final Skin skin, final Entity entity) {
         this.name = name;
         this.skin = skin;
-        this.entityType = entityType;
+        this.entity = entity;
     }
 
     /**
@@ -36,7 +37,7 @@ public final class Disguise {
      * @return a {@link Boolean} that indicates whether the disguise will change the player's entity
      */
     public boolean hasEntity() {
-        return entityType != null && entityType != EntityType.PLAYER;
+        return entity != null && entity.isValid();
     }
 
     /**
@@ -81,10 +82,10 @@ public final class Disguise {
     }
 
     /**
-     * @return the entitytype that the disguised player's entity going to be changed for
+     * @return the entity that the disguised player's entity going to be changed for
      */
-    public EntityType getEntityType() {
-        return entityType == null ? EntityType.PLAYER : entityType;
+    public Entity getEntity() {
+        return entity;
     }
 
     /**
@@ -94,7 +95,7 @@ public final class Disguise {
 
         private String name;
         private Skin skin;
-        private EntityType entityType;
+        private Entity entity;
 
         /* we don't allow constructors from outside */
         private Builder() {
@@ -171,11 +172,23 @@ public final class Disguise {
         }
 
         /**
-         * @param entityType the entity type the player should look like
+         * @deprecated There is now a custom entity system
+         * @see #setEntity(Function)
+         *
+         * @param type the entity type the player should look like
          * @return the disguise builder
          */
-        public Builder setEntityType(final EntityType entityType) {
-            this.entityType = entityType;
+        public Builder setEntityType(final EntityType type) {
+            this.entity = new Entity.Builder().setType(type).build();
+            return this;
+        }
+
+        /**
+         * @param builder the entity builder the player should look like
+         * @return        the disguise builder
+         */
+        public Builder setEntity(final Function<Entity.Builder, Entity.Builder> builder) {
+            builder.apply(new Entity.Builder());
             return this;
         }
 
@@ -183,10 +196,9 @@ public final class Disguise {
          * @return a new instance of {@link Disguise} with the collected info
          */
         public Disguise build() {
-            return new Disguise(name, skin, entityType);
+            return new Disguise(name, skin, entity);
         }
 
     }
-
 
 }
