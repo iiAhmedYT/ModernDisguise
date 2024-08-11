@@ -44,8 +44,8 @@ public class DisguiseCommand {
             @Flag("name") @Default("BillBobbyBob") String name,
             @Flag("skin") @Optional String skin
     ) {
-        long time = System.currentTimeMillis();
-        Disguise.Builder builder = Disguise.builder().setName(name);
+        final long time = System.currentTimeMillis();
+        final Disguise.Builder builder = Disguise.builder().setName(name);
 
         if (skin != null) {
             builder.setSkin(SkinAPI.MOJANG, Bukkit.getOfflinePlayer(skin).getUniqueId());
@@ -57,18 +57,19 @@ public class DisguiseCommand {
     @Subcommand("entity")
     public @NotNull String asEntity(
             final Player player,
-            @Default("ZOMBIE") EntityType type
+            final @Default("ZOMBIE") EntityType type,
+            final @Flag("scale") @Default("1.0") double scale
     ) {
         final long time = System.currentTimeMillis();
         final Disguise disguise = Disguise.builder()
-                .setEntity(builder -> builder.setType(type).setAttribute(RangedAttribute.SCALE, 1.0D))
+                .setEntity(builder -> builder.setType(type).setAttribute(RangedAttribute.SCALE, scale))
                 .build();
         return provider.disguise(player, disguise) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
     }
 
     @Command("undisguise")
     public @NotNull String undisguise(final Player player) {
-        long time = System.currentTimeMillis();
+        final long time = System.currentTimeMillis();
         return provider.undisguise(player) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
     }
 

@@ -7,7 +7,7 @@
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.1</version>
+    <version>3.2</version>
 
     <distributionManagement>
         <repository>

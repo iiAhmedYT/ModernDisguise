@@ -184,11 +184,20 @@ public final class Disguise {
         }
 
         /**
+         * @param entity the entity the player should look like
+         * @return        the disguise builder
+         */
+        public Builder setEntity(final Entity entity) {
+            this.entity = entity;
+            return this;
+        }
+
+        /**
          * @param builder the entity builder the player should look like
          * @return        the disguise builder
          */
         public Builder setEntity(final Function<Entity.Builder, Entity.Builder> builder) {
-            builder.apply(new Entity.Builder());
+            this.entity = builder.apply(new Entity.Builder()).build();
             return this;
         }
 

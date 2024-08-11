@@ -68,10 +68,9 @@ public final class VS1_21_R1 extends DisguiseProvider {
             final LivingEntity living = (LivingEntity) DisguiseUtil.createEntity(entity.getType(), handle.level());
 
             for (final Map.Entry<Attribute, Double> entry : entity.getAttributes().entrySet()) {
-                final Attribute attribute = entry.getKey();
-                final String name = attribute.getKey();
+                final String name = entry.getKey().getKey();
                 final Holder<net.minecraft.world.entity.ai.attributes.Attribute> holder = CraftRegistry.getMinecraftRegistry(Registries.ATTRIBUTE).wrapAsHolder(
-                        CraftRegistry.getMinecraftRegistry(Registries.ATTRIBUTE).getOptional(ResourceLocation.parse(name)).get()
+                        CraftRegistry.getMinecraftRegistry(Registries.ATTRIBUTE).get(ResourceLocation.parse(name))
                 );
                 living.getAttribute(holder).setBaseValue(entry.getValue());
             }
