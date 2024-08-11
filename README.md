@@ -167,7 +167,7 @@ public class ExampleClass implements Listener {
                 // it's recommended to run this async since #setSkin from an online API will block the mainthread
                 .setSkin(SkinAPI.MOJANG, UUID.fromString("d3db29ff-9bc2-4828-993f-3a75929280f5"))
                 // this will change the player into a zombie for others only
-                .setEntityType(EntityType.ZOMBIE)
+                .setEntity(builder -> builder.setType(type).setAttribute(RangedAttribute.SCALE, 3.0D))
                 .build();
         DisguiseResponse response = provider.disguise(player, disguise);
         // there are 8 responses other than DisguiseResponse#SUCCESS
