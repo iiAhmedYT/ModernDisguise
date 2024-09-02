@@ -2,6 +2,7 @@ package dev.iiahmed.disguise;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import dev.iiahmed.disguise.util.DefaultEntityProvider;
 import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.util.Version;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("unused")
 public abstract class DisguiseProvider {
 
     private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
@@ -25,6 +27,7 @@ public abstract class DisguiseProvider {
 
     protected Plugin plugin;
     protected boolean entityDisguises, checkOnlineNames = true;
+    protected EntityProvider entityProvider = new DefaultEntityProvider();
 
     /**
      * Set the username {@link Pattern} that is
@@ -32,7 +35,6 @@ public abstract class DisguiseProvider {
      *
      * @param pattern the name pattern
      */
-    @SuppressWarnings("unused")
     public DisguiseProvider setNamePattern(@NotNull final Pattern pattern) {
         this.namePattern = pattern;
         return this;
@@ -44,7 +46,6 @@ public abstract class DisguiseProvider {
      *
      * @param length the max length
      */
-    @SuppressWarnings("unused")
     public DisguiseProvider setNameLength(final int length) {
         this.nameLength = length;
         return this;
@@ -107,6 +108,25 @@ public abstract class DisguiseProvider {
     }
 
     /**
+     * Retrieves the current {@link EntityProvider} instance.
+     *
+     * @return The current {@link EntityProvider} instance, or null if none is set.
+     */
+    public EntityProvider getEntityProvider() {
+        return entityProvider;
+    }
+
+    /**
+     * Sets the {@link EntityProvider} instance to be used.
+     *
+     * @param entityProvider The {@link EntityProvider} to set. This parameter cannot be null.
+     * @throws NullPointerException if the provided entityProvider is null.
+     */
+    public void setEntityProvider(final @NotNull EntityProvider entityProvider) {
+        this.entityProvider = entityProvider;
+    }
+
+    /**
      * Disguises a {@link Player} with a valid {@link Disguise}
      *
      * @param player   the disguising player
@@ -127,7 +147,7 @@ public abstract class DisguiseProvider {
             return DisguiseResponse.FAIL_EMPTY_DISGUISE;
         }
 
-        if (disguise.hasEntity() && !entityDisguises) {
+        if (disguise.hasEntity()  && (!entityDisguises || this.entityProvider.isSupported(disguise.getEntity()))) {
             return DisguiseResponse.FAIL_ENTITY_NOT_SUPPORTED;
         }
 
@@ -286,7 +306,8 @@ public abstract class DisguiseProvider {
      * @return true if the {@link Player} is disguised as an entity, false if the {@link Player} is not.
      */
     public final boolean isDisguisedAsEntity(@NotNull final Player player) {
-        return this.playerInfo.containsKey(player.getUniqueId()) && getInfo(player).hasEntity();
+        final PlayerInfo info = this.playerInfo.get(player.getUniqueId());
+        return info != null && info.hasEntity() && this.entityProvider.isSupported(info.getEntityType());
     }
 
     /**
@@ -318,6 +339,13 @@ public abstract class DisguiseProvider {
      */
     public boolean isVersionSupported() {
         return DisguiseUtil.PRIMARY;
+    }
+
+    /**
+     * @return false if version is NOT supported for entities
+     */
+    public boolean areEntitiesSupported() {
+        return DisguiseUtil.INJECTION && this.entityProvider.isAvailable();
     }
 
     /**

@@ -19,8 +19,8 @@ public final class PacketListener extends ChannelDuplexHandler {
 
     private static final String BUNDLE_PACKET_NAME = "ClientboundBundlePacket";
     private static final String PACKET_NAME;
+    private static final FieldAccessor<?> PACKET_LIST;
     private static final FieldAccessor<UUID> PLAYER_ID;
-    private static FieldAccessor<?> PACKET_LIST;
 
     static {
         try {
@@ -31,6 +31,8 @@ public final class PacketListener extends ChannelDuplexHandler {
             PLAYER_ID = Reflections.getField(namedEntitySpawn, UUID.class);
             if (Version.isOrOver(20)) {
                 PACKET_LIST = Reflections.getField(Class.forName("net.minecraft.network.protocol.BundlePacket"), Iterable.class);
+            } else {
+                PACKET_LIST = null;
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -60,6 +62,7 @@ public final class PacketListener extends ChannelDuplexHandler {
             this.handleSpawnPacket(context, packet, packet, promise);
             return;
         } else if (BUNDLE_PACKET_NAME.equals(name)) {
+            assert PACKET_LIST != null;
             final Iterable<?> iterable = (Iterable<?>) PACKET_LIST.get(packet);
             for (final Object bundlePacket : iterable) {
                 final String packetName = bundlePacket.getClass().getSimpleName();

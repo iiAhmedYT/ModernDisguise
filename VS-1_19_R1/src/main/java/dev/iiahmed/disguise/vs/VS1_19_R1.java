@@ -1,7 +1,6 @@
 package dev.iiahmed.disguise.vs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.util.DisguiseUtil;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,7 +57,7 @@ public final class VS1_19_R1 extends DisguiseProvider {
         final ClientboundAddEntityPacket spawn;
         final Collection<AttributeInstance> attributesSet;
         try {
-            final LivingEntity entity = (LivingEntity) DisguiseUtil.createEntity(type, handle.getLevel());
+            final LivingEntity entity = (LivingEntity) this.entityProvider.create(type, handle.getLevel());
             attributesSet = entity.getAttributes().getDirtyAttributes();
 
             spawn = new ClientboundAddEntityPacket(

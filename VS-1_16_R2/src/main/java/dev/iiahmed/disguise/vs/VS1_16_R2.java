@@ -1,7 +1,6 @@
 package dev.iiahmed.disguise.vs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.util.DisguiseUtil;
 import net.minecraft.server.v1_16_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -67,7 +66,7 @@ public final class VS1_16_R2 extends DisguiseProvider {
         final PacketPlayOutSpawnEntityLiving spawn;
         final Collection<AttributeModifiable> attributeMapBase;
         try {
-            final EntityLiving entity = (EntityLiving) DisguiseUtil.createEntity(type, p.world);
+            final EntityLiving entity = (EntityLiving) this.entityProvider.create(type, p.world);
             attributeMapBase = entity.getAttributeMap().getAttributes();
 
             spawn = new PacketPlayOutSpawnEntityLiving(entity);

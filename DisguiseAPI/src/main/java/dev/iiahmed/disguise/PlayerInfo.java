@@ -46,7 +46,7 @@ public final class PlayerInfo {
     }
 
     /**
-     * @return the {@link EntityType} of the disguised Player
+     * @return the {@link Entity} of the disguised Player
      */
     public Entity getEntity() {
         return entity;

@@ -3,7 +3,6 @@ package dev.iiahmed.disguise.vs;
 import dev.iiahmed.disguise.DisguiseProvider;
 import dev.iiahmed.disguise.Entity;
 import dev.iiahmed.disguise.attribute.Attribute;
-import dev.iiahmed.disguise.util.DisguiseUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
@@ -62,7 +61,7 @@ public final class VS1_20_R2 extends DisguiseProvider {
         final ClientboundAddEntityPacket spawn;
         final Collection<AttributeInstance> attributesSet;
         try {
-            final LivingEntity living = (LivingEntity) DisguiseUtil.createEntity(entity.getType(), handle.level());
+            final LivingEntity living = (LivingEntity) this.entityProvider.create(entity.getType(), handle.level());
 
             for (final Map.Entry<Attribute, Double> entry : entity.getAttributes().entrySet()) {
                 final String name = entry.getKey().getKey();

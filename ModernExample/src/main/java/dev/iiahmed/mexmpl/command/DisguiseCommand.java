@@ -3,7 +3,6 @@ package dev.iiahmed.mexmpl.command;
 import dev.iiahmed.disguise.*;
 
 import dev.iiahmed.disguise.attribute.RangedAttribute;
-import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.util.Version;
 import dev.iiahmed.mexmpl.ModernExample;
 import net.md_5.bungee.api.ChatColor;
@@ -27,14 +26,15 @@ public class DisguiseCommand {
 
     @Subcommand("info")
     public void info(final CommandActor actor) {
-        String foundColor = DisguiseUtil.found < 56? "&c" : "&a"; // 56 is amount of entities detected on 1.8.8
-        actor.reply(translate("Found enitities: " + foundColor + DisguiseUtil.found));
+        final EntityProvider entityProvider = provider.getEntityProvider();
+        String foundColor = entityProvider.foundEntities() < 56? "&c" : "&a"; // 56 is amount of entities detected on 1.8.8
+        actor.reply(translate("Found enitities: " + foundColor + entityProvider.foundEntities()));
 
-        String livingColor = DisguiseUtil.living < 33? "&c" : "&a"; // 33 is amount of entities living in 1.8.8
-        actor.reply(translate("Extends LivingEntity: " + livingColor + DisguiseUtil.living));
+        String livingColor = entityProvider.foundLivingEntities() < 33? "&c" : "&a"; // 33 is amount of entities living in 1.8.8
+        actor.reply(translate("Extends LivingEntity: " + livingColor + entityProvider.foundLivingEntities()));
 
-        String registeredColor = DisguiseUtil.registered < 32? "&c" : "&a"; // 32 is amount of entities registered in 1.8.8
-        actor.reply(translate("Has a Constructor (aka. Registered): " + registeredColor + DisguiseUtil.registered));
+        String registeredColor = entityProvider.supportedEntities() < 32? "&c" : "&a"; // 32 is amount of entities registered in 1.8.8
+        actor.reply(translate("Has a Constructor (aka. Registered): " + registeredColor + entityProvider.supportedEntities()));
     }
 
     @Subcommand("player")

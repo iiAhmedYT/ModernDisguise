@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+@SuppressWarnings("unused")
 public final class Reflections {
 
     /**
@@ -72,6 +73,9 @@ public final class Reflections {
             final Class<T> fieldType,
             int index
     ) {
+        if (target == null) {
+            throw new IllegalArgumentException("Target class is null");
+        }
         for (final Field field : target.getDeclaredFields()) {
             if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(field.getType()) && index-- <= 0) {
                 field.setAccessible(true);
@@ -81,7 +85,7 @@ public final class Reflections {
 
                     @Override
                     @SuppressWarnings("unchecked")
-                    public T get(Object target) {
+                    public T get(final Object target) {
                         try {
                             return (T) field.get(target);
                         } catch (IllegalAccessException e) {
@@ -90,7 +94,7 @@ public final class Reflections {
                     }
 
                     @Override
-                    public void set(Object target, Object value) {
+                    public void set(final Object target, final Object value) {
                         try {
                             field.set(target, value);
                         } catch (IllegalAccessException e) {
@@ -99,7 +103,7 @@ public final class Reflections {
                     }
 
                     @Override
-                    public boolean hasField(Object target) {
+                    public boolean hasField(final Object target) {
                         // target instanceof DeclaringClass
                         return field.getDeclaringClass().isAssignableFrom(target.getClass());
                     }

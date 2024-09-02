@@ -1,7 +1,6 @@
 package dev.iiahmed.disguise.vs;
 
 import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.util.DisguiseUtil;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,7 +31,6 @@ public final class VS1_16_R3 extends DisguiseProvider {
             return;
         }
         final Location location = player.getLocation();
-        final long seed = player.getWorld().getSeed();
         final EntityPlayer ep = ((CraftPlayer) player).getHandle();
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
@@ -68,7 +66,7 @@ public final class VS1_16_R3 extends DisguiseProvider {
         final PacketPlayOutSpawnEntityLiving spawn;
         final Collection<AttributeModifiable> attributeMapBase;
         try {
-            final EntityLiving entity = (EntityLiving) DisguiseUtil.createEntity(type, p.world);
+            final EntityLiving entity = (EntityLiving) this.entityProvider.create(type, p.world);
             attributeMapBase = entity.getAttributeMap().getAttributes();
 
             spawn = new PacketPlayOutSpawnEntityLiving(entity);
