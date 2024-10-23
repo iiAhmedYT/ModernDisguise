@@ -7,7 +7,7 @@
     <parent>
         <artifactId>ModernDisguise-parent</artifactId>
         <groupId>dev.iiahmed</groupId>
-        <version>3.2</version>
+        <version>3.3</version>
     </parent>
 
     <artifactId>ModernExample</artifactId>
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>dev.iiahmed</groupId>
             <artifactId>ModernDisguise</artifactId>
-            <version>3.2</version>
+            <version>3.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

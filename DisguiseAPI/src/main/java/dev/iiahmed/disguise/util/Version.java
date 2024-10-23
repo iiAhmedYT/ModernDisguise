@@ -99,6 +99,9 @@ public final class Version {
                 case "1.21":
                 case "1.21.1":
                     return "1_21_R1";
+                case "1.21.2":
+                case "1.21.3":
+                    return "1_21_R2";
                 default:
                     return "UNKNOWN";
             }
