@@ -147,7 +147,7 @@ public abstract class DisguiseProvider {
             return DisguiseResponse.FAIL_EMPTY_DISGUISE;
         }
 
-        if (disguise.hasEntity()  && (!entityDisguises || this.entityProvider.isSupported(disguise.getEntity()))) {
+        if (disguise.hasEntity() && (!entityDisguises || !this.entityProvider.isSupported(disguise.getEntity()))) {
             return DisguiseResponse.FAIL_ENTITY_NOT_SUPPORTED;
         }
 
