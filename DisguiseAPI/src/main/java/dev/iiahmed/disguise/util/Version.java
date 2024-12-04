@@ -102,6 +102,8 @@ public final class Version {
                 case "1.21.2":
                 case "1.21.3":
                     return "1_21_R2";
+                case "1.21.4":
+                    return "1_21_R3";
                 default:
                     return "UNKNOWN";
             }
