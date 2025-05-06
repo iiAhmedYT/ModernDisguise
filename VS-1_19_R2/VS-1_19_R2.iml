@@ -5,7 +5,6 @@
       <configuration>
         <autoDetectTypes>
           <platformType>MCP</platformType>
-          <platformType>SPIGOT</platformType>
         </autoDetectTypes>
         <projectReimportVersion>1</projectReimportVersion>
       </configuration>

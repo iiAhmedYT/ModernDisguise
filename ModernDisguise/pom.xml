@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ModernDisguise-parent</artifactId>
         <groupId>dev.iiahmed</groupId>
-        <version>3.5</version>
+        <version>3.6</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -246,6 +246,13 @@
         <dependency>
             <groupId>dev.iiahmed</groupId>
             <artifactId>VS-1_21_R3</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.iiahmed</groupId>
+            <artifactId>VS-1_21_R4</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
