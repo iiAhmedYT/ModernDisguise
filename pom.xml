@@ -48,6 +48,7 @@
         <module>VS-1_21_R2</module>
         <module>VS-1_21_R3</module>
         <module>VS-1_21_R4</module>
+        <module>VS-1_21_R5</module>
     </modules>
 
     <build>
