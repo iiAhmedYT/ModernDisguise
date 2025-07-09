@@ -50,6 +50,10 @@ tasks.withType<JavaCompile> {
     )
 }
 
+tasks.shadowJar {
+    archiveClassifier.set("")
+}
+
 tasks.register<Jar>("aggregateSources") {
     archiveClassifier.set("sources")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
