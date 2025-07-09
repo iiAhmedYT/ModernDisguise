@@ -1,0 +1,124 @@
+package dev.iiahmed.disguise;
+
+import dev.iiahmed.disguise.vs.*;
+import dev.iiahmed.disguise.listener.PlayerListener;
+import dev.iiahmed.disguise.util.Version;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+
+@SuppressWarnings("unused")
+public final class DisguiseManager {
+
+    private static final DisguiseProvider PROVIDER;
+
+    static {
+        switch (Version.NMS) {
+            case "1_8_R3":
+                PROVIDER = new VS1_8_R3();
+                break;
+            case "1_9_R2":
+                PROVIDER = new VS1_9_R2();
+                break;
+            case "1_10_R1":
+                PROVIDER = new VS1_10_R1();
+                break;
+            case "1_11_R1":
+                PROVIDER = new VS1_11_R1();
+                break;
+            case "1_12_R1":
+                PROVIDER = new VS1_12_R1();
+                break;
+            case "1_13_R1":
+                PROVIDER = new VS1_13_R1();
+                break;
+            case "1_13_R2":
+                PROVIDER = new VS1_13_R2();
+                break;
+            case "1_14_R1":
+                PROVIDER = new VS1_14_R1();
+                break;
+            case "1_15_R1":
+                PROVIDER = new VS1_15_R1();
+                break;
+            case "1_16_R1":
+                PROVIDER = new VS1_16_R1();
+                break;
+            case "1_16_R2":
+                PROVIDER = new VS1_16_R2();
+                break;
+            case "1_16_R3":
+                PROVIDER = new VS1_16_R3();
+                break;
+            case "1_17_R1":
+                PROVIDER = Version.IS_PAPER ? new PVS1_17_R1() : new SVS1_17_R1();
+                break;
+            case "1_18_R1":
+                PROVIDER = Version.IS_PAPER ? new PVS1_18_R1() : new SVS1_18_R1();
+                break;
+            case "1_18_R2":
+                PROVIDER = Version.IS_PAPER ? new PVS1_18_R2() : new SVS1_18_R2();
+                break;
+            case "1_19_R1":
+                PROVIDER = Version.IS_PAPER ? new PVS1_19_R1() : new SVS1_19_R1();
+                break;
+            case "1_19_R2":
+                PROVIDER = Version.IS_PAPER ? new PVS1_19_R2() : new SVS1_19_R2();
+                break;
+            case "1_19_R3":
+                PROVIDER = Version.IS_PAPER ? new PVS1_19_R3() : new SVS1_19_R3();
+                break;
+            case "1_20_R1":
+                PROVIDER = Version.IS_PAPER ? new PVS1_20_R1() : new SVS1_20_R1();
+                break;
+            case "1_20_R2":
+                PROVIDER = Version.IS_PAPER ? new PVS1_20_R2() : new SVS1_20_R2();
+                break;
+            case "1_20_R3":
+                PROVIDER = Version.IS_PAPER ? new PVS1_20_R3() : new SVS1_20_R3();
+                break;
+            case "1_20_R4":
+                PROVIDER = Version.IS_PAPER ? new PVS1_20_R4() : new SVS1_20_R4();
+                break;
+            case "1_21_R1":
+                PROVIDER = Version.IS_PAPER ? new PVS1_21_R1() : new SVS1_21_R1();
+                break;
+            case "1_21_R2":
+                PROVIDER = Version.IS_PAPER ? new PVS1_21_R2() : new SVS1_21_R2();
+                break;
+            case "1_21_R3":
+                PROVIDER = Version.IS_PAPER ? new PVS1_21_R3() : new SVS1_21_R3();
+                break;
+            case "1_21_R4":
+                PROVIDER = Version.IS_PAPER ? new PVS1_21_R4() : new SVS1_21_R4();
+                break;
+            case "1_21_R5":
+                PROVIDER = Version.IS_PAPER ? new PVS1_21_R5() : new SVS1_21_R5();
+                break;
+            case "UNKNOWN":
+            default:
+                PROVIDER = new VS_Unavailable();
+                break;
+        }
+    }
+
+    /**
+     * Sets the plugin for the provider and registers the litsners
+     */
+    public static void initialize(@NotNull final Plugin plugin, final boolean entityDisguises) {
+        final Plugin old = PROVIDER.getPlugin();
+        if (old == null || !old.isEnabled()) {
+            PROVIDER.plugin = plugin;
+            PROVIDER.entityDisguises = entityDisguises;
+            plugin.getServer().getPluginManager().registerEvents(new PlayerListener(), plugin);
+        }
+    }
+
+    /**
+     * @return the available DisguiseProvider for current version
+     */
+    @NotNull
+    public static DisguiseProvider getProvider() {
+        return PROVIDER;
+    }
+
+}

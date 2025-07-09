@@ -1,0 +1,5 @@
+ext {
+    minecraftVersion = '1.16.5-R0.1-SNAPSHOT'
+}
+
+apply from: rootProject.file("version/script/legacy.gradle")

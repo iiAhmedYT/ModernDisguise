@@ -26,7 +26,7 @@ You can change the player's:
 - 1.18.x (1_18_R1, 1_18_R2)
 - 1.19.x (1_19_R1, 1_19_R2, 1_19_R3)
 - 1.20.x (1_20_R1, 1_20_R2, 1_20_R3, 1_20_R4)
-- 1.21.x (1_21_R1, 1_21_R2, 1_21_R3, 1_21_R4)
+- 1.21.x (1_21_R1, 1_21_R2, 1_21_R3, 1_21_R4, 1_21_R5)
 
 ## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this library disables that feature in order for disguised players to chat.
@@ -63,7 +63,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>3.6</version>
+    <version>4.0</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -88,7 +88,7 @@ and you can relocate them as well, here's an example maven-shade-plugin config:
 ```
 ### Gradle
 Add this repo to your repositories block:
-```groovy
+```kt
 repositories {
     maven {
         name = "gravemc-repo"
@@ -98,9 +98,9 @@ repositories {
 ```
 
 and now add dependency:
-```groovy
+```kt
 dependencies {
-    implementation 'dev.iiahmed:ModernDisguise:3.6'
+    implementation("dev.iiahmed:ModernDisguise:4.0")
 }
 ```
 

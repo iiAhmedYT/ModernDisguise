@@ -1,0 +1,25 @@
+apply plugin: 'java'
+
+ext {
+    minecraftVersion = project.hasProperty('minecraftVersion') ? project.minecraftVersion : '1.8.8-R0.1-SNAPSHOT'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url = uri("https://repo.codemc.org/repository/nms/")
+    }
+}
+
+dependencies {
+    compileOnly(project(":ModernDisguise-API"))
+    compileOnly("org.spigotmc:spigot:$minecraftVersion")
+    compileOnly("org.jetbrains:annotations:24.1.0")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+}
