@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
    java
     id("com.gradleup.shadow") version "8.3.8"
@@ -26,10 +28,6 @@ dependencies {
     compileOnly("org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT")
 }
 
-tasks.register("printResolvedArtifacts") {
-    doLast {
-        configurations.runtimeClasspath.get().resolvedConfiguration.resolvedArtifacts.forEach {
-            println("✅ ${it.moduleVersion.id} -> ${it.file}")
-        }
-    }
+tasks.named<ShadowJar>("shadowJar") {
+    dependsOn(project(":").tasks.named("shadowJar"))
 }
