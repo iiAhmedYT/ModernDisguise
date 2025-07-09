@@ -93,7 +93,7 @@ tasks.register<Jar>("aggregateJavadoc") {
 publishing {
     publications {
         create<MavenPublication>("modernDisguise") {
-            artifact(tasks.named("jar"))
+            artifact(tasks.named("shadowJar"))
 
             artifact(tasks.named("aggregateSources").get())
             artifact(tasks.named("aggregateJavadoc").get())
