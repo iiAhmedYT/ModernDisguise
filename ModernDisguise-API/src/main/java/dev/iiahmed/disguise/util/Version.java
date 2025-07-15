@@ -6,8 +6,8 @@ import org.bukkit.Bukkit;
 public final class Version {
 
     public static final String VERSION_EXACT = Bukkit.getBukkitVersion().split("-")[0];
-    public static final boolean IS_FOLIA = Reflections.findClass("io.papermc.paper.threadedregions.RegionizedServer");
-    public static final boolean IS_PAPER = Reflections.findClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
+    public static final boolean IS_FOLIA = Reflections.hasClass("io.papermc.paper.threadedregions.RegionizedServer");
+    public static final boolean IS_PAPER = Reflections.hasClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
 
     public static final int MAJOR, MINOR, PATCH;
 

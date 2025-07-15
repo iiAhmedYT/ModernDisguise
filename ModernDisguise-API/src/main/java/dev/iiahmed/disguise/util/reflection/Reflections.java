@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public final class Reflections {
@@ -124,11 +125,25 @@ public final class Reflections {
      * @param paths all possible class paths
      * @return false if the {@link Class} was NOT found
      */
-    public static boolean findClass(final String... paths) {
+    public static boolean hasClass(final String... paths) {
         for (final String path : paths) {
             if (getClass(path) != null) return true;
         }
         return false;
+    }
+
+    /**
+     * Finds any {@link Class} of the provided paths
+     *
+     * @param paths all possible class paths
+     * @return null if the {@link Class} was NOT found
+     */
+    public static Optional<Class<?>> findClass(final String... paths) {
+        for (final String path : paths) {
+            Class<?> clazz = getClass(path);
+            if (clazz != null) return Optional.of(clazz);
+        }
+        return Optional.empty();
     }
 
     /**
