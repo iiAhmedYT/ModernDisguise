@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     `java-library`
     `maven-publish`
@@ -50,8 +52,10 @@ tasks.withType<JavaCompile> {
     )
 }
 
-tasks.shadowJar {
-    archiveClassifier.set("")
+if (gradle.startParameter.taskNames.any { it.contains("publish", ignoreCase = true) }) {
+    tasks.named<ShadowJar>("shadowJar") {
+        archiveClassifier.set("")
+    }
 }
 
 tasks.register<Jar>("aggregateSources") {
