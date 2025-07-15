@@ -146,7 +146,11 @@ public class DefaultEntityProvider implements EntityProvider {
      */
     private static Class<?> findEntity(final String name) {
         if (Version.isBelow(17)) {
-            return Reflections.getClass(DisguiseUtil.PREFIX + name);
+            final Class<?> firstTry = Reflections.getClass(DisguiseUtil.PREFIX + name);
+            if (firstTry != null) {
+                return firstTry;
+            }
+            return Reflections.getClass(DisguiseUtil.PREFIX + "Entity" + name);
         }
         for (final String path : new String[]{
                 // animals
