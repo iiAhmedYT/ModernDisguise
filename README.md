@@ -63,7 +63,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>4.0</version>
+    <version>4.1</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -100,7 +100,7 @@ repositories {
 and now add dependency:
 ```kt
 dependencies {
-    implementation("dev.iiahmed:ModernDisguise:4.0")
+    implementation("dev.iiahmed:ModernDisguise:4.1")
 }
 ```
 
