@@ -206,11 +206,7 @@ Versions from now-on should be built with the ```--remapped``` flag
 ###### 2- Cloning
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature
 
-Congratulations! Now you can build ModernDisguise with the command ```mvn clean install```
-
-###### 3- Changing Version
-Well, to be honest with maven its too much work to change the versions, however, not on my watch!
-Just run ``mvn versions:set -DnewVersion=VERSION-HERE``, example: ``mvn versions:set -DnewVersion=3.0``
+Congratulations! Now you can build ModernDisguise with the command ```./gradlew shadowJar```
 
 ## 🪪 License
 This project is licensed under the [GPL-3.0 License](LICENSE.md)
