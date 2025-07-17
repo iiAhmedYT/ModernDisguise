@@ -30,4 +30,7 @@ dependencies {
 
 tasks.named<ShadowJar>("shadowJar") {
     dependsOn(project(":").tasks.named("shadowJar"))
+    archiveClassifier.set("")
+
+    archiveFileName.set("moderndisguise-test-plugin-${project.version}.jar")
 }

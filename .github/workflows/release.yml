@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Maven Central
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: ✅ Checkout Project
@@ -42,8 +42,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: 🚀 Deploy
-        run: ./gradlew publish
+        run: ./gradlew :ModernExample:shadowJar publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GRAVEMC_REPO_USER: ${{ secrets.GRAVEMC_REPO_USER }}
           GRAVEMC_REPO_PASSWORD: ${{ secrets.GRAVEMC_REPO_PASSWORD }}
+
+      - name: 📦 Upload JAR to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./ModernExample/build/libs/moderndisguise-test-plugin-*.jar
