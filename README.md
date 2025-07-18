@@ -63,7 +63,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>4.1</version>
+    <version>4.2</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -100,7 +100,7 @@ repositories {
 and now add dependency:
 ```kt
 dependencies {
-    implementation("dev.iiahmed:ModernDisguise:4.1")
+    implementation("dev.iiahmed:ModernDisguise:4.2")
 }
 ```
 
@@ -201,7 +201,7 @@ Versions from now-on should be built with the ```--remapped``` flag
 - 1.18.1, 1.18.2
 - 1.19.2, 1.19.3, 1.19.4
 - 1.20.1, 1.20.2, 1.20.4, 1.20.6
-- 1.21.1, 1.21.3, 1.21.4, 1.21.5
+- 1.21.1, 1.21.3, 1.21.4, 1.21.5, 1.21.7
 
 ###### 2- Cloning
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature
