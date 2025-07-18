@@ -28,6 +28,15 @@ dependencies {
     compileOnly("org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT")
 }
 
+tasks.processResources {
+    val props = mapOf("version" to project.version)
+    inputs.properties(props)
+    filteringCharset = "UTF-8"
+    filesMatching("plugin.yml") {
+        expand(props)
+    }
+}
+
 tasks.named<ShadowJar>("shadowJar") {
     dependsOn(project(":").tasks.named("shadowJar"))
     archiveClassifier.set("")

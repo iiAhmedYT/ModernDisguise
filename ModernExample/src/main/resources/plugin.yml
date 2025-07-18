@@ -1,5 +1,5 @@
 name: ModernExample
-version: '${project.version}'
+version: '${version}'
 main: dev.iiahmed.mexmpl.ModernExample
 authors: [ iiAhmedYT ]
 description: An example implementation to test the functionality of the plugin
