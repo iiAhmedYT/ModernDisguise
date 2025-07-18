@@ -42,11 +42,14 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: 🚀 Deploy
-        run: ./gradlew :ModernExample:shadowJar publish
+        run: ./gradlew publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GRAVEMC_REPO_USER: ${{ secrets.GRAVEMC_REPO_USER }}
           GRAVEMC_REPO_PASSWORD: ${{ secrets.GRAVEMC_REPO_PASSWORD }}
+
+      - name: 🏗️ Build ModernExample
+        run: ./gradlew :ModernExample:shadowJar
 
       - name: 📦 Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v2
