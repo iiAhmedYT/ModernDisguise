@@ -26,8 +26,9 @@ public final class PacketListener extends ChannelDuplexHandler {
         try {
             final String prefix = Version.isOrOver(17) ? "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX;
             final Class<?> namedEntitySpawn = Reflections.findClass(
-                    prefix + "PacketPlayOutSpawnEntity",
+                    // order is IMPORTANT
                     prefix + "PacketPlayOutNamedEntitySpawn",
+                    prefix + "PacketPlayOutSpawnEntity",
                     prefix + "ClientboundAddEntityPacket"
             ).orElseThrow(() -> new RuntimeException("Failed to find spawn entity packet class!"));
             PACKET_NAME = namedEntitySpawn.getSimpleName();
