@@ -5,13 +5,14 @@ import dev.iiahmed.disguise.*;
 import dev.iiahmed.disguise.attribute.RangedAttribute;
 import dev.iiahmed.disguise.util.Version;
 import dev.iiahmed.mexmpl.ModernExample;
+import dev.velix.imperat.BukkitSource;
+import dev.velix.imperat.annotations.*;
+import dev.velix.imperat.command.AttachmentMode;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import revxrsal.commands.annotation.*;
-import revxrsal.commands.command.CommandActor;
 
 @Command("disguise")
 @SuppressWarnings("unused")
@@ -24,25 +25,11 @@ public class DisguiseCommand {
         provider.allowOverrideChat(false);
     }
 
-    @Subcommand("info")
-    public void info(final CommandActor actor) {
-        final EntityProvider entityProvider = provider.getEntityProvider();
-        String foundColor = entityProvider.foundEntities() < 56? "&c" : "&a"; // 56 is amount of entities detected on 1.8.8
-        actor.reply(translate("Found enitities: " + foundColor + entityProvider.foundEntities()));
-
-        String livingColor = entityProvider.foundLivingEntities() < 33? "&c" : "&a"; // 33 is amount of entities living in 1.8.8
-        actor.reply(translate("Extends LivingEntity: " + livingColor + entityProvider.foundLivingEntities()));
-
-        String registeredColor = entityProvider.supportedEntities() < 32? "&c" : "&a"; // 32 is amount of entities registered in 1.8.8
-        actor.reply(translate("Has a Constructor (aka. Registered): " + registeredColor + entityProvider.supportedEntities()));
-    }
-
-    @Subcommand("player")
-    @SuppressWarnings("deprecation")
+    @SubCommand(value = "player", attachment = AttachmentMode.EMPTY)
     public @NotNull String asPlayer(
             final Player player,
-            @Flag("name") @Default("BillBobbyBob") String name,
-            @Flag("skin") @Optional String skin
+            @Default("BillBobbyBob") String name,
+            @Optional String skin
     ) {
         final long time = System.currentTimeMillis();
         final Disguise.Builder builder = Disguise.builder().setName(name);
@@ -54,7 +41,7 @@ public class DisguiseCommand {
         return provider.disguise(player, builder.build()) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
     }
 
-    @Subcommand("entity")
+    @SubCommand(value = "entity", attachment = AttachmentMode.EMPTY)
     public @NotNull String asEntity(
             final Player player,
             final @Default("ZOMBIE") EntityType type,
@@ -65,6 +52,19 @@ public class DisguiseCommand {
                 .setEntity(builder -> builder.setType(type).setAttribute(RangedAttribute.SCALE, scale))
                 .build();
         return provider.disguise(player, disguise) + " (done in " + (System.currentTimeMillis() - time) + "ms)";
+    }
+
+    @SubCommand(value = "info", attachment = AttachmentMode.EMPTY)
+    public void info(final BukkitSource source) {
+        final EntityProvider entityProvider = provider.getEntityProvider();
+        String foundColor = entityProvider.foundEntities() < 56? "&c" : "&a"; // 56 is amount of entities detected on 1.8.8
+        source.reply(translate("Found enitities: " + foundColor + entityProvider.foundEntities()));
+
+        String livingColor = entityProvider.foundLivingEntities() < 33? "&c" : "&a"; // 33 is amount of entities living in 1.8.8
+        source.reply(translate("Extends LivingEntity: " + livingColor + entityProvider.foundLivingEntities()));
+
+        String registeredColor = entityProvider.supportedEntities() < 32? "&c" : "&a"; // 32 is amount of entities registered in 1.8.8
+        source.reply(translate("Has a Constructor (aka. Registered): " + registeredColor + entityProvider.supportedEntities()));
     }
 
     @Command("undisguise")

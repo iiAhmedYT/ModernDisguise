@@ -20,8 +20,8 @@ repositories {
 
 dependencies {
     implementation(project(":"))
-    implementation("com.github.Revxrsal.Lamp:common:3.1.9")
-    implementation("com.github.Revxrsal.Lamp:bukkit:3.1.9")
+    implementation("dev.velix:imperat-core:1.9.6")
+    implementation("dev.velix:imperat-bukkit:1.9.6")
 
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("org.jetbrains:annotations:24.1.0")
@@ -37,9 +37,10 @@ tasks.processResources {
     }
 }
 
+
 tasks.named<ShadowJar>("shadowJar") {
     dependsOn(project(":").tasks.named("shadowJar"))
     archiveClassifier.set("")
-
+    relocate("dev.velix.imperat", "dev.iiahmed.mexample.shade")
     archiveFileName.set("moderndisguise-test-plugin-${project.version}.jar")
 }

@@ -2,10 +2,9 @@ package dev.iiahmed.mexmpl;
 
 import dev.iiahmed.mexmpl.command.DisguiseCommand;
 import dev.iiahmed.mexmpl.hook.PAPIExpansion;
+import dev.velix.imperat.BukkitImperat;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import revxrsal.commands.bukkit.BukkitCommandHandler;
-import revxrsal.commands.process.ResponseHandler;
 
 public final class ModernExample extends JavaPlugin {
 
@@ -14,11 +13,11 @@ public final class ModernExample extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        BukkitCommandHandler handler = BukkitCommandHandler.create(this);
-        handler.registerResponseHandler(String.class, ResponseHandler::reply);
-        handler.register(new DisguiseCommand());
-        handler.registerBrigadier();
+        final BukkitImperat imperat = BukkitImperat.builder(this)
+                .applyBrigadier(true)
+                .build();
 
+        imperat.registerCommands(new DisguiseCommand());
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PAPIExpansion().register();
         }
