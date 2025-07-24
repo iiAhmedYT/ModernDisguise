@@ -42,6 +42,9 @@ public final class VS1_14_R1 extends DisguiseProvider {
                         ep.playerInteractManager.getGameMode()
                 )
         );
+        ep.playerConnection.sendPacket(
+                new PacketPlayOutUpdateHealth(ep.getHealth(), ep.getFoodData().foodLevel, ep.getFoodData().saturationLevel)
+        );
         player.teleport(location);
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
