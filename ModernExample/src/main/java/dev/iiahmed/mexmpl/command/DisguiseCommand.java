@@ -75,6 +75,7 @@ public class DisguiseCommand {
 
     @Command("modernversion")
     public String isVersion(
+            final BukkitSource source,
             final int major,
             final int minor,
             final int patch

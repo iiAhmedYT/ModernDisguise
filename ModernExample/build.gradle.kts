@@ -28,6 +28,18 @@ dependencies {
     compileOnly("org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT")
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.release.set(17)
+    options.compilerArgs.addAll(
+        listOf(
+            "-Xlint:unchecked",
+            "-Xlint:deprecation",
+            "-parameters"
+        )
+    )
+}
+
 tasks.processResources {
     val props = mapOf("version" to project.version)
     inputs.properties(props)

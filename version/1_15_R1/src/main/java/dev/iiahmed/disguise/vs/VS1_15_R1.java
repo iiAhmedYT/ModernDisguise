@@ -37,7 +37,7 @@ public final class VS1_15_R1 extends DisguiseProvider {
                 ep));
         ep.playerConnection.sendPacket(
                 new PacketPlayOutRespawn(
-                        ep.dimension,
+                        ep.world.worldProvider.getDimensionManager(), // don't use EntityPlayer's dimension, as it will be wrong
                         ep.world.getSeed(),
                         ep.world.getWorldData().getType(),
                         ep.playerInteractManager.getGameMode()
