@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import java.util.concurrent.CompletableFuture;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -198,33 +199,48 @@ public final class DisguiseUtil {
     }
 
     /**
-     * @return the parsed {@link JSONObject} of the URL input
+     * @return a CompletableFuture containing the parsed {@link JSONObject} of the URL input
      */
-    public static JSONObject getJSONObject(@NotNull final String urlString) {
-        try {
-            final Scanner scanner = getScanner(urlString);
-            final StringBuilder builder = new StringBuilder();
-            while (scanner.hasNext()) {
-                builder.append(scanner.next());
+    public static CompletableFuture<JSONObject> getJSONObject(@NotNull final String urlString) {
+        return getScanner(urlString).thenApply(scanner -> {
+            try (scanner) { // Java 7+ try-with-resources
+                final StringBuilder builder = new StringBuilder();
+                while (scanner.hasNext()) {
+                    builder.append(scanner.next());
+                }
+                return (JSONObject) new JSONParser().parse(builder.toString());
+            } catch (final ParseException e) {
+                // JSON 파싱 실패 시 예외를 던져 exceptionally 블록에서 처리되도록 함
+                throw new RuntimeException("Failed to parse the JSON response", e);
             }
-
-            return (JSONObject) new JSONParser().parse(builder.toString());
-        } catch (final IOException | ParseException exception) {
-            throw new RuntimeException("Failed to Scan/Parse the URL", exception);
-        }
+        });
     }
 
-    private static @NotNull Scanner getScanner(@NotNull String urlString) throws IOException {
-        final URL url = new URL(urlString);
-        final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.setRequestProperty("User-Agent", "ModernDisguiseAPI/v1.0");
-        connection.setRequestMethod("GET");
-        connection.connect();
-        if (connection.getResponseCode() != 200) {
-            throw new RuntimeException("The used URL doesn't seem to be working (the api is down?) " + urlString);
-        }
+    /**
+     * Asynchronously gets a Scanner for a given URL.
+     * @return A CompletableFuture that will complete with the Scanner.
+     */
+    private static CompletableFuture<Scanner> getScanner(@NotNull String urlString) {
+        // supplyAsync를 통해 별도의 스레드에서 네트워크 작업을 비동기적으로 실행
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                final URL url = new URL(urlString);
+                final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestProperty("User-Agent", "ModernDisguiseAPI/v1.0");
+                connection.setRequestMethod("GET");
+                // connect()는 getInputStream()이나 getResponseCode() 호출 시 암시적으로 호출되므로 생략 가능
+                // connection.connect();
 
-        return new Scanner(url.openStream());
+                if (connection.getResponseCode() != 200) {
+                    throw new IOException("The used URL doesn't seem to be working (response code: " + connection.getResponseCode() + ") " + urlString);
+                }
+
+                return new Scanner(connection.getInputStream());
+            } catch (IOException e) {
+                // 예외 발생 시 CompletableFuture를 예외 상태로 완료시킴
+                throw new RuntimeException("Failed to scan the URL", e);
+            }
+        });
     }
 
     /**
