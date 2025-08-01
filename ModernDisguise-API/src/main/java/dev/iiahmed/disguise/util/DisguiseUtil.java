@@ -198,12 +198,12 @@ public final class DisguiseUtil {
         }
     }
 
-    /**
+/**
      * @return a CompletableFuture containing the parsed {@link JSONObject} of the URL input
      */
     public static CompletableFuture<JSONObject> getJSONObject(@NotNull final String urlString) {
         return getScanner(urlString).thenApply(scanner -> {
-            try (scanner) { // Java 7+ try-with-resources
+            try {
                 final StringBuilder builder = new StringBuilder();
                 while (scanner.hasNext()) {
                     builder.append(scanner.next());
@@ -212,6 +212,11 @@ public final class DisguiseUtil {
             } catch (final ParseException e) {
                 // JSON 파싱 실패 시 예외를 던져 exceptionally 블록에서 처리되도록 함
                 throw new RuntimeException("Failed to parse the JSON response", e);
+            } finally {
+                // Java 8 호환성을 위해 try-finally 구문을 사용하여 스캐너를 확실히 닫습니다.
+                if (scanner != null) {
+                    scanner.close();
+                }
             }
         });
     }
