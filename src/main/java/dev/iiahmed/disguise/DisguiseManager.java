@@ -94,6 +94,9 @@ public final class DisguiseManager {
             case "1_21_R5":
                 PROVIDER = Version.IS_PAPER ? new PVS1_21_R5() : new SVS1_21_R5();
                 break;
+            case "1_21_R6":
+                PROVIDER = Version.IS_PAPER ? new PVS1_21_R6() : new SVS1_21_R6();
+                break;
             case "UNKNOWN":
             default:
                 PROVIDER = new VS_Unavailable();
