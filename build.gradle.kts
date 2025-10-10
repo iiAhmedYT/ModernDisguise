@@ -13,7 +13,7 @@ java {
 
 allprojects {
     group = "dev.iiahmed"
-    version = "4.3"
+    version = "4.4"
 }
 
 repositories {
