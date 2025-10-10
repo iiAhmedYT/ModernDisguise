@@ -26,7 +26,7 @@ You can change the player's:
 - 1.18.x (1_18_R1, 1_18_R2)
 - 1.19.x (1_19_R1, 1_19_R2, 1_19_R3)
 - 1.20.x (1_20_R1, 1_20_R2, 1_20_R3, 1_20_R4)
-- 1.21.x (1_21_R1, 1_21_R2, 1_21_R3, 1_21_R4, 1_21_R5)
+- 1.21.x (1_21_R1, 1_21_R2, 1_21_R3, 1_21_R4, 1_21_R5, 1_21_R6)
 
 ## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this library disables that feature in order for disguised players to chat.
@@ -201,7 +201,7 @@ Versions from now-on should be built with the ```--remapped``` flag
 - 1.18.1, 1.18.2
 - 1.19.2, 1.19.3, 1.19.4
 - 1.20.1, 1.20.2, 1.20.4, 1.20.6
-- 1.21.1, 1.21.3, 1.21.4, 1.21.5, 1.21.7
+- 1.21.1, 1.21.3, 1.21.4, 1.21.5, 1.21.7, 1.21.9
 
 ###### 2- Cloning
 You can either clone the repository using the famous ```git clone``` command or use your IDE's clone feature

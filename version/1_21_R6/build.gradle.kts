@@ -4,7 +4,7 @@ plugins {
 }
 
 recraft {
-    minecraftVersion.set("1.19.2")
+    minecraftVersion.set("1.21.9")
     targetedPackages.set(listOf("dev/iiahmed/disguise/vs"))
     jarFilePattern = "libs/${project.name}-${project.version}.jar"
 }
