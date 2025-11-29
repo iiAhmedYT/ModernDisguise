@@ -39,7 +39,7 @@ public final class VS1_21_R6 extends DisguiseProvider {
                 )
         );
         player.teleport(location);
-        ep.server.getPlayerList().sendLevelInfo(ep, ep.level());
+        ep.level().getServer().getPlayerList().sendLevelInfo(ep, ep.level());
         ep.connection.send(new ClientboundPlayerInfoUpdatePacket(
                 ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
                 ep));
