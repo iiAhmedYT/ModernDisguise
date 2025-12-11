@@ -50,31 +50,31 @@ public final class DisguiseManager {
                 PROVIDER = new VS1_16_R3();
                 break;
             case "1_17_R1":
-                PROVIDER = Version.IS_PAPER ? new PVS1_17_R1() : new SVS1_17_R1();
+                PROVIDER = new VS1_17_R1();
                 break;
             case "1_18_R1":
-                PROVIDER = Version.IS_PAPER ? new PVS1_18_R1() : new SVS1_18_R1();
+                PROVIDER = new VS1_18_R1();
                 break;
             case "1_18_R2":
-                PROVIDER = Version.IS_PAPER ? new PVS1_18_R2() : new SVS1_18_R2();
+                PROVIDER = new VS1_18_R2();
                 break;
             case "1_19_R1":
-                PROVIDER = Version.IS_PAPER ? new PVS1_19_R1() : new SVS1_19_R1();
+                PROVIDER = new VS1_19_R1();
                 break;
             case "1_19_R2":
-                PROVIDER = Version.IS_PAPER ? new PVS1_19_R2() : new SVS1_19_R2();
+                PROVIDER = new VS1_19_R2();
                 break;
             case "1_19_R3":
-                PROVIDER = Version.IS_PAPER ? new PVS1_19_R3() : new SVS1_19_R3();
+                PROVIDER = new VS1_19_R3();
                 break;
             case "1_20_R1":
-                PROVIDER = Version.IS_PAPER ? new PVS1_20_R1() : new SVS1_20_R1();
+                PROVIDER = new VS1_20_R1();
                 break;
             case "1_20_R2":
-                PROVIDER = Version.IS_PAPER ? new PVS1_20_R2() : new SVS1_20_R2();
+                PROVIDER = new VS1_20_R2();
                 break;
             case "1_20_R3":
-                PROVIDER = Version.IS_PAPER ? new PVS1_20_R3() : new SVS1_20_R3();
+                PROVIDER = new VS1_20_R3();
                 break;
             case "1_20_R4":
                 PROVIDER = Version.IS_PAPER ? new PVS1_20_R4() : new SVS1_20_R4();

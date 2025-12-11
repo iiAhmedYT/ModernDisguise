@@ -1,9 +1,10 @@
 plugins {
     java
-    id("dev.iiahmed.recraft") version "1.0.3"
+    id("dev.iiahmed.recraft") version "1.0.4"
 }
 
 recraft {
+    remapToPaper.set(false)
     minecraftVersion.set("1.20.2")
     targetedPackages.set(listOf("dev/iiahmed/disguise/vs"))
     jarFilePattern = "libs/${project.name}-${project.version}.jar"
