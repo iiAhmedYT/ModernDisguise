@@ -26,7 +26,7 @@ You can change the player's:
 - 1.18.x (1_18_R1, 1_18_R2)
 - 1.19.x (1_19_R1, 1_19_R2, 1_19_R3)
 - 1.20.x (1_20_R1, 1_20_R2, 1_20_R3, 1_20_R4)
-- 1.21.x (1_21_R1, 1_21_R2, 1_21_R3, 1_21_R4, 1_21_R5, 1_21_R6)
+- 1.21.x (1_21_R1, 1_21_R2, 1_21_R3, 1_21_R4, 1_21_R5, 1_21_R6, 1_21_R7)
 
 ## ⚠️ WARNING
 On versions that support Mojang Chat-Reports this library disables that feature in order for disguised players to chat.
@@ -63,7 +63,7 @@ and then add this dependancy:
 <dependency>
     <groupId>dev.iiahmed</groupId>
     <artifactId>ModernDisguise</artifactId>
-    <version>4.5</version>
+    <version>4.6</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -100,7 +100,7 @@ repositories {
 and now add dependency:
 ```kt
 dependencies {
-    implementation("dev.iiahmed:ModernDisguise:4.5")
+    implementation("dev.iiahmed:ModernDisguise:4.6")
 }
 ```
 

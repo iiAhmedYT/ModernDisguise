@@ -33,6 +33,7 @@ val minecraftVersions = listOf(
         "1_21_R4",
         "1_21_R5",
         "1_21_R6",
+        "1_21_R7",
         "fallback"
 )
 
