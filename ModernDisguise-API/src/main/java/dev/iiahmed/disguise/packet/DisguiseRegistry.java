@@ -1,6 +1,6 @@
 package dev.iiahmed.disguise.packet;
 
-import dev.iiahmed.disguise.Disguise;
+import dev.iiahmed.disguise.PlayerInfo;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,27 +25,28 @@ import java.util.UUID;
  *       results.</li>
  * </ul>
  *
- * <p>This interface intentionally starts minimal. Methods will be
- * added as concrete rewriters are written and reveal what state they
- * need.</p>
+ * <p>The registry returns {@link PlayerInfo} (the resolved active
+ * state — name, skin, entity) rather than {@link dev.iiahmed.disguise.Disguise}
+ * (the request that produced it), because rewriters need to know what
+ * is currently active, not what was asked for.</p>
  */
 public interface DisguiseRegistry {
 
     /**
      * @param realId the player's real {@link UUID}
-     * @return the active disguise on that player, or {@code null} if
-     *         the player is not currently disguised
+     * @return the active disguise info for that player, or {@code null}
+     *         if the player is not currently disguised
      */
-    @Nullable Disguise getDisguise(@NotNull UUID realId);
+    @Nullable PlayerInfo getInfo(@NotNull UUID realId);
 
     /**
      * Convenience overload.
      *
      * @param player the player to query
-     * @return the active disguise on that player, or {@code null} if
-     *         the player is not currently disguised
+     * @return the active disguise info for that player, or {@code null}
+     *         if the player is not currently disguised
      */
-    @Nullable default Disguise getDisguise(@NotNull final Player player) {
-        return getDisguise(player.getUniqueId());
+    @Nullable default PlayerInfo getInfo(@NotNull final Player player) {
+        return getInfo(player.getUniqueId());
     }
 }

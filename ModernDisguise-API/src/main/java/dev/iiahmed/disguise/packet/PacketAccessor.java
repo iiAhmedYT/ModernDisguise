@@ -72,4 +72,17 @@ public interface PacketAccessor {
      *         support bundles
      */
     @NotNull Object bundle(@NotNull List<Object> packets);
+
+    /**
+     * Open a typed view over a {@link LogicalPacket#PLAYER_INFO_UPDATE}
+     * packet.
+     *
+     * @param packet a packet whose {@link #identify(Object)} is
+     *               {@link LogicalPacket#PLAYER_INFO_UPDATE}
+     * @return a view that exposes the action and entries of the packet
+     * @throws UnsupportedOperationException if this version does not
+     *         support reading {@code PLAYER_INFO_UPDATE} packets (the
+     *         class was missing on the runtime classpath)
+     */
+    @NotNull PlayerInfoView playerInfoView(@NotNull Object packet);
 }
