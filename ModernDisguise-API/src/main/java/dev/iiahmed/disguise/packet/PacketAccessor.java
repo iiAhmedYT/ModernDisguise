@@ -85,4 +85,40 @@ public interface PacketAccessor {
      *         class was missing on the runtime classpath)
      */
     @NotNull PlayerInfoView playerInfoView(@NotNull Object packet);
+
+    /**
+     * Open a typed view over a {@link LogicalPacket#ADD_ENTITY} packet
+     * that carries a player UUID.
+     *
+     * @param packet a packet whose {@link #identify(Object)} is
+     *               {@link LogicalPacket#ADD_ENTITY}
+     * @return a view exposing the spawning entity's UUID
+     * @throws UnsupportedOperationException if this version does not
+     *         support reading the packet
+     */
+    @NotNull NamedEntitySpawnView namedEntitySpawnView(@NotNull Object packet);
+
+    /**
+     * Open a typed view over a {@link LogicalPacket#SET_PLAYER_TEAM}
+     * packet.
+     *
+     * @param packet a packet whose {@link #identify(Object)} is
+     *               {@link LogicalPacket#SET_PLAYER_TEAM}
+     * @return a view exposing the team-member name collection
+     * @throws UnsupportedOperationException if this version does not
+     *         support reading the packet
+     */
+    @NotNull ScoreboardTeamView scoreboardTeamView(@NotNull Object packet);
+
+    /**
+     * Open a typed view over a chat-carrying packet
+     * ({@link LogicalPacket#PLAYER_CHAT} or
+     * {@link LogicalPacket#SYSTEM_CHAT}).
+     *
+     * @param packet a chat packet
+     * @return a view exposing the chat content as JSON
+     * @throws UnsupportedOperationException if this version does not
+     *         support reading the packet
+     */
+    @NotNull ChatView chatView(@NotNull Object packet);
 }

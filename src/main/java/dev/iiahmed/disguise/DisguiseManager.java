@@ -4,7 +4,10 @@ import dev.iiahmed.disguise.vs.*;
 import dev.iiahmed.disguise.listener.PlayerListener;
 import dev.iiahmed.disguise.packet.DisguiseRegistry;
 import dev.iiahmed.disguise.packet.LegacyPacketAccessor;
+import dev.iiahmed.disguise.packet.PacketRewriter;
+import dev.iiahmed.disguise.packet.rewriter.ChatNickRewriter;
 import dev.iiahmed.disguise.packet.rewriter.PlayerInfoNickRewriter;
+import dev.iiahmed.disguise.packet.rewriter.ScoreboardTeamNickRewriter;
 import dev.iiahmed.disguise.packet.runtime.ErrorPolicy;
 import dev.iiahmed.disguise.packet.runtime.PacketPipeline;
 import dev.iiahmed.disguise.packet.runtime.PacketPipelineHandler;
@@ -17,7 +20,10 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 @SuppressWarnings("unused")
@@ -132,9 +138,24 @@ public final class DisguiseManager {
         if (Version.isBelow(17) && !"UNKNOWN".equals(Version.NMS)) {
             try {
                 accessor = new LegacyPacketAccessor("v" + Version.NMS);
-                registry = PROVIDER::getActiveInfo;
+                registry = new DisguiseRegistry() {
+                    @Override
+                    public @Nullable PlayerInfo getInfo(@NotNull final UUID id) {
+                        return PROVIDER.getActiveInfo(id);
+                    }
+
+                    @Override
+                    public @NotNull Collection<PlayerInfo> activeDisguises() {
+                        return PROVIDER.getAllActiveDisguises();
+                    }
+                };
+                final List<PacketRewriter> rewriters = Arrays.asList(
+                        new PlayerInfoNickRewriter(),
+                        new ScoreboardTeamNickRewriter(),
+                        new ChatNickRewriter()
+                );
                 pipeline = new PacketPipeline(
-                        Collections.singletonList(new PlayerInfoNickRewriter()),
+                        rewriters,
                         SelfViewFilter.ALWAYS,
                         ErrorPolicy.logOnce(Bukkit.getLogger())
                 );

@@ -1,8 +1,11 @@
 package dev.iiahmed.disguise.packet.dev;
 
+import dev.iiahmed.disguise.packet.ChatView;
 import dev.iiahmed.disguise.packet.LogicalPacket;
+import dev.iiahmed.disguise.packet.NamedEntitySpawnView;
 import dev.iiahmed.disguise.packet.PacketAccessor;
 import dev.iiahmed.disguise.packet.PlayerInfoView;
+import dev.iiahmed.disguise.packet.ScoreboardTeamView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,7 +91,26 @@ public final class FakeAccessor implements PacketAccessor {
 
     @Override
     public @NotNull PlayerInfoView playerInfoView(@NotNull final Object packet) {
-        throw new UnsupportedOperationException(
+        throw views();
+    }
+
+    @Override
+    public @NotNull NamedEntitySpawnView namedEntitySpawnView(@NotNull final Object packet) {
+        throw views();
+    }
+
+    @Override
+    public @NotNull ScoreboardTeamView scoreboardTeamView(@NotNull final Object packet) {
+        throw views();
+    }
+
+    @Override
+    public @NotNull ChatView chatView(@NotNull final Object packet) {
+        throw views();
+    }
+
+    private static UnsupportedOperationException views() {
+        return new UnsupportedOperationException(
                 "FakeAccessor does not implement typed views; tests that "
                         + "exercise rewriters should provide their own PacketAccessor");
     }

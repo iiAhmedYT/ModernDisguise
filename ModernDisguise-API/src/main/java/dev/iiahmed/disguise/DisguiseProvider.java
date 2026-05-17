@@ -340,6 +340,19 @@ public abstract class DisguiseProvider {
     }
 
     /**
+     * Live, thread-safe view of every active disguise. Iteration is
+     * weakly consistent (the backing map is a
+     * {@link java.util.concurrent.ConcurrentHashMap}) so the Netty I/O
+     * thread can walk it while the main thread mutates.
+     *
+     * @return the collection of currently active {@link PlayerInfo}s;
+     *         empty when no one is disguised
+     */
+    public final @NotNull java.util.Collection<PlayerInfo> getAllActiveDisguises() {
+        return this.playerInfo.values();
+    }
+
+    /**
      * This sends packets to {@link Player}s to show changes like name and skin
      *
      * @param player the refreshed {@link Player}

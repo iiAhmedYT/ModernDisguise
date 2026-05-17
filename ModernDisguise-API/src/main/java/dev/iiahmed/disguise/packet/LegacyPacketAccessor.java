@@ -6,12 +6,15 @@ import dev.iiahmed.disguise.util.reflection.Reflections;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Shared {@link PacketAccessor} for the pre-1.17 NMS era
@@ -81,6 +84,14 @@ public final class LegacyPacketAccessor implements PacketAccessor {
     private final FieldAccessor<?> piEntriesField;
     private final FieldAccessor<?> piDataProfileField;
 
+    private final FieldAccessor<UUID> spawnUuidField;
+
+    private final FieldAccessor<?> teamPlayersField;
+
+    private final FieldAccessor<?> chatComponentField;
+    private final Method chatSerializeMethod;
+    private final Method chatDeserializeMethod;
+
     /**
      * @param nmsVersion the NMS package suffix, e.g. {@code "v1_8_R3"},
      *                   matching the {@code net.minecraft.server.<suffix>}
@@ -114,6 +125,53 @@ public final class LegacyPacketAccessor implements PacketAccessor {
         this.piActionField = action;
         this.piEntriesField = entries;
         this.piDataProfileField = dataProfile;
+
+        FieldAccessor<UUID> spawnUuid = null;
+        try {
+            final Class<?> spawnPacket = Class.forName(prefix + "PacketPlayOutNamedEntitySpawn");
+            spawnUuid = Reflections.getField(spawnPacket, UUID.class);
+        } catch (final Throwable ignored) {
+            // Leave null; namedEntitySpawnView() will refuse.
+        }
+        this.spawnUuidField = spawnUuid;
+
+        FieldAccessor<?> teamPlayers = null;
+        try {
+            final Class<?> teamPacket = Class.forName(prefix + "PacketPlayOutScoreboardTeam");
+            teamPlayers = Reflections.getField(teamPacket, Collection.class);
+        } catch (final Throwable ignored) {
+            // Leave null; scoreboardTeamView() will refuse.
+        }
+        this.teamPlayersField = teamPlayers;
+
+        FieldAccessor<?> chatComponent = null;
+        Method chatSerialize = null, chatDeserialize = null;
+        try {
+            final Class<?> chatPacket = Class.forName(prefix + "PacketPlayOutChat");
+            final Class<?> componentClass = Class.forName(prefix + "IChatBaseComponent");
+            chatComponent = Reflections.getField(chatPacket, componentClass);
+            // ChatSerializer is a nested class of IChatBaseComponent on
+            // every supported legacy version (v1_8_R2 and later). Its
+            // serialize / deserialize methods are both named "a",
+            // distinguished by argument type.
+            Class<?> serializer = null;
+            for (final Class<?> nested : componentClass.getDeclaredClasses()) {
+                if ("ChatSerializer".equals(nested.getSimpleName())) {
+                    serializer = nested;
+                    break;
+                }
+            }
+            if (serializer == null) {
+                throw new ClassNotFoundException("ChatSerializer nested in " + componentClass.getName());
+            }
+            chatSerialize = serializer.getMethod("a", componentClass);
+            chatDeserialize = serializer.getMethod("a", String.class);
+        } catch (final Throwable ignored) {
+            // Leave fields null; chatView() will refuse.
+        }
+        this.chatComponentField = chatComponent;
+        this.chatSerializeMethod = chatSerialize;
+        this.chatDeserializeMethod = chatDeserialize;
     }
 
     /** @return the NMS version this accessor was constructed for */
@@ -148,6 +206,33 @@ public final class LegacyPacketAccessor implements PacketAccessor {
                     "PlayerInfo view not available on NMS " + nmsVersion);
         }
         return new LegacyPlayerInfoView(packet);
+    }
+
+    @Override
+    public @NotNull NamedEntitySpawnView namedEntitySpawnView(@NotNull final Object packet) {
+        if (spawnUuidField == null) {
+            throw new UnsupportedOperationException(
+                    "NamedEntitySpawn view not available on NMS " + nmsVersion);
+        }
+        return new LegacyNamedEntitySpawnView(packet);
+    }
+
+    @Override
+    public @NotNull ScoreboardTeamView scoreboardTeamView(@NotNull final Object packet) {
+        if (teamPlayersField == null) {
+            throw new UnsupportedOperationException(
+                    "ScoreboardTeam view not available on NMS " + nmsVersion);
+        }
+        return new LegacyScoreboardTeamView(packet);
+    }
+
+    @Override
+    public @NotNull ChatView chatView(@NotNull final Object packet) {
+        if (chatComponentField == null) {
+            throw new UnsupportedOperationException(
+                    "Chat view not available on NMS " + nmsVersion);
+        }
+        return new LegacyChatView(packet);
     }
 
     /**
@@ -231,6 +316,79 @@ public final class LegacyPacketAccessor implements PacketAccessor {
         @Override
         public void setProfile(@NotNull final GameProfile profile) {
             piDataProfileField.set(data, Objects.requireNonNull(profile, "profile"));
+        }
+    }
+
+    private final class LegacyNamedEntitySpawnView implements NamedEntitySpawnView {
+
+        private final Object packet;
+
+        LegacyNamedEntitySpawnView(@NotNull final Object packet) {
+            this.packet = packet;
+        }
+
+        @Override
+        public @NotNull UUID uuid() {
+            return spawnUuidField.get(packet);
+        }
+
+        @Override
+        public void setUuid(@NotNull final UUID uuid) {
+            spawnUuidField.set(packet, Objects.requireNonNull(uuid, "uuid"));
+        }
+    }
+
+    private final class LegacyScoreboardTeamView implements ScoreboardTeamView {
+
+        private final Object packet;
+
+        LegacyScoreboardTeamView(@NotNull final Object packet) {
+            this.packet = packet;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public @NotNull Collection<String> players() {
+            final Collection<String> raw = (Collection<String>) teamPlayersField.get(packet);
+            return raw == null ? Collections.emptyList() : raw;
+        }
+
+        @Override
+        public void setPlayers(@NotNull final Collection<String> players) {
+            teamPlayersField.set(packet, Objects.requireNonNull(players, "players"));
+        }
+    }
+
+    private final class LegacyChatView implements ChatView {
+
+        private final Object packet;
+
+        LegacyChatView(@NotNull final Object packet) {
+            this.packet = packet;
+        }
+
+        @Override
+        public String json() {
+            final Object component = chatComponentField.get(packet);
+            if (component == null) {
+                return null;
+            }
+            try {
+                return (String) chatSerializeMethod.invoke(null, component);
+            } catch (final ReflectiveOperationException e) {
+                throw new RuntimeException("Failed to serialize chat component on " + nmsVersion, e);
+            }
+        }
+
+        @Override
+        public void setJson(@NotNull final String json) {
+            Objects.requireNonNull(json, "json");
+            try {
+                final Object component = chatDeserializeMethod.invoke(null, json);
+                chatComponentField.set(packet, component);
+            } catch (final ReflectiveOperationException e) {
+                throw new RuntimeException("Failed to deserialize chat component on " + nmsVersion, e);
+            }
         }
     }
 }
