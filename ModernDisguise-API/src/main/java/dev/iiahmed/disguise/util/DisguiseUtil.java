@@ -27,7 +27,7 @@ import java.util.logging.Level;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public final class DisguiseUtil {
 
-    private static final String HANDLER_NAME = "ModernDisguise";
+    public static final String HANDLER_NAME = "ModernDisguise";
     public static final String PREFIX = "net.minecraft.server." + (Version.isBelow(17) ? "v" + Version.NMS + "." : "");
 
     public static final Field PROFILE_NAME;
@@ -148,36 +148,72 @@ public final class DisguiseUtil {
     }
 
     /**
-     * Injects into the {@link Player}'s netty {@link Channel}
+     * Injects into the {@link Player}'s netty {@link Channel} under
+     * the default handler name ({@value #HANDLER_NAME}). Equivalent to
+     * {@link #inject(Player, String, ChannelHandler) inject(player,
+     * HANDLER_NAME, handler)}.
      *
      * @param player  the player getting injected into
      * @param handler the {@link ChannelHandler} injected into the channel
      */
     public static void inject(@NotNull final Player player, @NotNull final ChannelHandler handler) {
+        inject(player, HANDLER_NAME, handler);
+    }
+
+    /**
+     * Injects a {@link ChannelHandler} into the {@link Player}'s netty
+     * {@link Channel} under a caller-supplied name, so multiple
+     * independent handlers can coexist in the same channel pipeline.
+     *
+     * <p>The handler is added before the encoder ({@code packet_handler})
+     * so it sees decoded packet objects rather than raw bytes. The
+     * operation is dispatched onto the channel's event loop and is a
+     * no-op if a handler with the same name is already installed.</p>
+     *
+     * @param player  the player getting injected into
+     * @param name    the unique handler name in the pipeline
+     * @param handler the handler to install
+     */
+    public static void inject(@NotNull final Player player,
+                              @NotNull final String name,
+                              @NotNull final ChannelHandler handler) {
         final Channel ch = getChannel(player);
         if (ch == null) {
             return;
         }
         ch.eventLoop().submit(() -> {
-            if (ch.pipeline().get(HANDLER_NAME) == null) {
-                ch.pipeline().addBefore("packet_handler", HANDLER_NAME, handler);
+            if (ch.pipeline().get(name) == null) {
+                ch.pipeline().addBefore("packet_handler", name, handler);
             }
         });
     }
 
     /**
-     * Un-injects out of the {@link Player}'s netty channel
+     * Un-injects out of the {@link Player}'s netty channel under the
+     * default handler name. Equivalent to
+     * {@link #uninject(Player, String) uninject(player, HANDLER_NAME)}.
      *
      * @param player the player getting un-injected out of
      */
     public static void uninject(@NotNull final Player player) {
+        uninject(player, HANDLER_NAME);
+    }
+
+    /**
+     * Un-injects a previously installed handler by name from the
+     * {@link Player}'s netty channel.
+     *
+     * @param player the player getting un-injected out of
+     * @param name   the handler name to remove
+     */
+    public static void uninject(@NotNull final Player player, @NotNull final String name) {
         final Channel ch = getChannel(player);
         if (ch == null) {
             return;
         }
         ch.eventLoop().submit(() -> {
-            if (ch.pipeline().get(HANDLER_NAME) != null) {
-                ch.pipeline().remove(HANDLER_NAME);
+            if (ch.pipeline().get(name) != null) {
+                ch.pipeline().remove(name);
             }
         });
     }

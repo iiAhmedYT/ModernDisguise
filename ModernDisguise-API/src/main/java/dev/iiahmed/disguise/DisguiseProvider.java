@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
@@ -319,6 +320,23 @@ public abstract class DisguiseProvider {
             return this.playerInfo.get(player.getUniqueId());
         }
         return new PlayerInfo(player.getName(), null, null, null);
+    }
+
+    /**
+     * Lock-free lookup of the currently active disguise info by UUID.
+     *
+     * <p>Unlike {@link #getInfo(Player)}, this returns {@code null}
+     * when the player is not disguised rather than synthesizing a
+     * pass-through {@link PlayerInfo}, and it does not require a
+     * {@link Player} reference. Intended for use by the packet
+     * pipeline's {@code DisguiseRegistry} on the Netty I/O thread.</p>
+     *
+     * @param id the player's real {@link UUID}
+     * @return the active disguise info, or {@code null} if the player
+     *         is not currently disguised
+     */
+    public final @Nullable PlayerInfo getActiveInfo(@NotNull final UUID id) {
+        return this.playerInfo.get(id);
     }
 
     /**

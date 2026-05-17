@@ -3,6 +3,7 @@ package dev.iiahmed.disguise.listener;
 import dev.iiahmed.disguise.DisguiseManager;
 import dev.iiahmed.disguise.DisguiseProvider;
 import dev.iiahmed.disguise.UndisguiseResponse;
+import dev.iiahmed.disguise.packet.runtime.PacketPipelineHandler;
 import dev.iiahmed.disguise.util.DisguiseUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,6 +23,10 @@ public final class PlayerListener implements Listener {
         if (provider.performEntityDisguises()) {
             DisguiseUtil.inject(player, new PacketListener(player));
         }
+        final PacketPipelineHandler pipeline = DisguiseManager.newPipelineHandler(player);
+        if (pipeline != null) {
+            DisguiseUtil.inject(player, PacketPipelineHandler.HANDLER_NAME, pipeline);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -30,6 +35,7 @@ public final class PlayerListener implements Listener {
         if (provider.performEntityDisguises()) {
             DisguiseUtil.uninject(player);
         }
+        DisguiseUtil.uninject(player, PacketPipelineHandler.HANDLER_NAME);
         if (!provider.isDisguised(player)) {
             return;
         }
