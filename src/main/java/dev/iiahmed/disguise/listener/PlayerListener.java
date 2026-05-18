@@ -14,13 +14,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public final class PlayerListener implements Listener {
 
+    private static final String HANDLER_NAME = "ModernDisguise";
     private final DisguiseProvider provider = DisguiseManager.getProvider();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         if (provider.performEntityDisguises()) {
-            DisguiseUtil.inject(player, new PacketListener(player));
+            DisguiseUtil.inject(player, HANDLER_NAME, new PacketListener(player));
         }
     }
 
@@ -28,7 +29,7 @@ public final class PlayerListener implements Listener {
     public void onLeave(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (provider.performEntityDisguises()) {
-            DisguiseUtil.uninject(player);
+            DisguiseUtil.uninject(player, HANDLER_NAME);
         }
         if (!provider.isDisguised(player)) {
             return;

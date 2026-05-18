@@ -52,8 +52,10 @@ public final class VS1_9_R2 extends DisguiseProvider {
                 ep));
         player.updateInventory();
         for (final Player serverPlayer : Bukkit.getOnlinePlayers()) {
-            serverPlayer.hidePlayer(player);
-            serverPlayer.showPlayer(player);
+            if (serverPlayer.canSee(player)) {
+                serverPlayer.hidePlayer(player);
+                serverPlayer.showPlayer(player);
+            }
         }
     }
 

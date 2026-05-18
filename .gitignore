@@ -8,6 +8,7 @@ mappings/
 
 ### IntelliJ IDEA ###
 .idea/
+.claude/
 
 *.iws
 *.iml

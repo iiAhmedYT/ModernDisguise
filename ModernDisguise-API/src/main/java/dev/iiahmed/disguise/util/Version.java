@@ -24,16 +24,12 @@ public final class Version {
     public static final boolean IS_20_R2_PLUS = isOrOver(1, 20, 2);
     public static final boolean IS_20_R4_PLUS = isOrOver(1, 20, 5);
 
-    public static boolean is(final int minor) {
-        return MINOR == minor;
+    public static boolean is(final int major, final int minor) {
+        return MAJOR == major && MINOR == minor;
     }
 
     public static boolean is(final int major, final int minor, final int patch) {
         return MAJOR == major && MINOR == minor && PATCH == patch;
-    }
-
-    public static boolean isOver(final int minor) {
-        return MINOR > minor;
     }
 
     public static boolean isOver(final int major, final int minor, final int patch) {
@@ -49,16 +45,8 @@ public final class Version {
         return false;
     }
 
-    public static boolean isOrOver(final int minor) {
-        return MINOR >= minor;
-    }
-
     public static boolean isOrOver(final int major, final int minor, final int patch) {
         return is(major, minor, patch) || isOver(major, minor, patch);
-    }
-
-    public static boolean isBelow(final int minor) {
-        return MINOR < minor;
     }
 
     public static boolean isBelow(final int major, final int minor, final int patch) {
@@ -74,16 +62,12 @@ public final class Version {
         return false;
     }
 
-    public static boolean isOrBelow(final int minor) {
-        return MINOR <= minor;
-    }
-
     public static boolean isOrBelow(final int major, final int minor, final int patch) {
         return is(major, minor, patch) || isBelow(major, minor, patch);
     }
 
     private static String findVersion() {
-        if (IS_PAPER && MINOR >= 20) {
+        if (IS_PAPER && (MAJOR > 1 || MINOR >= 20)) {
             switch (VERSION_EXACT) {
                 case "1.20":
                 case "1.20.1":

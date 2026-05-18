@@ -1,7 +1,6 @@
 package dev.iiahmed.disguise;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import dev.iiahmed.disguise.util.DefaultEntityProvider;
 import dev.iiahmed.disguise.util.DisguiseUtil;
 import dev.iiahmed.disguise.util.Version;
@@ -11,16 +10,16 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public abstract class DisguiseProvider {
 
     private Pattern namePattern = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
-    private boolean overrideChat = Version.isOver(18);
+    private boolean overrideChat = Version.isOver(1, 18, 0);
     private int nameLength = 16;
 
     private final Map<UUID, PlayerInfo> playerInfo = new ConcurrentHashMap<>();
@@ -153,7 +152,7 @@ public abstract class DisguiseProvider {
 
         String realName = player.getName();
         String nickname = realName;
-        final GameProfile profile = DisguiseUtil.getProfile(player);
+        GameProfile profile = DisguiseUtil.getProfile(player);
         if (!player.isOnline() || profile == null) {
             return DisguiseResponse.FAIL_PROFILE_NOT_FOUND;
         }
@@ -178,22 +177,23 @@ public abstract class DisguiseProvider {
 
             nickname = name;
             try {
-                DisguiseUtil.PROFILE_NAME.set(profile, name);
+                profile = DisguiseUtil.setProfileName(player, name);
                 DisguiseUtil.register(name, player);
-            } catch (final IllegalAccessException e) {
-                // shouldn't happen
+            } catch (final Exception e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to set profile name", e);
                 return DisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
             }
         }
 
         Skin realSkin = null;
         if (disguise.hasSkin()) {
-            final Optional<Property> optional = profile.getProperties().get("textures").stream().findFirst();
-            if (optional.isPresent()) {
-                realSkin = DisguiseUtil.getSkin(optional.get());
-                profile.getProperties().removeAll("textures");
+            realSkin = DisguiseUtil.getSkin(player);
+            try {
+                DisguiseUtil.setSkin(player, profile, disguise.getTextures(), disguise.getSignature());
+                profile = DisguiseUtil.getProfile(player);
+            } catch (final Exception e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to set skin", e);
             }
-            profile.getProperties().put("textures", new Property("textures", disguise.getTextures(), disguise.getSignature()));
         }
 
         Entity entity = disguise.getEntity();
@@ -257,7 +257,7 @@ public abstract class DisguiseProvider {
             return UndisguiseResponse.FAIL_ALREADY_UNDISGUISED;
         }
 
-        final GameProfile profile = DisguiseUtil.getProfile(player);
+        GameProfile profile = DisguiseUtil.getProfile(player);
         if (profile == null) {
             if (player.isOnline()) {
                 // shouldn't happen
@@ -273,17 +273,20 @@ public abstract class DisguiseProvider {
         final PlayerInfo info = this.playerInfo.get(player.getUniqueId());
         if (info.hasName()) {
             try {
-                DisguiseUtil.PROFILE_NAME.set(profile, info.getName());
+                profile = DisguiseUtil.setProfileName(player, info.getName());
                 DisguiseUtil.unregister(info.getNickname());
-            } catch (final IllegalAccessException e) {
+            } catch (final Exception e) {
                 return UndisguiseResponse.FAIL_NAME_CHANGE_EXCEPTION;
             }
         }
 
         if (info.hasSkin()) {
             final Skin skin = info.getSkin();
-            profile.getProperties().removeAll("textures");
-            profile.getProperties().put("textures", new Property("textures", skin.getTextures(), skin.getSignature()));
+            try {
+                DisguiseUtil.setSkin(player, profile, skin.getTextures(), skin.getSignature());
+            } catch (final Exception e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to restore skin", e);
+            }
         }
 
         this.playerInfo.remove(player.getUniqueId());

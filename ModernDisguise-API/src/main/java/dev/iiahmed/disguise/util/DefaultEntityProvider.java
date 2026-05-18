@@ -25,7 +25,7 @@ public class DefaultEntityProvider implements EntityProvider {
     private static Class<?> ENTITY_TYPES, WORLD;
 
     static {
-        final boolean obf = Version.isOrOver(17);
+        final boolean obf = Version.isOrOver(1, 17, 0);
         Class<?> entityLiving = null;
         boolean supported;
         try {
@@ -36,7 +36,7 @@ public class DefaultEntityProvider implements EntityProvider {
                     "net.minecraft.world.level." : DisguiseUtil.PREFIX)
                     + "World");
 
-            if (Version.isOrOver(13)) {
+            if (Version.isOrOver(1, 13, 0)) {
                 ENTITY_TYPES = Class.forName((obf ?
                         "net.minecraft.world.entity." : DisguiseUtil.PREFIX)
                         + "EntityTypes");
@@ -145,7 +145,7 @@ public class DefaultEntityProvider implements EntityProvider {
      * @return null if the NMS entity was NOT found
      */
     private static Class<?> findEntity(final String name) {
-        if (Version.isBelow(17)) {
+        if (Version.isBelow(1, 17, 0)) {
             final Class<?> firstTry = Reflections.getClass(DisguiseUtil.PREFIX + name);
             if (firstTry != null) {
                 return firstTry;
@@ -188,7 +188,7 @@ public class DefaultEntityProvider implements EntityProvider {
      * @return null if the NMS entity was NOT found
      */
     private static Constructor<?> findConstructor(@NotNull final Class<?> entityClass, final EntityType type) {
-        if (Version.isBelow(13)) {
+        if (Version.isBelow(1, 13, 0)) {
             return Reflections.getConstructor(entityClass, WORLD);
         }
         try {
@@ -196,7 +196,7 @@ public class DefaultEntityProvider implements EntityProvider {
             if (obj == null) {
                 return null;
             }
-            if (Version.is(13)) {
+            if (Version.is(1, 13)) {
                 ENTITY_FIELDS.put(type, obj);
             } else {
                 final Optional<?> o = (Optional<?>) obj;

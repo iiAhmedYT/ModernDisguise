@@ -24,7 +24,7 @@ public final class PacketListener extends ChannelDuplexHandler {
 
     static {
         try {
-            final String prefix = Version.isOrOver(17) ? "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX;
+            final String prefix = Version.isOrOver(1, 17, 0) ? "net.minecraft.network.protocol.game." : DisguiseUtil.PREFIX;
             final Class<?> namedEntitySpawn = Reflections.findClass(
                     // order is IMPORTANT
                     prefix + "PacketPlayOutNamedEntitySpawn",
@@ -34,7 +34,7 @@ public final class PacketListener extends ChannelDuplexHandler {
             PACKET_NAME = namedEntitySpawn.getSimpleName();
 
             PLAYER_ID = Reflections.getField(namedEntitySpawn, UUID.class);
-            if (Version.isOrOver(20)) {
+            if (Version.isOrOver(1, 20, 0)) {
                 PACKET_LIST = Reflections.getField(Class.forName("net.minecraft.network.protocol.BundlePacket"), Iterable.class);
             } else {
                 PACKET_LIST = null;
