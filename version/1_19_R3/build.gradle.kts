@@ -1,6 +1,6 @@
 plugins {
     java
-    id("dev.iiahmed.recraft") version "1.0.4"
+    id("dev.iiahmed.recraft") version "1.0.5"
 }
 
 recraft {

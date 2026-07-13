@@ -5,7 +5,10 @@ import org.bukkit.Bukkit;
 
 public final class Version {
 
-    public static final String VERSION_EXACT = Bukkit.getBukkitVersion().split("-")[0];
+    public static final String VERSION_EXACT = Bukkit.getBukkitVersion()
+            .split("-")[0]
+            .replaceAll("\\.build\\.\\d+", "");;
+
     public static final boolean IS_FOLIA = Reflections.hasClass("io.papermc.paper.threadedregions.RegionizedServer");
     public static final boolean IS_PAPER = Reflections.hasClass("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
 
@@ -99,6 +102,11 @@ public final class Version {
                     return "1_21_R6";
                 case "1.21.11":
                     return "1_21_R7";
+                case "26.1":
+                case "26.1.1":
+                case "26.1.2":
+                case "26.2":
+                    return "26_1_R1";
                 default:
                     return "UNKNOWN";
             }
